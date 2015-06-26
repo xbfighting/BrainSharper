@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Threading.Tasks;
 using BrainSharper.Abstract.Data;
 using BrainSharper.General.Exceptions.Data;
 using BrainSharper.General.Utils;
@@ -177,7 +178,7 @@ namespace BrainSharper.Implementations.Data
             {
                 newTable.Rows.Add(DataTable.Rows[rowIdx].ItemArray);
             }
-            return new DataFrame(newTable, rowIndices);
+            return new DataFrame(newTable, RowIndices.Where((rowName, rowIdx) => rowIndices.Contains(rowIdx)).ToList());
         }
 
         public IDataFrame Slice(IList<int> rows, IList<string> columns, bool useRowNames = false)
@@ -193,7 +194,7 @@ namespace BrainSharper.Implementations.Data
         public IDataFrame Set<TValue>(TValue value, int rowIndex, int columnIndex, bool useRowNames = false)
         {
             var newDataTable = DataTable.DefaultView.ToTable();
-            var idx = useRowNames ? rowIndex : RowNameToIndex(rowIndex);
+            var idx = useRowNames ? RowNameToIndex(rowIndex) : rowIndex;
             newDataTable.Rows[idx][columnIndex] = value;
             return new DataFrame(newDataTable, new List<int>(RowIndices));
         }
@@ -205,12 +206,30 @@ namespace BrainSharper.Implementations.Data
 
         public IDataFrame ProcessMultiple<TValue>(DataFrameRowIndexColumnNameOperator<TValue> rowOperator)
         {
-            throw new NotImplementedException();
+            var newData = DataTable.DefaultView.ToTable();
+            Parallel.For(0, newData.Rows.Count, rowIdx =>
+            {
+                var row = newData.Rows[rowIdx];
+                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                {
+                    row[colIdx] = rowOperator(rowIdx, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                }
+            });
+            return new DataFrame(newData, new List<int>(RowIndices));
         }
 
         public IDataFrame ProcessMultiple<TValue>(DataFrameRowIndexColumnIndexOperator<TValue> rowOperator)
         {
-            throw new NotImplementedException();
+            var newData = DataTable.DefaultView.ToTable();
+            Parallel.For(0, newData.Rows.Count, rowIdx =>
+            {
+                var row = newData.Rows[rowIdx];
+                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                {
+                    row[colIdx] = rowOperator(rowIdx, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                }
+            });
+            return new DataFrame(newData, new List<int>(RowIndices));
         }
 
         public IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnIndexOperator<TValue> rowOperator)
@@ -225,7 +244,7 @@ namespace BrainSharper.Implementations.Data
 
         public Matrix<double> GetAsMatrix()
         {
-            var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Cast<double>().ToArray()).ToList();
+            var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
             return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
         }
 

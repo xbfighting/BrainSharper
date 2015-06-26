@@ -4,11 +4,11 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Abstract.Data
 {
-    public delegate TValue DataFrameRowIndexColumnNameOperator<TValue>(int rowIndex, string columnName);
-    public delegate TValue DataFrameRowIndexColumnIndexOperator<TValue>(int rowIndex, int columnIndex);
+    public delegate TValue DataFrameRowIndexColumnNameOperator<TValue>(int rowIndex, string columnName, TValue actualValue);
+    public delegate TValue DataFrameRowIndexColumnIndexOperator<TValue>(int rowIndex, int columnIndex, TValue actualValue);
 
-    public delegate TValue DataFrameRowNameColumnNameOperator<TValue>(int rowName, string columnName);
-    public delegate TValue DataFrameRowNameColumnIndexOperator<TValue>(int rowName, int columnIndex);
+    public delegate TValue DataFrameRowNameColumnNameOperator<TValue>(int rowName, string columnName, TValue actualValue);
+    public delegate TValue DataFrameRowNameColumnIndexOperator<TValue>(int rowName, int columnIndex, TValue actualValue);
 
     public interface IDataFrame
     {
