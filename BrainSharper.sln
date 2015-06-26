@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainSharperTests", "BrainSharperTests\BrainSharperTests.csproj", "{79F87E6B-70AB-49CA-B01A-3576259BCA5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainSharper", "BrainSharper\BrainSharper.csproj", "{35B2B7B5-77BE-411F-BCA2-20932C81F788}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79F87E6B-70AB-49CA-B01A-3576259BCA5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F87E6B-70AB-49CA-B01A-3576259BCA5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F87E6B-70AB-49CA-B01A-3576259BCA5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F87E6B-70AB-49CA-B01A-3576259BCA5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35B2B7B5-77BE-411F-BCA2-20932C81F788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35B2B7B5-77BE-411F-BCA2-20932C81F788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35B2B7B5-77BE-411F-BCA2-20932C81F788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35B2B7B5-77BE-411F-BCA2-20932C81F788}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
