@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.General.Utils
 {
@@ -16,6 +17,21 @@ namespace BrainSharper.General.Utils
                 return false;
             }
             return source.AsEnumerable().SequenceEqual(other.AsEnumerable(), DataRowComparer.Default);
+        }
+
+        public static DataTable ToDataTable(this Matrix<double> matrix, IList<string> columnNames = null)
+        {
+            var dataTable = new DataTable();
+            for (int colIdx = 0; colIdx < matrix.ColumnCount; colIdx++)
+            {
+                var columnName = (columnNames?[colIdx]) ?? string.Format("Col{0}", colIdx);
+                dataTable.Columns.Add(new DataColumn(columnName, typeof(double)));
+            }
+            for (int rowIdx = 0; rowIdx < matrix.RowCount; rowIdx++)
+            {
+                dataTable.Rows.Add(matrix.Row(rowIdx).Cast<object>().ToArray());
+            }
+            return dataTable;
         }
     }
 }

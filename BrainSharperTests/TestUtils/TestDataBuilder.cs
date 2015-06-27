@@ -47,5 +47,15 @@ namespace BrainSharperTests.TestUtils
                    }
                }, new [] { 100, 101, 102 });
         }
+
+        public static IDataVector<object> BuildMixedObjectsVector()
+        {
+            return new DataVector<object>(new object[] { "A", 1, "B", 2 }, new []{ "F1", "F2", "F3", "F4" });
+        }
+
+        public static IDataVector<object> BuildNumericVector()
+        {
+            return new DataVector<object>(new object[] { 1.0, 2.0, 3.0, 4.0 }, new[] { "F1", "F2", "F3", "F4" });
+        }
     }
 }

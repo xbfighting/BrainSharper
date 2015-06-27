@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BrainSharper</RootNamespace>
     <AssemblyName>BrainSharper</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\Algorithms\Knn\IKnnModelBuilder.cs" />
     <Compile Include="Abstract\Data\IDataFrame.cs" />
     <Compile Include="Abstract\Data\IDataItem.cs" />
     <Compile Include="Abstract\Data\IDataVector.cs" />

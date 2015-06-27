@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Data;
@@ -17,16 +18,11 @@ namespace BrainSharper.Implementations.Data
 
         protected readonly DataTable DataTable;
         private IList<int> _rowIndices;
+        private readonly object _locker = new object();
 
         #endregion Fields
 
         #region Constructors
-
-        public DataFrame(string name)
-        {
-            DataTable = new DataTable(name);
-            _rowIndices = new List<int>();
-        }
 
         public DataFrame(DataTable dataTable, IList<int> rowIndices = null)
         {
@@ -41,6 +37,12 @@ namespace BrainSharper.Implementations.Data
             }
         }
 
+        public DataFrame(Matrix<double> matrix, IList<string> columnNames = null, IList<int> rowIndices = null)
+            : this(matrix.ToDataTable(columnNames), rowIndices)
+        {
+
+        }
+
         #endregion Constructors
 
         #region Getters/setters
@@ -52,7 +54,7 @@ namespace BrainSharper.Implementations.Data
             get
             {
                 return (from DataColumn col in DataTable.Columns
-                       select col.ColumnName).ToList();
+                        select col.ColumnName).ToList();
             }
             set
             {
@@ -79,7 +81,7 @@ namespace BrainSharper.Implementations.Data
         {
             get
             {
-                if(!ColumnNames.Contains(columnName))
+                if (!ColumnNames.Contains(columnName))
                 {
                     throw new ArgumentException(string.Format("Invalid column name: {0}", columnName));
                 }
@@ -212,7 +214,11 @@ namespace BrainSharper.Implementations.Data
                 var row = newData.Rows[rowIdx];
                 for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
-                    row[colIdx] = rowOperator(rowIdx, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    var newVal = rowOperator(rowIdx, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    lock (_locker)
+                    {
+                        row[colIdx] = newVal;
+                    }
                 }
             });
             return new DataFrame(newData, new List<int>(RowIndices));
@@ -222,11 +228,16 @@ namespace BrainSharper.Implementations.Data
         {
             var newData = DataTable.DefaultView.ToTable();
             Parallel.For(0, newData.Rows.Count, rowIdx =>
+            //for(int rowIdx = 0; rowIdx < newData.Rows.Count; rowIdx++)
             {
                 var row = newData.Rows[rowIdx];
-                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                for (int colIdx = 0; colIdx < ColumnNames.Count; colIdx++)
                 {
-                    row[colIdx] = rowOperator(rowIdx, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    var newVal = rowOperator(rowIdx, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    lock (_locker)
+                    {
+                        newData.Rows[rowIdx][colIdx] = newVal;
+                    }
                 }
             });
             return new DataFrame(newData, new List<int>(RowIndices));
@@ -234,12 +245,40 @@ namespace BrainSharper.Implementations.Data
 
         public IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnIndexOperator<TValue> rowOperator)
         {
-            throw new NotImplementedException();
+            var newData = DataTable.DefaultView.ToTable();
+            Parallel.For(0, newData.Rows.Count, rowIdx =>
+            {
+                var row = newData.Rows[rowIdx];
+                var rowName = _rowIndices[rowIdx];
+                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                {
+                    var newVal = rowOperator(rowName, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    lock (_locker)
+                    {
+                        row[colIdx] = newVal;
+                    }
+                }
+            });
+            return new DataFrame(newData, new List<int>(RowIndices));
         }
 
         public IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnNameOperator<TValue> rowOperator)
         {
-            throw new NotImplementedException();
+            var newData = DataTable.DefaultView.ToTable();
+            Parallel.For(0, newData.Rows.Count, rowIdx =>
+            {
+                var row = newData.Rows[rowIdx];
+                var rowName = _rowIndices[rowIdx];
+                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                {
+                    var newVal = rowOperator(rowName, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
+                    lock (_locker)
+                    {
+                        row[colIdx] = newVal;
+                    }
+                }
+            });
+            return new DataFrame(newData, new List<int>(RowIndices));
         }
 
         public Matrix<double> GetAsMatrix()
@@ -292,7 +331,7 @@ namespace BrainSharper.Implementations.Data
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((DataFrame) obj);
+            return Equals((DataFrame)obj);
         }
 
         public override int GetHashCode()
@@ -304,13 +343,13 @@ namespace BrainSharper.Implementations.Data
                 {
                     foreach (DataRow row in DataTable.Rows)
                     {
-                        hash = row.ItemArray.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode()*397);
+                        hash = row.ItemArray.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
                     }
                 }
 
                 if (_rowIndices != null)
                 {
-                    hash = _rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode()*397);
+                    hash = _rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
                 }
                 return hash;
             }
