@@ -9,17 +9,20 @@ namespace BrainSharper.Implementations.Data
 {
     public class DataVector<TValue> : IList<TValue>, IDataVector<TValue>
     {
-        private readonly IList<TValue> _values; 
+        private readonly IList<TValue> _values;
+        private readonly Lazy<Vector<double>> _numericVector;
 
         public DataVector(IList<TValue> values, IList<string> featureNames)
         {
             _values = values;
+            _numericVector = new Lazy<Vector<double>>(() => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
             FeatureNames = featureNames;
         }
 
         public DataVector(IList<TValue> values, string featureName)
         {
             _values = values;
+            _numericVector = new Lazy<Vector<double>>(() => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
             FeatureNames = Enumerable.Repeat(featureName, _values.Count).ToList();
         }
 
@@ -39,17 +42,15 @@ namespace BrainSharper.Implementations.Data
         {
             get
             {
+                var tmpThis = this;
                 return (
-                        from elem in _values.Select((value, index) => new {Value = value, Index = index})
-                        select new DataItem<TValue>(FeatureNames[elem.Index], elem.Value) as IDataItem<TValue>
+                        from elem in tmpThis._values.Select((value, index) => new {Value = value, Index = index})
+                        select new DataItem<TValue>(tmpThis.FeatureNames[elem.Index], elem.Value) as IDataItem<TValue>
                         ).ToList();
             }
         }
 
-        public Vector<double> NumericVector
-        {
-            get { return Vector<double>.Build.Dense(Values.Select(val => Convert.ToDouble(val)).ToArray()); }
-        }
+        public Vector<double> NumericVector => _numericVector.Value;
 
         public IDataVector<TValue> Set(int fetureIdx, TValue value)
         {
@@ -70,7 +71,8 @@ namespace BrainSharper.Implementations.Data
 
         public IDataVector<TValue> MemberwiseSet(VectorMemberwiseNameOpertor<TValue> setterAction)
         {
-            var newValues = _values.Select((val, idx) => setterAction(FeatureNames[idx], val)).ToList();
+            var tmpThis = this;
+            var newValues = tmpThis._values.Select((val, idx) => setterAction(tmpThis.FeatureNames[idx], val)).ToList();
             return new DataVector<TValue>(newValues, new List<string>(FeatureNames));
         }
 
@@ -134,20 +136,9 @@ namespace BrainSharper.Implementations.Data
 
         #region Equality members
 
-        protected bool Equals(DataVector<TValue> other)
-        {
-            return (
-                    (_values == null && other._values == null) || ((_values != null && other._values != null) && _values.SequenceEqual(other.Values))) && 
-                (
-                    (FeatureNames == null && other.FeatureNames == null) ||
-                    ( (FeatureNames != null && other.FeatureNames != null) && FeatureNames.SequenceEqual(other.FeatureNames) )
-               );
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
             return Equals((DataVector<TValue>) obj);
         }
@@ -169,6 +160,16 @@ namespace BrainSharper.Implementations.Data
                 }
                 return ((valuesSum ?? 0)*397) ^ (fetureNamesSum ?? 0);
             }
+        }
+
+        private bool Equals(DataVector<TValue> other)
+        {
+            return (
+                    (_values == null && other._values == null) || ((_values != null && other._values != null) && _values.SequenceEqual(other.Values))) &&
+                (
+                    (FeatureNames == null && other.FeatureNames == null) ||
+                    ((FeatureNames != null && other.FeatureNames != null) && FeatureNames.SequenceEqual(other.FeatureNames))
+               );
         }
 
         #endregion Equality members

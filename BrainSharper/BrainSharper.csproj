@@ -46,15 +46,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
+    <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
+    <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\Infrastructure\IPredictor.cs" />
+    <Compile Include="Abstract\Algorithms\Knn\IKnnAdditionalParams.cs" />
     <Compile Include="Abstract\Algorithms\Knn\IKnnModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\Knn\IKnnPredictionModel.cs" />
+    <Compile Include="Abstract\Algorithms\Knn\IKnnPredictor.cs" />
+    <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
+    <Compile Include="Abstract\MathUtils\ErrorMeasures\IQuantitativeErrorMeasure.cs" />
     <Compile Include="Abstract\Data\IDataFrame.cs" />
     <Compile Include="Abstract\Data\IDataItem.cs" />
     <Compile Include="Abstract\Data\IDataVector.cs" />
+    <Compile Include="Abstract\MathUtils\Normalizers\IQuantitativeDataNormalizer.cs" />
     <Compile Include="General\Exceptions\Data\InvalidColumnNamesException.cs" />
     <Compile Include="General\Utils\DataTableExtensions.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\KnnAdditionalParams.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BaseKnnModelBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\KnnPredictionModel.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BaseKnnPredictor.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\RowIndexDistanceDto.cs" />
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />
+    <Compile Include="Implementations\MathUtils\DistanceMeasures\EuclideanDistanceMeasure.cs" />
+    <Compile Include="Implementations\MathUtils\ErrorMeasures\MeanSquareError.cs" />
+    <Compile Include="Implementations\MathUtils\Normalizers\StandardDeviationNormalizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

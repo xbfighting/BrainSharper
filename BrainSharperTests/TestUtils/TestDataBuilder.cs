@@ -1,4 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Linq;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Data;
 
@@ -56,6 +60,36 @@ namespace BrainSharperTests.TestUtils
         public static IDataVector<object> BuildNumericVector()
         {
             return new DataVector<object>(new object[] { 1.0, 2.0, 3.0, 4.0 }, new[] { "F1", "F2", "F3", "F4" });
+        }
+
+        /// <summary>
+        /// Creates data frame with values calculated using the following linear equation:
+        /// f6 = f1 + 2f2 - 3f3
+        /// </summary>
+        /// <returns>Data frame with numeric outcomes</returns>
+        public static IDataFrame BuildRandomAbstractNumericDataFrame(int rowCount = 10000, Random randomizer = null, int min = 1, int max = 10)
+        {
+            randomizer = randomizer ?? new Random();
+            var dataTable = new DataTable("some table")
+            {
+                Columns = {"F1", "F2", "F3", "F4", "F5", "F6"}
+            };
+            for (int i = 0; i < rowCount; i++)
+            {
+                var features = new double[6];
+                for (int fIdx = 0; fIdx < 5; fIdx++)
+                {
+                    features[fIdx] = randomizer.Next(min, max);
+                }
+                features[5] = CalcualteLinearlyDependentFeatureValue(features);
+                dataTable.Rows.Add(features.Select(val => val as object).ToArray());
+            }
+            return new DataFrame(dataTable);
+        }
+
+        public static double CalcualteLinearlyDependentFeatureValue(IList<double> features)
+        {
+            return features[0] + 2 * features[1] - 3 * features[2];
         }
     }
 }

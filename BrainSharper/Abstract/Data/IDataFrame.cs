@@ -25,6 +25,8 @@ namespace BrainSharper.Abstract.Data
         /// </summary>
         IList<string> ColumnNames { get; set; }
         IList<int> RowIndices { get; set; }
+        int RowCount { get; }
+        int ColumnsCount { get; }
 
         IDataItem<object> this[int rowIdx, int columnIdx] {get;}
         IDataItem<object> this[int rowIdx, string columnName] { get; }

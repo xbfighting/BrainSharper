@@ -75,6 +75,10 @@ namespace BrainSharper.Implementations.Data
             set { _rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value; }
         }
 
+        public int RowCount => DataTable.Rows.Count;
+
+        public int ColumnsCount => DataTable.Columns.Count;
+
         IDataItem<object> IDataFrame.this[int rowIdx, int columnIdx] => new DataItem<object>(ColumnNames[(int)columnIdx], DataTable.Rows[(int)rowIdx][columnIdx]);
 
         public IDataItem<object> this[int rowIdx, string columnName]

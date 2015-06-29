@@ -7,9 +7,9 @@ namespace BrainSharper.Abstract.Algorithms.Infrastructure
     /// This is the most generic interface representing the machine learning predictor. It takes a query
     /// data frame and existing model, and tries to perform prediction on the unseen data.
     /// </summary>
-    public interface IPredictor
+    public interface IPredictor<TPredictionResult>
     {
-        IList<TResult> Predict<TResult>(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName);
-        IList<TResult> Predict<TResult>(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex);
+        IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName);
+        IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex);
     }
 }
