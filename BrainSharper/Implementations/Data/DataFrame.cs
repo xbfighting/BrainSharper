@@ -17,8 +17,9 @@ namespace BrainSharper.Implementations.Data
         #region Fields
 
         protected readonly DataTable DataTable;
-        private IList<int> _rowIndices;
         private readonly object _locker = new object();
+        private IList<int> _rowIndices;
+        private readonly Lazy<Matrix<double>> _numericMatrix; 
 
         #endregion Fields
 
@@ -35,6 +36,7 @@ namespace BrainSharper.Implementations.Data
             {
                 _rowIndices = rowIndices.Take(dataTable.Rows.Count).ToList();
             }
+            _numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
         }
 
         public DataFrame(Matrix<double> matrix, IList<string> columnNames = null, IList<int> rowIndices = null)
@@ -287,8 +289,7 @@ namespace BrainSharper.Implementations.Data
 
         public Matrix<double> GetAsMatrix()
         {
-            var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
-            return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
+            return _numericMatrix.Value;
         }
 
         #endregion Slicers
@@ -325,6 +326,13 @@ namespace BrainSharper.Implementations.Data
         {
             return RowIndices.IndexOf(rowName);
         }
+
+        private Matrix<double> CreateMatrixFromDataTable()
+        {
+            var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
+            return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
+        }
+
 
         #endregion Private methods
 

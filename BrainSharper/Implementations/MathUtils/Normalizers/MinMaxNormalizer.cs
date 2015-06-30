@@ -2,26 +2,29 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.MathUtils.Normalizers;
-using MathNet.Numerics.Integration;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.Statistics;
 
 namespace BrainSharper.Implementations.MathUtils.Normalizers
 {
-    public class StandardDeviationNormalizer : IQuantitativeDataNormalizer
+    public class MinMaxNormalizer : IQuantitativeDataNormalizer
     {
         public Matrix<double> NormalizeColumns(Matrix<double> dataToNormalize, IList<int> columnsToNormalize = null)
         {
             columnsToNormalize = columnsToNormalize ?? Enumerable.Range(0, dataToNormalize.ColumnCount).ToList();
             var normalizedColumns = new ConcurrentBag<Tuple<int, Vector<double>>>();
-            var columnStds = new double[dataToNormalize.ColumnCount];
-            var columnMeans = new double[dataToNormalize.ColumnCount];
+            var columnMins = new double[dataToNormalize.ColumnCount];
+            var columnRanges = new double[dataToNormalize.ColumnCount];
             for (int colIdx = 0; colIdx < dataToNormalize.ColumnCount; colIdx++)
             {
-                columnStds[colIdx] = dataToNormalize.Column(colIdx).StandardDeviation();
-                columnMeans[colIdx] = dataToNormalize.Column(colIdx).Mean();
+                var columnMin = dataToNormalize.Column(colIdx).Minimum();
+                var columnMax = dataToNormalize.Column(colIdx).Maximum();
+                var colRange = columnMax - columnMin;
+
+                columnMins[colIdx] = columnMin;
+                columnRanges[colIdx] = colRange;
             }
             Parallel.For(0, dataToNormalize.ColumnCount, colIdx =>
             {
@@ -33,12 +36,13 @@ namespace BrainSharper.Implementations.MathUtils.Normalizers
                 else
                 {
                     var columnVector = dataToNormalize.Column(colIdx);
-                    var columnStd = columnStds[colIdx];
-                    var columnMean = columnMeans[colIdx];
-                    vectorToAdd = columnVector.Subtract(columnMean).Divide(columnStd);
+                    var columnMin = columnMins[colIdx];
+                    var colRange = columnRanges[colIdx];
+                    vectorToAdd = columnVector.Subtract(columnMin).Divide(colRange);
                 }
                 normalizedColumns.Add(new Tuple<int, Vector<double>>(colIdx, vectorToAdd));
             });
+
             return Matrix<double>.Build.DenseOfColumnVectors(normalizedColumns.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2));
         }
     }

@@ -66,6 +66,7 @@
     <Compile Include="Implementations\Algorithms\Knn\BaseKnnPredictorTests.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
     <Compile Include="Implementations\Data\DataVectorTests.cs" />
+    <Compile Include="Implementations\MathUtils\MinMaxNormalizerTest.cs" />
     <Compile Include="Implementations\MathUtils\StandardDeviationNormalizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\DataTableComparer.cs" />

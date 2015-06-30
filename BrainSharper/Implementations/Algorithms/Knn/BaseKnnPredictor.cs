@@ -7,17 +7,29 @@ using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Algorithms.Knn;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Abstract.MathUtils.DistanceMeaseures;
+using BrainSharper.Abstract.MathUtils.Normalizers;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Algorithms.Knn
 {
     public class BaseKnnPredictor : IKnnPredictor
     {
-        public BaseKnnPredictor(IDistanceMeasure distanceMeasure)
+        public BaseKnnPredictor(
+            IDistanceMeasure distanceMeasure, 
+            IQuantitativeDataNormalizer dataNormalizer, 
+            Func<double, double> weightingFunc = null,
+            IDistanceMeasure similarityMeasure = null)
         {
             DistanceMeasure = distanceMeasure;
+            SimilarityMeasure = similarityMeasure ?? distanceMeasure;
+            DataNormalizer = dataNormalizer;
+            WeightingFunction = weightingFunc;
         }
 
+        public Func<double, double> WeightingFunction { get; } 
         public IDistanceMeasure DistanceMeasure { get; }
+        public IDistanceMeasure SimilarityMeasure { get; }
+        public IQuantitativeDataNormalizer DataNormalizer { get; }
 
         public IList<double> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
         {
@@ -29,28 +41,41 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             ValidateModel(model);
             var knnModel = model as IKnnPredictionModel;
             var results = new ConcurrentBag<RowIndexDistanceDto>();
-            var queryData = queryDataFrame;
-            // TODO: add checking query frame length - if it has empty value column
-            //Parallel.For(0, queryDataFrame.RowCount, queryRowIdx =>
-            for(int queryRowIdx = 0; queryRowIdx < queryDataFrame.RowCount; queryRowIdx++)
+            var normalizedData = NormalizeData(queryDataFrame, knnModel, dependentFeatureIndex);
+            var normalizedTrainingData = normalizedData.Item1;
+            var queryMatrix = normalizedData.Item2;
+            Parallel.For(0, queryDataFrame.RowCount, queryRowIdx =>
             {
-                var rowVector = queryDataFrame.GetNumericRowVector(queryRowIdx);
+                var rowVector = queryMatrix.Row(queryRowIdx);
                 var distances = new ConcurrentBag<RowIndexDistanceDto>();
-                // Parallel.For(0, knnModel.TrainingData.RowCount, trainingRowIdx =>
-                for (int trainingRowIdx = 0; trainingRowIdx < knnModel.TrainingData.RowCount; trainingRowIdx++)
-
+                for (int trainingRowIdx = 0; trainingRowIdx < normalizedTrainingData.RowCount; trainingRowIdx++)
                 {
-                    var trainingRow = knnModel.TrainingData.Row(trainingRowIdx);
+                    var trainingRow = normalizedTrainingData.Row(trainingRowIdx);
                     double dependentFeatureValue = knnModel.ExpectedTrainingOutcomes[trainingRowIdx];
                     double distance = DistanceMeasure.Distance(rowVector, trainingRow);
                     var distanceDto = new RowIndexDistanceDto(trainingRowIdx, distance, dependentFeatureValue);
                     distances.Add(distanceDto);
-                }//);
+                }
                 var sortedDistances = distances.OrderBy(distDto => distDto.Distance).Take(knnModel.KNeighbors);
                 var result = new RowIndexDistanceDto(queryRowIdx, 0, FindResult(sortedDistances));
                 results.Add(result);
-            }//);
+            });
             return results.OrderBy(res => res.RowIndex).Select(res => res.DependentFeatureValue).ToList();
+        }
+
+        protected virtual Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel knnModel, int dependentFeatureIdx)
+        {
+            var dependentFetureName =  (dependentFeatureIdx < queryDataFrame.ColumnsCount && dependentFeatureIdx >= 0) 
+                ? queryDataFrame.ColumnNames[dependentFeatureIdx] : string.Empty;
+            var modelMatrix = knnModel.TrainingData;
+            var queryMatrix =
+                queryDataFrame.GetSubsetByColumns(
+                    queryDataFrame.ColumnNames.Where(colName => colName != dependentFetureName).ToList()).GetAsMatrix();
+            var commonMatrix = modelMatrix.Stack(queryMatrix);
+            var normalizedMatrix = DataNormalizer.NormalizeColumns(commonMatrix);
+            var normalizedModelMatrix = normalizedMatrix.SubMatrix(0, modelMatrix.RowCount, 0, modelMatrix.ColumnCount);
+            var normalizedQueryMatrix = normalizedMatrix.SubMatrix(modelMatrix.RowCount, queryMatrix.RowCount, 0, queryMatrix.ColumnCount);
+            return new Tuple<Matrix<double>, Matrix<double>>(normalizedModelMatrix, normalizedQueryMatrix);
         }
 
         protected virtual double FindResult(IEnumerable<RowIndexDistanceDto> distances)
@@ -59,8 +84,9 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             var weights = 0.0;
             foreach (var dist in distances)
             {
-                resultTotal += dist.DependentFeatureValue * dist.Distance;
-                weights += dist.Distance;
+                var weight = WeightingFunction(dist.Distance);
+                resultTotal += dist.DependentFeatureValue*weight;
+                weights += weight;
             }
             return resultTotal/weights;
         }
