@@ -6,14 +6,23 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 {
     public class KnnPredictionModel : IKnnPredictionModel
     {
-        public KnnPredictionModel(Matrix<double> trainingData, IList<double> expectedTrainingOutcomes,  int kNeighbors, bool useWeightedDistance, double accuracy = 0)
+        public KnnPredictionModel(
+            Matrix<double> trainingData, 
+            IList<double> expectedTrainingOutcomes, 
+            IList<string> dataColumnsNames, 
+            int kNeighbors,
+            bool useWeightedDistance, 
+            double accuracy = 0)
         {
             TrainingData = trainingData;
             TrainingDataAccuracy = accuracy;
             KNeighbors = kNeighbors;
             UseWeightedDistance = useWeightedDistance;
             ExpectedTrainingOutcomes = expectedTrainingOutcomes;
+            DataColumnsNames = dataColumnsNames;
         }
+
+        public IList<string> DataColumnsNames { get; }
 
         public Matrix<double> TrainingData { get; }
 

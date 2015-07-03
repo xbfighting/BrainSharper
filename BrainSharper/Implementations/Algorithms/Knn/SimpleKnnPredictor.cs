@@ -12,24 +12,30 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Algorithms.Knn
 {
-    public class BaseKnnPredictor : IKnnPredictor
+    public class SimpleKnnPredictor : IKnnPredictor
     {
-        public BaseKnnPredictor(
+        public SimpleKnnPredictor(
             IDistanceMeasure distanceMeasure, 
             IQuantitativeDataNormalizer dataNormalizer, 
             Func<double, double> weightingFunc = null,
-            IDistanceMeasure similarityMeasure = null)
+            IDistanceMeasure similarityMeasure = null,
+            bool normalizeNumericValues = false)
         {
             DistanceMeasure = distanceMeasure;
             SimilarityMeasure = similarityMeasure ?? distanceMeasure;
             DataNormalizer = dataNormalizer;
             WeightingFunction = weightingFunc;
+            NormalizeNumericValues = normalizeNumericValues;
         }
 
         public Func<double, double> WeightingFunction { get; } 
         public IDistanceMeasure DistanceMeasure { get; }
+
+        public bool NormalizeNumericValues { get; set; }
+
         public IDistanceMeasure SimilarityMeasure { get; }
         public IQuantitativeDataNormalizer DataNormalizer { get; }
+
 
         public IList<double> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
         {
@@ -41,7 +47,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             ValidateModel(model);
             var knnModel = model as IKnnPredictionModel;
             var results = new ConcurrentBag<RowIndexDistanceDto>();
-            var normalizedData = NormalizeData(queryDataFrame, knnModel, dependentFeatureIndex);
+            var normalizedData =  NormalizeData(queryDataFrame, knnModel, dependentFeatureIndex);
             var normalizedTrainingData = normalizedData.Item1;
             var queryMatrix = normalizedData.Item2;
             Parallel.For(0, queryDataFrame.RowCount, queryRowIdx =>
@@ -65,12 +71,18 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 
         protected virtual Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel knnModel, int dependentFeatureIdx)
         {
-            var dependentFetureName =  (dependentFeatureIdx < queryDataFrame.ColumnsCount && dependentFeatureIdx >= 0) 
+            var dependentFetureName = (dependentFeatureIdx < queryDataFrame.ColumnsCount && dependentFeatureIdx >= 0)
                 ? queryDataFrame.ColumnNames[dependentFeatureIdx] : string.Empty;
             var modelMatrix = knnModel.TrainingData;
             var queryMatrix =
                 queryDataFrame.GetSubsetByColumns(
                     queryDataFrame.ColumnNames.Where(colName => colName != dependentFetureName).ToList()).GetAsMatrix();
+
+            if (!NormalizeNumericValues)
+            {
+                return new Tuple<Matrix<double>, Matrix<double>>(modelMatrix, queryMatrix);
+            }
+            
             var commonMatrix = modelMatrix.Stack(queryMatrix);
             var normalizedMatrix = DataNormalizer.NormalizeColumns(commonMatrix);
             var normalizedModelMatrix = normalizedMatrix.SubMatrix(0, modelMatrix.RowCount, 0, modelMatrix.ColumnCount);

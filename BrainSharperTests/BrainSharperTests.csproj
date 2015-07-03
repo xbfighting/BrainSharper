@@ -63,7 +63,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Implementations\Algorithms\Knn\BaseKnnPredictorTests.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationModelBuilderTest.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\SimpleKnnPredictorTests.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
     <Compile Include="Implementations\Data\DataVectorTests.cs" />
     <Compile Include="Implementations\MathUtils\MinMaxNormalizerTest.cs" />

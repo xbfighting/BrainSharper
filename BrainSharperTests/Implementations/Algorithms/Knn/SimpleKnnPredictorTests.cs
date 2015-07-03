@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace BrainSharperTests.Implementations.Algorithms.Knn
 {
     [TestFixture]
-    public class BaseKnnPredictorTests
+    public class BackwardsEliminationModelBuilderTest
     {
         [Test]
         public void TestBuildKnnModel()
@@ -28,7 +28,6 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
             var randomizer = new Random(55);
             var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer);
 
-            // TODO: change data type in query frame
             var queryDataFrame = new DataFrame(new DataTable("some data")
             {
                 Columns =
@@ -50,12 +49,12 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 .Select(
                     rowIdx =>
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
-            
 
-            var modelBuilder = new BaseKnnModelBuilder();
+
+            var modelBuilder = new SimpleKnnModelBuilder();
             var modelParams = new KnnAdditionalParams(4, true);
             var weightingFunction = new GaussianFunction(0.3);
-            var predictor = new BaseKnnPredictor(new EuclideanDistanceMeasure(), new MinMaxNormalizer(), weightingFunction.GetValue);
+            var predictor = new SimpleKnnPredictor(new EuclideanDistanceMeasure(), new MinMaxNormalizer(), weightingFunction.GetValue);
             var errorMeasure = new MeanSquareError();
             // When
             var model = modelBuilder.BuildModel(baseDataFrame, "F6", modelParams);

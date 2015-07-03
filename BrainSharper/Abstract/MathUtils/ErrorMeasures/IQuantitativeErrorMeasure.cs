@@ -1,4 +1,5 @@
-﻿using BrainSharper.Abstract.Data;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Data;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Abstract.MathUtils.ErrorMeasures
@@ -7,5 +8,6 @@ namespace BrainSharper.Abstract.MathUtils.ErrorMeasures
     {
         double CalculateError(Vector<double> vec1, Vector<double> vec2);
         double CalculateError(IDataVector<double> vec1, IDataVector<double> vec2);
+        double CalculateError(IList<double> vec1, IList<double> vec2);
     }
 }

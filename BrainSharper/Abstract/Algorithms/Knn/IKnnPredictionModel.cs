@@ -10,5 +10,6 @@ namespace BrainSharper.Abstract.Algorithms.Knn
         IList<double> ExpectedTrainingOutcomes { get; }
         int KNeighbors { get; }
         bool UseWeightedDistance { get; }
+        IList<string> DataColumnsNames { get; }
     }
 }

@@ -6,5 +6,6 @@ namespace BrainSharper.Abstract.Algorithms.Knn
     public interface IKnnPredictor : IPredictor<double>
     {
         IDistanceMeasure DistanceMeasure { get; }
+        bool NormalizeNumericValues { get; set; }
     }
 }
