@@ -71,23 +71,38 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 
         protected virtual Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel knnModel, int dependentFeatureIdx)
         {
-            var dependentFetureName = (dependentFeatureIdx < queryDataFrame.ColumnsCount && dependentFeatureIdx >= 0)
-                ? queryDataFrame.ColumnNames[dependentFeatureIdx] : string.Empty;
             var modelMatrix = knnModel.TrainingData;
-            var queryMatrix =
-                queryDataFrame.GetSubsetByColumns(
-                    queryDataFrame.ColumnNames.Where(colName => colName != dependentFetureName).ToList()).GetAsMatrix();
+            var queryMatrix = ExtractQueryDataAsMatrix(queryDataFrame, knnModel, dependentFeatureIdx);
 
+            return PerformNormalization(modelMatrix, queryMatrix);
+        }
+
+        protected virtual Tuple<Matrix<double>, Matrix<double>> PerformNormalization(Matrix<double> modelMatrix, Matrix<double> queryMatrix)
+        {
             if (!NormalizeNumericValues)
             {
                 return new Tuple<Matrix<double>, Matrix<double>>(modelMatrix, queryMatrix);
             }
-            
+
             var commonMatrix = modelMatrix.Stack(queryMatrix);
             var normalizedMatrix = DataNormalizer.NormalizeColumns(commonMatrix);
             var normalizedModelMatrix = normalizedMatrix.SubMatrix(0, modelMatrix.RowCount, 0, modelMatrix.ColumnCount);
-            var normalizedQueryMatrix = normalizedMatrix.SubMatrix(modelMatrix.RowCount, queryMatrix.RowCount, 0, queryMatrix.ColumnCount);
+            var normalizedQueryMatrix = normalizedMatrix.SubMatrix(modelMatrix.RowCount, queryMatrix.RowCount, 0,
+                queryMatrix.ColumnCount);
             return new Tuple<Matrix<double>, Matrix<double>>(normalizedModelMatrix, normalizedQueryMatrix);
+        }
+
+        protected virtual Matrix<double> ExtractQueryDataAsMatrix(
+            IDataFrame queryDataFrame, 
+            IKnnPredictionModel knnModel,
+            int dependentFeatureIdx)
+        {
+            var dependentFetureName = (dependentFeatureIdx < queryDataFrame.ColumnsCount && dependentFeatureIdx >= 0)
+                ? queryDataFrame.ColumnNames[dependentFeatureIdx]
+                : string.Empty;
+            var queryMatrix = queryDataFrame.GetSubsetByColumns(
+                queryDataFrame.ColumnNames.Where(colName => colName != dependentFetureName).ToList()).GetAsMatrix();
+            return queryMatrix;
         }
 
         protected virtual double FindResult(IEnumerable<RowIndexDistanceDto> distances)
@@ -103,7 +118,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             return resultTotal/weights;
         }
 
-        private static void ValidateModel(IPredictionModel model)
+        protected virtual void ValidateModel(IPredictionModel model)
         {
             if (!(model is IKnnPredictionModel))
             {

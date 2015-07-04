@@ -66,6 +66,7 @@
     <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationKnnModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\Knn\IBackwardsEliminationKnnModel.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationPredictor.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationRemovedFeatureData.cs" />
     <Compile Include="Abstract\Algorithms\Knn\IBackwardsEliminationRemovedFeatureData.cs" />
     <Compile Include="Implementations\Algorithms\Knn\KnnAdditionalParams.cs" />

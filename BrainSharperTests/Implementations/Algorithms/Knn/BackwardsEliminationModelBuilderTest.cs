@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using BrainSharper.Abstract.Algorithms.Knn;
 using BrainSharper.General.MathFunctions;
 using BrainSharper.Implementations.Algorithms.Knn;
-using BrainSharper.Implementations.Data;
-using BrainSharper.Implementations.MathUtils;
 using BrainSharper.Implementations.MathUtils.DistanceMeasures;
 using BrainSharper.Implementations.MathUtils.ErrorMeasures;
 using BrainSharper.Implementations.MathUtils.Normalizers;
 using BrainSharperTests.TestUtils;
-using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.Knn
 {
     [TestFixture]
-    public class SimpleKnnPredictorTests
+    public class BackwardsEliminationModelBuilderTest
     {
         [Test]
         public void TestBuildKnnModel()
@@ -35,9 +28,14 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 new MinMaxNormalizer(),
                 predictor,
                 new MeanSquareError());
+            var expectedRemovedFeaturesNames = new[] {"F4", "F5"};
 
             // When
-            var model = subject.BuildModel(baseDataFrame, "F6", modelParams);
+            var model = subject.BuildModel(baseDataFrame, "F6", modelParams) as IBackwardsEliminationKnnModel;
+
+            // Then
+            Assert.AreEqual(2, model.RemovedFeaturesData.Count);
+            CollectionAssert.AreEquivalent(expectedRemovedFeaturesNames, model.RemovedFeaturesData.Select(f => f.FeatureName));
         }
 
     }

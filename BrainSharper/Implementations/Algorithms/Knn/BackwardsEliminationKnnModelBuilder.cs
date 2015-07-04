@@ -82,7 +82,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             }
 
             return new BackwardsEliminationKnnModel(
-                trainingData,
+                preparedData.Item1,
                 expectedValues,
                 dataColumnsNames,
                 additionalParams.KNeighbors,

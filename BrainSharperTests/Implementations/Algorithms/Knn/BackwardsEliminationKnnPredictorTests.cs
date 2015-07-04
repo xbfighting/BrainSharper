@@ -14,14 +14,15 @@ using NUnit.Framework;
 namespace BrainSharperTests.Implementations.Algorithms.Knn
 {
     [TestFixture]
-    public class SimpleKnnPredictorTests
+    public class BackwardsEliminationKnnPredictorTests
     {
         [Test]
-        public void Test_RegressionWith_SimpleKnnModel()
+        public void Test_RegressionWith_BackwardsEliminationKnnModel()
         {
+
             // Given
             var randomizer = new Random(55);
-            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer);
+            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer, rowCount: 1000);
 
             var queryDataFrame = new DataFrame(new DataTable("some data")
             {
@@ -44,21 +45,29 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 .Select(
                     rowIdx =>
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
-
-
-            var modelBuilder = new SimpleKnnModelBuilder();
-            var modelParams = new KnnAdditionalParams(4, true);
             var weightingFunction = new GaussianFunction(0.3);
-            var predictor = new SimpleKnnPredictor(new EuclideanDistanceMeasure(), new MinMaxNormalizer(), weightingFunction.GetValue, normalizeNumericValues: true);
+            var predictor = new SimpleKnnPredictor(
+                new EuclideanDistanceMeasure(), 
+                new MinMaxNormalizer(), 
+                weightingFunction.GetValue);
+            var modelBuilder = new BackwardsEliminationKnnModelBuilder(
+                new MinMaxNormalizer(),
+                predictor,
+                new MeanSquareError()
+                );
+            var modelParams = new KnnAdditionalParams(4, true);
             var errorMeasure = new MeanSquareError();
 
+            var subject = new BackwardsEliminationPredictor(
+                new EuclideanDistanceMeasure(), 
+                new MinMaxNormalizer(),
+                weightingFunction.GetValue);
+            
             // When
             var model = modelBuilder.BuildModel(baseDataFrame, "F6", modelParams);
-            var results = predictor.Predict(queryDataFrame, model, "F6");
-
-            // Then
-            var mse = errorMeasure.CalculateError(Vector<double>.Build.DenseOfEnumerable(expectedValues), Vector<double>.Build.DenseOfEnumerable(results));
-            Assert.IsTrue(mse < 0.55);
+            var actualOutcomes = subject.Predict(queryDataFrame, model, "F6");
+            var mse = errorMeasure.CalculateError(Vector<double>.Build.DenseOfEnumerable(expectedValues), Vector<double>.Build.DenseOfEnumerable(actualOutcomes));
+            Assert.IsTrue(mse < 0.35);
         }
     }
 }
