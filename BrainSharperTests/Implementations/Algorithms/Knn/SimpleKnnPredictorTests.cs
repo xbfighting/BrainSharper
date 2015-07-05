@@ -46,10 +46,10 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
 
 
-            var modelBuilder = new SimpleKnnModelBuilder();
+            var modelBuilder = new SimpleKnnModelBuilder<double>();
             var modelParams = new KnnAdditionalParams(4, true);
             var weightingFunction = new GaussianFunction(0.3);
-            var predictor = new SimpleKnnPredictor(new EuclideanDistanceMeasure(), new MinMaxNormalizer(), weightingFunction.GetValue, normalizeNumericValues: true);
+            var predictor = new SimpleKnnRegressor(new EuclideanDistanceMeasure(), new MinMaxNormalizer(), weightingFunction.GetValue, normalizeNumericValues: true);
             var errorMeasure = new MeanSquareError();
 
             // When

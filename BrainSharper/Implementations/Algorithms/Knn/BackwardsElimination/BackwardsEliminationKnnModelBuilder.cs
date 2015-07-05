@@ -11,15 +11,15 @@ using BrainSharper.Abstract.MathUtils.Normalizers;
 using BrainSharper.Implementations.Data;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace BrainSharper.Implementations.Algorithms.Knn
+namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
 {
-    public class BackwardsEliminationKnnModelBuilder : SimpleKnnModelBuilder
+    public class BackwardsEliminationKnnModelBuilder<TPredictionResult> : SimpleKnnModelBuilder<TPredictionResult>
     {
         private readonly IQuantitativeDataNormalizer _dataNormalizer;
-        private readonly IKnnPredictor _knnPredictor;
-        private readonly IQuantitativeErrorMeasure _errorMeasure;
+        private readonly IKnnPredictor<TPredictionResult> _knnPredictor;
+        private readonly IErrorMeasure<TPredictionResult> _errorMeasure;
 
-        public BackwardsEliminationKnnModelBuilder(IQuantitativeDataNormalizer dataNormalizer, IKnnPredictor knnPredictor, IQuantitativeErrorMeasure errorMeasure)
+        public BackwardsEliminationKnnModelBuilder(IQuantitativeDataNormalizer dataNormalizer, IKnnPredictor<TPredictionResult> knnPredictor, IErrorMeasure<TPredictionResult> errorMeasure)
         {
             _dataNormalizer = dataNormalizer;
             _knnPredictor = knnPredictor;
@@ -32,9 +32,9 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             return PerformBackwardsElimination(dataFrame, dependentFeatureName, additionalParams as IKnnAdditionalParams);
         }
 
-        protected IBackwardsEliminationKnnModel PerformBackwardsElimination(IDataFrame dataFrame, string dependentFeatureName, IKnnAdditionalParams additionalParams)
+        protected IBackwardsEliminationKnnModel<TPredictionResult> PerformBackwardsElimination(IDataFrame dataFrame, string dependentFeatureName, IKnnAdditionalParams additionalParams)
         {
-            Tuple<Matrix<double>, Vector<double>, IList<string>> preparedData = PrepareTrainingData(dataFrame, dependentFeatureName);
+            Tuple<Matrix<double>, IList<TPredictionResult>, IList<string>> preparedData = PrepareTrainingData(dataFrame, dependentFeatureName);
             var dataColumnsNames = preparedData.Item3;
             var trainingData = _dataNormalizer.NormalizeColumns(preparedData.Item1);
             var expectedValues = preparedData.Item2;
@@ -81,7 +81,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
                 actualDataColumnNames.RemoveAt(bestFeatureToRemove.Key);
             }
 
-            return new BackwardsEliminationKnnModel(
+            return new BackwardsEliminationKnnModel<TPredictionResult>(
                 preparedData.Item1,
                 expectedValues,
                 dataColumnsNames,
@@ -93,11 +93,11 @@ namespace BrainSharper.Implementations.Algorithms.Knn
         private double ProcessDataAndQuantifyErrorRate(
             string dependentFeatureName, 
             Matrix<double> trainingData, 
-            Vector<double> expectedValues,
+            IList<TPredictionResult> expectedValues,
             IList<string> dataColumnsNames,
             IKnnAdditionalParams knnAdditionalParams)
         {
-            var partialResults = new ConcurrentDictionary<int, double>();
+            var partialResults = new ConcurrentDictionary<int, TPredictionResult>();
             ProcessData(dependentFeatureName, trainingData, expectedValues, dataColumnsNames, partialResults, knnAdditionalParams);
             var actualValues = partialResults.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
             return _errorMeasure.CalculateError(expectedValues, actualValues);
@@ -106,27 +106,27 @@ namespace BrainSharper.Implementations.Algorithms.Knn
         private void ProcessData(
             string dependentFeatureName, 
             Matrix<double> trainingData, 
-            Vector<double> expectedValues,
+            IList<TPredictionResult> expectedValues,
             IList<string> dataColumnNames, 
-            ConcurrentDictionary<int, double> partialResults,
+            ConcurrentDictionary<int, TPredictionResult> partialResults,
             IKnnAdditionalParams knnAdditionalParams)
         {
             Parallel.For(0, trainingData.RowCount, rowIdx =>
             {
                 var trainingDataExceptRow = trainingData.RemoveRow(rowIdx);
+
                 var expectedValuesExceptRow = expectedValues.ToList();
                 expectedValuesExceptRow.RemoveAt(rowIdx);
-                var expectedValuesVector = Vector<double>.Build.DenseOfEnumerable(expectedValuesExceptRow);
 
                 var queryMatrix = Matrix<double>.Build.DenseOfRowVectors(trainingData.Row(rowIdx));
                 var queryDataFrame = new DataFrame(queryMatrix);
-                var knnPredictionModel = new KnnPredictionModel(trainingDataExceptRow, expectedValuesVector,
-                    dataColumnNames, 3, true);
+                var knnPredictionModel = new KnnPredictionModel<TPredictionResult>(trainingDataExceptRow, expectedValuesExceptRow,
+                    dataColumnNames, knnAdditionalParams.KNeighbors, knnAdditionalParams.UseWeightedDistances);
                 var results = _knnPredictor.Predict(
                     queryDataFrame, 
                     knnPredictionModel,
                     dependentFeatureName);
-                double result = results.First();
+                TPredictionResult result = results.First();
                 partialResults.AddOrUpdate(rowIdx, result, (i, d) => result);
             });
         }

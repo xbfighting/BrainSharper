@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using BrainSharper.General.MathFunctions;
 using BrainSharper.Implementations.Algorithms.Knn;
+using BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination;
 using BrainSharper.Implementations.Data;
 using BrainSharper.Implementations.MathUtils.DistanceMeasures;
 using BrainSharper.Implementations.MathUtils.ErrorMeasures;
@@ -46,11 +47,11 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                     rowIdx =>
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
             var weightingFunction = new GaussianFunction(0.3);
-            var predictor = new SimpleKnnPredictor(
+            var predictor = new SimpleKnnRegressor(
                 new EuclideanDistanceMeasure(), 
                 new MinMaxNormalizer(), 
                 weightingFunction.GetValue);
-            var modelBuilder = new BackwardsEliminationKnnModelBuilder(
+            var modelBuilder = new BackwardsEliminationKnnModelBuilder<double>(
                 new MinMaxNormalizer(),
                 predictor,
                 new MeanSquareError()
@@ -58,7 +59,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
             var modelParams = new KnnAdditionalParams(4, true);
             var errorMeasure = new MeanSquareError();
 
-            var subject = new BackwardsEliminationPredictor(
+            var subject = new BackwardsEliminationKnnRegressor(
                 new EuclideanDistanceMeasure(), 
                 new MinMaxNormalizer(),
                 weightingFunction.GetValue);

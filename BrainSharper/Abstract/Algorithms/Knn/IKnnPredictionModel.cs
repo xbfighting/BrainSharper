@@ -4,10 +4,10 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Abstract.Algorithms.Knn
 {
-    public interface IKnnPredictionModel : IPredictionModel
+    public interface IKnnPredictionModel<TPredictionResult> : IPredictionModel
     {
         Matrix<double> TrainingData { get; }
-        IList<double> ExpectedTrainingOutcomes { get; }
+        IList<TPredictionResult> ExpectedTrainingOutcomes { get; }
         int KNeighbors { get; }
         bool UseWeightedDistance { get; }
         IList<string> DataColumnsNames { get; }

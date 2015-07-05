@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BrainSharper.Implementations.Algorithms.Knn
+﻿namespace BrainSharper.Implementations.Algorithms.Knn
 {
-    public struct RowIndexDistanceDto
+    public struct RowIndexDistanceDto<TPredictionResult>
     {
-        public RowIndexDistanceDto(int rowIndex, double distance, double dependentFeatureValue)
+        public RowIndexDistanceDto(int rowIndex, double distance, TPredictionResult dependentFeatureValue)
         {
             RowIndex = rowIndex;
             Distance = distance;
@@ -17,6 +11,6 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 
         public int RowIndex { get; }
         public double Distance { get; }
-        public double DependentFeatureValue { get; }
+        public TPredictionResult DependentFeatureValue { get; }
     }
 }

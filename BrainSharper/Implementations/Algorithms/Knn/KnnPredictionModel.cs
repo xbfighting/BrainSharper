@@ -4,11 +4,11 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Algorithms.Knn
 {
-    public class KnnPredictionModel : IKnnPredictionModel
+    public class KnnPredictionModel<TPredictionResult> : IKnnPredictionModel<TPredictionResult>
     {
         public KnnPredictionModel(
             Matrix<double> trainingData, 
-            IList<double> expectedTrainingOutcomes, 
+            IList<TPredictionResult> expectedTrainingOutcomes, 
             IList<string> dataColumnsNames, 
             int kNeighbors,
             bool useWeightedDistance, 
@@ -26,7 +26,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 
         public Matrix<double> TrainingData { get; }
 
-        public IList<double> ExpectedTrainingOutcomes { get; }
+        public IList<TPredictionResult> ExpectedTrainingOutcomes { get; }
 
         public int KNeighbors { get; }
 

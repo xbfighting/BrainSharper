@@ -8,23 +8,24 @@ using BrainSharper.Abstract.MathUtils.DistanceMeaseures;
 using BrainSharper.Abstract.MathUtils.Normalizers;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace BrainSharper.Implementations.Algorithms.Knn
+namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
 {
-    public class BackwardsEliminationPredictor : SimpleKnnPredictor
+    public abstract class BackwardsEliminationPredictor<TPredictionResult> : SimpleKnnPredictor<TPredictionResult>
     {
-        public BackwardsEliminationPredictor(
+        protected BackwardsEliminationPredictor(
             IDistanceMeasure distanceMeasure, 
-            IQuantitativeDataNormalizer dataNormalizer, 
+            IQuantitativeDataNormalizer dataNormalizer,
+            KnnResultHandler<TPredictionResult> resultHandlingFunc, 
             Func<double, double> weightingFunc = null, 
             IDistanceMeasure similarityMeasure = null, 
             bool normalizeNumericValues = false) 
-                : base(distanceMeasure, dataNormalizer, weightingFunc, similarityMeasure, normalizeNumericValues)
+            : base(distanceMeasure, dataNormalizer, resultHandlingFunc, weightingFunc, similarityMeasure, normalizeNumericValues)
         {
         }
 
-        protected override Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel knnModel, int dependentFeatureIdx)
+        protected override Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel<TPredictionResult> knnModel, int dependentFeatureIdx)
         {
-            var backwardsEliminationModel = knnModel as IBackwardsEliminationKnnModel;
+            var backwardsEliminationModel = knnModel as IBackwardsEliminationKnnModel<TPredictionResult>;
             var featureIndicesToRemove =
                 backwardsEliminationModel.RemovedFeaturesData.Select(f => queryDataFrame.ColumnNames.IndexOf(f.FeatureName)).OrderBy(i => i).ToList();
             var relevantFeatures =
@@ -49,7 +50,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
 
         protected override void ValidateModel(IPredictionModel model)
         {
-            if (!(model is IBackwardsEliminationKnnModel))
+            if (!(model is IBackwardsEliminationKnnModel<TPredictionResult>))
             {
                 throw new ArgumentException("Invalid model passed to Backwards Elimination KNN Predictor!");
             }

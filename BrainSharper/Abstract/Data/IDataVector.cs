@@ -6,12 +6,11 @@ namespace BrainSharper.Abstract.Data
     public delegate TValue VectorMemberwiseIndexOpertor<TValue>(int featureIndex, TValue initialValue);
     public delegate TValue VectorMemberwiseNameOpertor<TValue>(string featureName, TValue initialValue);
 
-    public interface IDataVector<TValue>
+    public interface IDataVector<TValue> : IList<TValue>
     {
         IList<string> FeatureNames { get; }
         IList<TValue> Values { get; }
         TValue this[string featureName] { get; }
-        TValue this[int index] { get; }
         IList<IDataItem<TValue>> DataItems { get; }
         Vector<double> NumericVector { get; }
 

@@ -7,7 +7,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Data
 {
-    public class DataVector<TValue> : IList<TValue>, IDataVector<TValue>
+    public class DataVector<TValue> : IDataVector<TValue>
     {
         private readonly IList<TValue> _values;
         private readonly Lazy<Vector<double>> _numericVector;
