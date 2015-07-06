@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.OleDb;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Data;
 
@@ -90,6 +94,35 @@ namespace BrainSharperTests.TestUtils
         public static double CalcualteLinearlyDependentFeatureValue(IList<double> features)
         {
             return features[0] + 2 * features[1] - 3 * features[2];
+        }
+
+        public static IDataFrame ReadIrisData()
+        {
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\IrisData.txt", true);
+            return new DataFrame(dt);
+        }
+
+        private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)
+        {
+            string header = isFirstRowHeader ? "Yes" : "No";
+
+            string fileName = Path.GetFileName(filepath);
+            string directory = Path.GetDirectoryName(filepath) ?? string.Empty;
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var fullPath = Path.Combine(currentDirectory, directory);
+
+            string sql = @"SELECT * FROM [" + fileName + "]";
+
+            using (OleDbConnection connection = new OleDbConnection(
+                      @"Provider= Microsoft.Jet.OLEDB.4.0;Data Source=" + fullPath +
+                      ";Extended Properties=\"Text;HDR=" + header + "\""))
+            using (OleDbCommand command = new OleDbCommand(sql, connection))
+            using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
+            {
+                DataTable dataTable = new DataTable { Locale = CultureInfo.CurrentCulture };
+                adapter.Fill(dataTable);
+                return dataTable;
+            }
         }
     }
 }

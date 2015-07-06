@@ -79,6 +79,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
                 anyFeatureRemovedInThisIteration = true;
                 removedFeaturesInfo.Add(new BackwardsEliminationRemovedFeatureData(bestFeatureToRemove.Value, actualDataColumnNames[bestFeatureToRemove.Key]));
                 actualDataColumnNames.RemoveAt(bestFeatureToRemove.Key);
+                baseErrorRate = bestFeatureToRemove.Value;
             }
 
             return new BackwardsEliminationKnnModel<TPredictionResult>(

@@ -61,8 +61,10 @@
     <Compile Include="Abstract\Data\IDataItem.cs" />
     <Compile Include="Abstract\Data\IDataVector.cs" />
     <Compile Include="Abstract\MathUtils\Normalizers\IQuantitativeDataNormalizer.cs" />
+    <Compile Include="General\DataQuality\IConfusionMatrix.cs" />
     <Compile Include="General\Exceptions\Data\InvalidColumnNamesException.cs" />
     <Compile Include="General\MathFunctions\GaussianFunction.cs" />
+    <Compile Include="General\Utils\CollectionUtils.cs" />
     <Compile Include="General\Utils\DataTableExtensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />
     <Compile Include="Implementations\MathUtils\DistanceMeasures\EuclideanDistanceMeasure.cs" />
+    <Compile Include="Implementations\MathUtils\ErrorMeasures\ClassificationAccuracyError.cs" />
     <Compile Include="Implementations\MathUtils\ErrorMeasures\MeanSquareError.cs" />
     <Compile Include="Implementations\MathUtils\Normalizers\MinMaxNormalizer.cs" />
     <Compile Include="Implementations\MathUtils\Normalizers\StandardDeviationNormalizer.cs" />

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using BrainSharper.General.DataQuality;
 using BrainSharper.General.MathFunctions;
+using BrainSharper.General.Utils;
 using BrainSharper.Implementations.Algorithms.Knn;
 using BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination;
 using BrainSharper.Implementations.Data;
@@ -10,6 +13,7 @@ using BrainSharper.Implementations.MathUtils.ErrorMeasures;
 using BrainSharper.Implementations.MathUtils.Normalizers;
 using BrainSharperTests.TestUtils;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.Random;
 using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.Knn
@@ -48,8 +52,8 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
             var weightingFunction = new GaussianFunction(0.3);
             var predictor = new SimpleKnnRegressor(
-                new EuclideanDistanceMeasure(), 
-                new MinMaxNormalizer(), 
+                new EuclideanDistanceMeasure(),
+                new MinMaxNormalizer(),
                 weightingFunction.GetValue);
             var modelBuilder = new BackwardsEliminationKnnModelBuilder<double>(
                 new MinMaxNormalizer(),
@@ -60,15 +64,59 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
             var errorMeasure = new MeanSquareError();
 
             var subject = new BackwardsEliminationKnnRegressor(
-                new EuclideanDistanceMeasure(), 
+                new EuclideanDistanceMeasure(),
                 new MinMaxNormalizer(),
                 weightingFunction.GetValue);
-            
+
             // When
             var model = modelBuilder.BuildModel(baseDataFrame, "F6", modelParams);
             var actualOutcomes = subject.Predict(queryDataFrame, model, "F6");
             var mse = errorMeasure.CalculateError(Vector<double>.Build.DenseOfEnumerable(expectedValues), Vector<double>.Build.DenseOfEnumerable(actualOutcomes));
             Assert.IsTrue(mse < 0.35);
+        }
+
+        [Test]
+        public void Test_ClassificationWith_BackwardsEliminationKnnModel()
+        {
+            // Given
+            var randomizer = new Random(55);
+            var data = TestDataBuilder.ReadIrisData();
+            var trainingDataPercentage = 0.8;
+            int trainingDataCount = (int)(data.RowCount * trainingDataPercentage);
+            var shuffledIndices = data.RowIndices.Shuffle();
+            var trainingIndices = shuffledIndices.Take(trainingDataCount).ToList();
+            var testIndices =
+                shuffledIndices.Skip(trainingDataCount).Take(shuffledIndices.Count - trainingDataCount).ToList();
+
+            var trainingData = data.GetSubsetByRows(trainingIndices);
+            var testData = data.GetSubsetByRows(testIndices);
+
+            var weightingFunction = new GaussianFunction(0.15);
+            var predictor = new SimpleKnnClassifier<string>(
+                new EuclideanDistanceMeasure(),
+                new MinMaxNormalizer(),
+                weightingFunction.GetValue);
+            var modelBuilder = new BackwardsEliminationKnnModelBuilder<string>(
+                new MinMaxNormalizer(),
+                predictor,
+                new ClassificationAccuracyError<string>()
+                );
+            var modelParams = new KnnAdditionalParams(7, true);
+            var errorMeasure = new MeanSquareError();
+
+            var subject = new BackwardsEliminationKnnClassifier<string>(
+                new EuclideanDistanceMeasure(),
+                new MinMaxNormalizer(),
+                weightingFunction.GetValue);
+
+            // When
+            var model = modelBuilder.BuildModel(trainingData, "iris_class", modelParams);
+            var actualResults = subject.Predict(testData, model, "iris_class");
+            var confusionMatrix = new ConfusionMatrix<string>(testData.GetColumnVector<string>("iris_class"),
+                actualResults);
+            
+            // Then
+            Assert.IsTrue(confusionMatrix.Accuracy >= 0.9);
         }
     }
 }
