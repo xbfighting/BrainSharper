@@ -50,7 +50,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 .Select(
                     rowIdx =>
                         TestDataBuilder.CalcualteLinearlyDependentFeatureValue(queryDataFrame.GetNumericRowVector(rowIdx))).ToList();
-            var weightingFunction = new GaussianFunction(0.3);
+            var weightingFunction = new GaussianFunction(0.07);
             var predictor = new SimpleKnnRegressor(
                 new EuclideanDistanceMeasure(),
                 new MinMaxNormalizer(),
@@ -60,7 +60,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 predictor,
                 new MeanSquareError()
                 );
-            var modelParams = new KnnAdditionalParams(4, true);
+            var modelParams = new KnnAdditionalParams(3, true);
             var errorMeasure = new MeanSquareError();
 
             var subject = new BackwardsEliminationKnnRegressor(
@@ -91,7 +91,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
             var trainingData = data.GetSubsetByRows(trainingIndices);
             var testData = data.GetSubsetByRows(testIndices);
 
-            var weightingFunction = new GaussianFunction(0.15);
+            var weightingFunction = new GaussianFunction(0.07);
             var predictor = new SimpleKnnClassifier<string>(
                 new EuclideanDistanceMeasure(),
                 new MinMaxNormalizer(),
@@ -101,7 +101,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 predictor,
                 new ClassificationAccuracyError<string>()
                 );
-            var modelParams = new KnnAdditionalParams(7, true);
+            var modelParams = new KnnAdditionalParams(3, true);
             var errorMeasure = new MeanSquareError();
 
             var subject = new BackwardsEliminationKnnClassifier<string>(
@@ -116,7 +116,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
                 actualResults);
             
             // Then
-            Assert.IsTrue(confusionMatrix.Accuracy >= 0.9);
+            Assert.IsTrue(confusionMatrix.Accuracy >= 0.95);
         }
     }
 }

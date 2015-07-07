@@ -65,7 +65,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
                         expectedValues, 
                         newFeatureNames,
                         additionalParams);
-                    if (newDataPredictionError < baseErrorRate)
+                    if (newDataPredictionError <= baseErrorRate)
                     {
                         var errorGain = baseErrorRate - newDataPredictionError;
                         candidateFeaturesToEliminate.Add(columnIdx, errorGain);
@@ -88,7 +88,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
                 dataColumnsNames,
                 additionalParams.KNeighbors,
                 additionalParams.UseWeightedDistances,
-                removedFeaturesInfo); // TODO: later add calculation of best known accuracy rate
+                removedFeaturesInfo);
         }
 
         private double ProcessDataAndQuantifyErrorRate(
