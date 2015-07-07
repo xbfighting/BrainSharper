@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using BrainSharper.General.DataQuality;
@@ -13,10 +12,9 @@ using BrainSharper.Implementations.MathUtils.ErrorMeasures;
 using BrainSharper.Implementations.MathUtils.Normalizers;
 using BrainSharperTests.TestUtils;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.Random;
 using NUnit.Framework;
 
-namespace BrainSharperTests.Implementations.Algorithms.Knn
+namespace BrainSharperTests.Implementations.Algorithms.Knn.BackwardsElimination
 {
     [TestFixture]
     public class BackwardsEliminationKnnPredictorTests
@@ -24,7 +22,6 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
         [Test]
         public void Test_RegressionWith_BackwardsEliminationKnnModel()
         {
-
             // Given
             var randomizer = new Random(55);
             var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer, rowCount: 1000);

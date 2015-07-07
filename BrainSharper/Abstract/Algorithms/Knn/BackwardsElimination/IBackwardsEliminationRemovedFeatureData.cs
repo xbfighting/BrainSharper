@@ -1,4 +1,4 @@
-﻿namespace BrainSharper.Implementations.Algorithms.Knn
+﻿namespace BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination
 {
     public interface IBackwardsEliminationRemovedFeatureData
     {

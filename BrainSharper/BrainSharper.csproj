@@ -69,10 +69,10 @@
     <Compile Include="General\Utils\TypeUtils.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModelBuilder.cs" />
-    <Compile Include="Abstract\Algorithms\Knn\IBackwardsEliminationKnnModel.cs" />
+    <Compile Include="Abstract\Algorithms\Knn\BackwardsElimination\IBackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationPredictor.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationRemovedFeatureData.cs" />
-    <Compile Include="Abstract\Algorithms\Knn\IBackwardsEliminationRemovedFeatureData.cs" />
+    <Compile Include="Abstract\Algorithms\Knn\BackwardsElimination\IBackwardsEliminationRemovedFeatureData.cs" />
     <Compile Include="Implementations\Algorithms\Knn\KnnAdditionalParams.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnClassifier.cs" />
     <Compile Include="Implementations\Algorithms\Knn\SimpleKnnClassifier.cs" />

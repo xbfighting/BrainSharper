@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using BrainSharper.Abstract.Algorithms.Knn;
+using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
 using BrainSharper.General.MathFunctions;
 using BrainSharper.Implementations.Algorithms.Knn;
 using BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination;
@@ -10,7 +10,7 @@ using BrainSharper.Implementations.MathUtils.Normalizers;
 using BrainSharperTests.TestUtils;
 using NUnit.Framework;
 
-namespace BrainSharperTests.Implementations.Algorithms.Knn
+namespace BrainSharperTests.Implementations.Algorithms.Knn.BackwardsElimination
 {
     [TestFixture]
     public class BackwardsEliminationModelBuilderTest

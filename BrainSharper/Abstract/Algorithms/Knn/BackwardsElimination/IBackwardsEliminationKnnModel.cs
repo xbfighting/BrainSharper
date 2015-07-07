@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using BrainSharper.Implementations.Algorithms.Knn;
 
-namespace BrainSharper.Abstract.Algorithms.Knn
+namespace BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination
 {
     public interface IBackwardsEliminationKnnModel<TPredictionResult> : IKnnPredictionModel<TPredictionResult>
     {

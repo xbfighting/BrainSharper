@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Algorithms.Knn;
+using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Abstract.MathUtils.ErrorMeasures;
 using BrainSharper.Abstract.MathUtils.Normalizers;
@@ -19,7 +20,10 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
         private readonly IKnnPredictor<TPredictionResult> _knnPredictor;
         private readonly IErrorMeasure<TPredictionResult> _errorMeasure;
 
-        public BackwardsEliminationKnnModelBuilder(IQuantitativeDataNormalizer dataNormalizer, IKnnPredictor<TPredictionResult> knnPredictor, IErrorMeasure<TPredictionResult> errorMeasure)
+        public BackwardsEliminationKnnModelBuilder(
+            IQuantitativeDataNormalizer dataNormalizer, 
+            IKnnPredictor<TPredictionResult> knnPredictor, 
+            IErrorMeasure<TPredictionResult> errorMeasure)
         {
             _dataNormalizer = dataNormalizer;
             _knnPredictor = knnPredictor;
@@ -38,6 +42,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
             var dataColumnsNames = preparedData.Item3;
             var trainingData = _dataNormalizer.NormalizeColumns(preparedData.Item1);
             var expectedValues = preparedData.Item2;
+
+            // TODO: refactor this - ugly!
             _knnPredictor.NormalizeNumericValues = false;
             double baseErrorRate = ProcessDataAndQuantifyErrorRate(
                 dependentFeatureName,

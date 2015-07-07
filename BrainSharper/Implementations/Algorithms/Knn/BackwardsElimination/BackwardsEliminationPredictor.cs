@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Algorithms.Knn;
+using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Abstract.MathUtils.DistanceMeaseures;
 using BrainSharper.Abstract.MathUtils.Normalizers;

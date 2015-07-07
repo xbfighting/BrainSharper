@@ -65,8 +65,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
-    <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationModelBuilderTest.cs" />
-    <Compile Include="Implementations\Algorithms\Knn\BackwardsEliminationKnnPredictorTests.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationModelBuilderTest.cs" />
+    <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnPredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\SimpleKnnPredictorTests.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
     <Compile Include="Implementations\Data\DataVectorTests.cs" />

@@ -7,5 +7,7 @@ namespace BrainSharper.Abstract.Algorithms.Knn
     {
         IDistanceMeasure DistanceMeasure { get; }
         bool NormalizeNumericValues { get; set; }
+
+        // TODO: add maybe methods for handling matrices directly in Predict call
     }
 }

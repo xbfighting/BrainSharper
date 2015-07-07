@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BrainSharper.Abstract.Algorithms.Knn;
+using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
