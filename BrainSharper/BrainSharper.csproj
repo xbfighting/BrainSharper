@@ -46,6 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\Algorithms\DecisionTrees\BinaryTrees\IBinaryDecisionTreeChildLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeLeaf.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeParentNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\MultiValueTrees\IDecisionTreeMultiValueLink.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModelBuilder.cs" />
@@ -67,6 +74,10 @@
     <Compile Include="General\Utils\CollectionUtils.cs" />
     <Compile Include="General\Utils\DataTableExtensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTrees\BinaryDecisionTreeParentNode.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionLink.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreeLeaf.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreeParentNode.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\Knn\BackwardsElimination\IBackwardsEliminationKnnModel.cs" />
