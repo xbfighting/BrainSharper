@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.DecisionTrees;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.BinaryTrees;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.BinaryDecisionTrees
 {
@@ -13,10 +14,10 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.BinaryDecisionTr
             IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren, TDecisionValue decisionValue) : base(isLeaf, decisionFeatureName, linksToChildren)
         {
             DecisionValue = decisionValue;
-            TestResultWithChildren = linksToChildren.ToDictionary(kvp => kvp.Key as IBinaryDecisionTreeChildLink, kvp => kvp.Value);
+            TestResultsWithChildren = linksToChildren.ToDictionary(kvp => kvp.Key as IBinaryDecisionTreeLink, kvp => kvp.Value);
             foreach (var link in linksToChildren)
             {
-                var binaryTreeLink = link.Key as IBinaryDecisionTreeChildLink;
+                var binaryTreeLink = link.Key as IBinaryDecisionTreeLink;
                 if (binaryTreeLink != null)
                 {
                     if (!binaryTreeLink.TestValue)
@@ -34,12 +35,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.BinaryDecisionTr
         }
 
         public IDecisionTreeNode LeftChild { get; }
-        public IBinaryDecisionTreeChildLink LeftChildLink { get; }
+        public IBinaryDecisionTreeLink LeftChildLink { get; }
 
         public IDecisionTreeNode RightChild { get; }
-        public IBinaryDecisionTreeChildLink RightChildLink { get; }
+        public IBinaryDecisionTreeLink RightChildLink { get; }
 
         public TDecisionValue DecisionValue { get; }
-        public IDictionary<IBinaryDecisionTreeChildLink, IDecisionTreeNode> TestResultWithChildren { get; }
+        public IDictionary<IBinaryDecisionTreeLink, IDecisionTreeNode> TestResultsWithChildren { get; }
     }
 }

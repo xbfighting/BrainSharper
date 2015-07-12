@@ -2,7 +2,7 @@
 using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
 
-namespace BrainSharperTests.Implementations.MathUtils
+namespace BrainSharperTests.Implementations.MathUtils.Normalizers
 {
     [TestFixture]
     public class StandardDeviationNormalizerTest

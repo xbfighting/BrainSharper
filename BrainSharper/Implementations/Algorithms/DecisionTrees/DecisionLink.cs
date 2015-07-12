@@ -1,4 +1,5 @@
 ﻿using BrainSharper.Abstract.Algorithms.DecisionTrees;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {

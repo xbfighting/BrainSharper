@@ -102,6 +102,11 @@ namespace BrainSharperTests.TestUtils
             return new DataFrame(dt);
         }
 
+        public static IDataFrame ReadWeatherData()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherData.txt", true));
+        }
+
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)
         {
             string header = isFirstRowHeader ? "Yes" : "No";

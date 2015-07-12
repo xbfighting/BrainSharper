@@ -46,13 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\Algorithms\DecisionTrees\BinaryTrees\IBinaryDecisionTreeChildLink.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeLeaf.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeLink.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeNode.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeParentNode.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\MultiValueTrees\IDecisionTreeMultiValueLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeClassificationLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryRegressionLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeLeaf.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeParentNode.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueRegressionLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueClassificationLink.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeBuilderAdditionalParams.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModelBuilder.cs" />
@@ -67,6 +73,7 @@
     <Compile Include="Abstract\Data\IDataFrame.cs" />
     <Compile Include="Abstract\Data\IDataItem.cs" />
     <Compile Include="Abstract\Data\IDataVector.cs" />
+    <Compile Include="Abstract\MathUtils\ImpurityMeasures\IImpurityMeasure.cs" />
     <Compile Include="Abstract\MathUtils\Normalizers\IQuantitativeDataNormalizer.cs" />
     <Compile Include="General\DataQuality\IConfusionMatrix.cs" />
     <Compile Include="General\Exceptions\Data\InvalidColumnNamesException.cs" />
@@ -99,6 +106,9 @@
     <Compile Include="Implementations\MathUtils\DistanceMeasures\EuclideanDistanceMeasure.cs" />
     <Compile Include="Implementations\MathUtils\ErrorMeasures\ClassificationAccuracyError.cs" />
     <Compile Include="Implementations\MathUtils\ErrorMeasures\MeanSquareError.cs" />
+    <Compile Include="Implementations\MathUtils\ImpurityMeasures\BaseImpurityMeasure.cs" />
+    <Compile Include="Implementations\MathUtils\ImpurityMeasures\GiniIndex.cs" />
+    <Compile Include="Implementations\MathUtils\ImpurityMeasures\ShannonEntropy.cs" />
     <Compile Include="Implementations\MathUtils\Normalizers\MinMaxNormalizer.cs" />
     <Compile Include="Implementations\MathUtils\Normalizers\StandardDeviationNormalizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

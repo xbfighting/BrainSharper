@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BrainSharper.Abstract.Algorithms.DecisionTrees
+﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
     public interface IDecisionTreeNode
     {
