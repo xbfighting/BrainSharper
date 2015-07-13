@@ -4,8 +4,8 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface ISplitQualityChecker
+    public interface IDataSplitter
     {
-        double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName);
+        IList<ISplittingResult> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams);
     }
 }

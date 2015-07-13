@@ -14,6 +14,8 @@ namespace BrainSharperTests.TestUtils
 {
     public static class TestDataBuilder
     {
+        public static string WeatherDataDependentFeatureName = "Play";
+
         public static IDataFrame BuildSmallDataFrameMixedDataTypes()
         {
             return new DataFrame(

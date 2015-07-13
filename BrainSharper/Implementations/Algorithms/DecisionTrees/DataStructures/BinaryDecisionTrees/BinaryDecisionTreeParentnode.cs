@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BrainSharper.Abstract.Algorithms.DecisionTrees;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.BinaryDecisionTrees
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
 {
     public class BinaryDecisionTreeParentNode<TDecisionValue> : DecisionTreeParentNode, IBinaryDecisionTreeParentNode<TDecisionValue>
     {

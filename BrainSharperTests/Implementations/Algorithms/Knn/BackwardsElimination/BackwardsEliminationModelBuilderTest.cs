@@ -29,13 +29,13 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn.BackwardsElimination
                 new MinMaxNormalizer(),
                 predictor,
                 new MeanSquareError());
-            var expectedRemovedFeaturesNames = new[] {"F4", "F5"};
+            var expectedRemovedFeaturesNames = new[] { "F4" };
 
             // When
             var model = subject.BuildModel(baseDataFrame, "F6", modelParams) as IBackwardsEliminationKnnModel<double>;
 
             // Then
-            Assert.AreEqual(2, model.RemovedFeaturesData.Count);
+            Assert.AreEqual(1, model.RemovedFeaturesData.Count);
             CollectionAssert.AreEquivalent(expectedRemovedFeaturesNames, model.RemovedFeaturesData.Select(f => f.FeatureName));
         }
 

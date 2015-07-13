@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BrainSharper.Abstract.Algorithms.DecisionTrees;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
     public class DecisionTreeParentNode : IDecisionTreeParentNode
     {

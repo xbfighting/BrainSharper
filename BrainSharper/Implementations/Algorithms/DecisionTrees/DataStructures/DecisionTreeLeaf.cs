@@ -1,7 +1,6 @@
-﻿using BrainSharper.Abstract.Algorithms.DecisionTrees;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
     public class DecisionTreeLeaf<TDecisionValue> : IDecisionTreeLeaf<TDecisionValue>
     {

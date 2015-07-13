@@ -51,6 +51,9 @@ namespace BrainSharper.Implementations.Data
 
         public DataTable InnerTable => DataTable;
 
+        public IList<Type> ColumnTypes => (from DataColumn col in InnerTable.Columns
+                                           select col.DataType).ToList();
+
         public IList<string> ColumnNames
         {
             get
