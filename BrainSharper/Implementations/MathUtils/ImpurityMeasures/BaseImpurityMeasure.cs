@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 
 namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
@@ -23,9 +21,9 @@ namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
                     valuesCounts[val] = 1;
                 }
             }
-            return CalculateImpurity(valuesCounts, values.Count);
+            return ImpurityValue(valuesCounts.Values.ToList());
         }
 
-        internal abstract double CalculateImpurity(IDictionary<T, int> valuesCounts, double elementsCount);
+        public abstract double ImpurityValue(IList<int> elementsInGroupsCount);
     }
 }

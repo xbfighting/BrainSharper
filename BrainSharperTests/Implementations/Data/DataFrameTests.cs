@@ -536,5 +536,35 @@ namespace BrainSharperTests.Implementations.Data
             // Then
             Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
         }
+
+        [Test]
+        public void GetRowsWhere()
+        {
+            // Given
+            var expectedMatrixMeetingCriteria = Matrix<double>.Build.DenseOfArray(new double[,]
+              {
+                  { 9, 10, 11, 12 },
+              });
+
+            var expectedMatrixNotMeetingCriteria = Matrix<double>.Build.DenseOfArray(new double[,]
+              {
+                    { 1, 2, 3, 4 },
+                    { 5, 6, 7, 8 }
+              });
+
+            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+            Predicate<DataRow> rowFilter = row => Convert.ToDouble(row[0]) > 5;
+
+            // When
+            var filteredRows = baseDataFrame.GetRowsIndicesWhere(rowFilter);
+            var matrixMeetingCriteria =
+                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsMeetingCriteria).GetAsMatrix();
+            var matrixNotMeetingCriteria =
+                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsNotMeetingCriteria).GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrixMeetingCriteria.Equals(matrixMeetingCriteria));
+            Assert.IsTrue(expectedMatrixNotMeetingCriteria.Equals(matrixNotMeetingCriteria));
+        }
     }
 }

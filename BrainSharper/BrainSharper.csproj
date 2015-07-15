@@ -50,7 +50,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryRegressionLink.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IBinarySplittingParams.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinarySplittingParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeLeaf.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\IDecisionTreeNode.cs" />
@@ -61,6 +61,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueClassificationLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeBuilderAdditionalParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Abstract\Algorithms\Knn\IKnnModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\Knn\IKnnPredictionModel.cs" />
     <Compile Include="Abstract\Algorithms\Knn\IKnnPredictor.cs" />
+    <Compile Include="Abstract\Data\IFilteringResult.cs" />
     <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IErrorMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IQuantitativeErrorMeasure.cs" />
@@ -85,12 +87,16 @@
     <Compile Include="General\Utils\CollectionUtils.cs" />
     <Compile Include="General\Utils\DataTableExtensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeLink.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeParentNode.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinarySplittingParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionLink.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeLeaf.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeParentNode.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryDiscreteDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\Knn\BackwardsElimination\IBackwardsEliminationKnnModel.cs" />
@@ -109,6 +115,7 @@
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />
+    <Compile Include="Implementations\Data\FilteringResult.cs" />
     <Compile Include="Implementations\MathUtils\DistanceMeasures\EuclideanDistanceMeasure.cs" />
     <Compile Include="Implementations\MathUtils\ErrorMeasures\ClassificationAccuracyError.cs" />
     <Compile Include="Implementations\MathUtils\ErrorMeasures\MeanSquareError.cs" />

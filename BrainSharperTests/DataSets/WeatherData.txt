@@ -1,4 +1,4 @@
-﻿Outlook,Temperature,Humidity,Windy,Play
+Outlook,Temperature,Humidity,Windy,Play
 Sunny,Hot,High,False,No
 Sunny,Hot,High,True,No
 Overcast,Hot,High,False,Yes

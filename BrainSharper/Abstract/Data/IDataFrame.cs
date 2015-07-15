@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Abstract.Data
@@ -116,7 +117,15 @@ namespace BrainSharper.Abstract.Data
         /// <param name="columnIndices">Column indices to be used</param>
         /// <returns>IDataFrame containing only selected columns</returns>
         IDataFrame GetSubsetByColumns(IList<int> columnIndices);
+
+        /// <summary>
+        /// Gets subset of IDataFrame - another IDataFrame - based on the selected rows.
+        /// </summary>
+        /// <param name="rowIndices">Int indices for rows to take</param>
+        /// <param name="useRowNames">Treat indices as rownames</param>
+        /// <returns>IDataFrame contatining only selected rows</returns>
         IDataFrame GetSubsetByRows(IList<int> rowIndices, bool useRowNames = false);
+
         IDataFrame Slice(IList<int> rows, IList<string> columns, bool useRowNames = false);
         IDataFrame Slice(IList<int> rows, IList<int> columnIndices, bool useRowNames = false);
 
@@ -126,6 +135,7 @@ namespace BrainSharper.Abstract.Data
         IDataFrame ProcessMultiple<TValue>(DataFrameRowIndexColumnIndexOperator<TValue> rowOperator);
         IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnIndexOperator<TValue> rowOperator);
         IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnNameOperator<TValue> rowOperator);
+        IFilteringResult GetRowsIndicesWhere(Predicate<DataRow> rowsFilter);
 
         Matrix<double> GetAsMatrix();
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -237,7 +238,6 @@ namespace BrainSharper.Implementations.Data
         {
             var newData = DataTable.DefaultView.ToTable();
             Parallel.For(0, newData.Rows.Count, rowIdx =>
-            //for(int rowIdx = 0; rowIdx < newData.Rows.Count; rowIdx++)
             {
                 var row = newData.Rows[rowIdx];
                 for (int colIdx = 0; colIdx < ColumnNames.Count; colIdx++)
@@ -288,6 +288,27 @@ namespace BrainSharper.Implementations.Data
                 }
             });
             return new DataFrame(newData, new List<int>(RowIndices));
+        }
+
+        public IFilteringResult GetRowsIndicesWhere(Predicate<DataRow> rowsFilter)
+        {
+            var rowsMeetingCriteria = new ConcurrentBag<int>();
+            var rowsNotMeetingCriteria = new ConcurrentBag<int>();
+            Parallel.For(0, RowCount, rowIdx =>
+            {
+                var row = DataTable.Rows[rowIdx];
+                if (rowsFilter(row))
+                {
+                    rowsMeetingCriteria.Add(rowIdx);
+                }
+                else
+                {
+                    rowsNotMeetingCriteria.Add(rowIdx);
+                }
+            });
+            return new FilteringResult(
+                rowsMeetingCriteria.OrderBy(i => i).ToList(),
+                rowsNotMeetingCriteria.OrderBy(i => i).ToList());
         }
 
         public Matrix<double> GetAsMatrix()

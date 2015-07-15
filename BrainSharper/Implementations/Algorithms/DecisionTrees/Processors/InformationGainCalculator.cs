@@ -8,28 +8,40 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
     public class InformationGainCalculator<T> : ISplitQualityChecker
     {
-        private readonly IImpurityMeasure<T> _impuryMeasure;
+        protected readonly IImpurityMeasure<T> ImpuryMeasure;
 
         public InformationGainCalculator(IImpurityMeasure<T> impuryMeasure)
         {
-            _impuryMeasure = impuryMeasure;
+            ImpuryMeasure = impuryMeasure;
         }
 
-        public double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName)
+        public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName)
         {
-            double initialEntropy = _impuryMeasure.ImpurityValue(baseData.GetColumnVector<T>(dependentFeatureName));
-            var splittedDataWeightedEntropy = 0.0;
+            double initialEntropy = ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<T>(dependentFeatureName));
             var totalRowsCount = baseData.RowCount;
+            var splittedDataWeightedEntopy = GetSplittedDataWeightedEntropy(
+                splittingResults, 
+                totalRowsCount,
+                dependentFeatureName);
+            return initialEntropy - splittedDataWeightedEntopy;
+        }
+
+        protected virtual double GetSplittedDataWeightedEntropy(
+            IList<ISplittingResult> splittingResults,
+            double baseDataRowsCount,
+            string dependentFeatureName)
+        {
+            var splittedDataWeightedEntropy = 0.0;
             foreach (var splittingResult in splittingResults)
             {
                 var splittingResultEntropy =
-                    _impuryMeasure.ImpurityValue(
+                    ImpuryMeasure.ImpurityValue(
                         splittingResult.SplittedDataFrame.GetColumnVector<T>(dependentFeatureName));
                 var splittedDataCount = splittingResult.SplittedDataFrame.RowCount;
-                var weight = splittedDataCount/(double) totalRowsCount;
+                var weight = splittedDataCount / baseDataRowsCount;
                 splittedDataWeightedEntropy += weight * splittingResultEntropy;
             }
-            return initialEntropy - splittedDataWeightedEntropy;
+            return splittedDataWeightedEntropy;
         }
     }
 }
