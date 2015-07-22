@@ -1,10 +1,11 @@
-﻿using BrainSharper.Abstract.Data;
+﻿using System.Collections.Generic;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
     public interface ISplittingResult
     {
-        IDecisionTreeLink SplitLink { get; }
-        IDataFrame SplittedDataFrame { get; }
+        bool IsSplitNumeric { get; }
+        string SplittingFeatureName { get; }
+        IList<ISplittedData> SplittedDataSets { get; }
     }
 }

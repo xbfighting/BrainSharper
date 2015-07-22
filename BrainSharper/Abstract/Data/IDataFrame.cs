@@ -38,11 +38,19 @@ namespace BrainSharper.Abstract.Data
         /// </summary>
         IList<int> RowIndices { get; set; }
 
+        /// <summary>
+        /// Checks if dataframe contains any data
+        /// </summary>
+        bool Any { get; }
+
         int RowCount { get; }
         int ColumnsCount { get; }
 
         IDataItem<object> this[int rowIdx, int columnIdx] {get;}
         IDataItem<object> this[int rowIdx, string columnName] { get; }
+
+        Type GetColumnType(string columnName);
+        Type GetColumnType(int columnIdx);
 
         /// <summary>
         /// Gets selected row as IDataVector of TValue type
@@ -125,6 +133,26 @@ namespace BrainSharper.Abstract.Data
         /// <param name="useRowNames">Treat indices as rownames</param>
         /// <returns>IDataFrame contatining only selected rows</returns>
         IDataFrame GetSubsetByRows(IList<int> rowIndices, bool useRowNames = false);
+
+        /// <summary>
+        /// Gets values for selected rows from a selected column.
+        /// </summary>
+        /// <typeparam name="TValue">Generic type to be returned</typeparam>
+        /// <param name="rowIndices">Indices of rows to be processed</param>
+        /// <param name="columnName">Name of the column from which values should be extracted</param>
+        /// <param name="useRowName">Should row names be used instead of indices</param>
+        /// <returns>List of values</returns>
+        IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, string columnName, bool useRowName = false);
+
+        /// <summary>
+        /// Gets values for selected rows from a selected column.
+        /// </summary>
+        /// <typeparam name="TValue">Generic type to be returned</typeparam>
+        /// <param name="rowIndices">Indices of rows to be processed</param>
+        /// <param name="columnIndex">Index of the column from which values should be extracted</param>
+        /// <param name="useRowName">Should row names be used instead of indices</param>
+        /// <returns>List of values</returns>
+        IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, int columnIndex, bool useRowName = false);
 
         IDataFrame Slice(IList<int> rows, IList<string> columns, bool useRowNames = false);
         IDataFrame Slice(IList<int> rows, IList<int> columnIndices, bool useRowNames = false);

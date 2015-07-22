@@ -31,7 +31,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.B
         {
             unchecked
             {
-                return ((SplitOnFeature != null ? SplitOnFeature.GetHashCode() : 0)*397) ^ EqualityComparer<T>.Default.GetHashCode(SplitOnValue);
+                return ((SplitOnFeature?.GetHashCode() ?? 0)*397) ^ EqualityComparer<T>.Default.GetHashCode(SplitOnValue);
             }
         }
     }

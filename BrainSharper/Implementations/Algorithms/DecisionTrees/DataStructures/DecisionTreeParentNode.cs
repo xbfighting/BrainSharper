@@ -9,13 +9,16 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
         public DecisionTreeParentNode(
             bool isLeaf, 
             string decisionFeatureName, 
-            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren)
+            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren,
+            double trainingDataAccuracy = 0)
         {
             DecisionFeatureName = decisionFeatureName;
             Children = linksToChildren?.Values.ToList() ?? new List<IDecisionTreeNode>();
             LinksToChildren = linksToChildren ?? new Dictionary<IDecisionTreeLink, IDecisionTreeNode>();
+            TrainingDataAccuracy = trainingDataAccuracy;
         }
 
+        public double TrainingDataAccuracy { get; }
         public bool IsLeaf => false;
         public string DecisionFeatureName { get; }
         public IList<IDecisionTreeNode> Children { get; }

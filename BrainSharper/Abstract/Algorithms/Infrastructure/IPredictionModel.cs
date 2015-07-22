@@ -6,9 +6,5 @@
     /// </summary>
     public interface IPredictionModel
     {
-        /// <summary>
-        /// Accuracy measure of the prediction model calculated as: |correct cases| / |all cases|
-        /// </summary>
-        double TrainingDataAccuracy { get; }
     }
 }

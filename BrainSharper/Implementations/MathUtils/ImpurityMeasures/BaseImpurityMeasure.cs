@@ -5,7 +5,7 @@ using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 
 namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
 {
-    public abstract class BaseImpurityMeasure<T> : IImpurityMeasure<T>
+    public abstract class BaseImpurityMeasure<T> : ICategoricalImpurityMeasure<T>
     {
         public double ImpurityValue(IList<T> values)
         {

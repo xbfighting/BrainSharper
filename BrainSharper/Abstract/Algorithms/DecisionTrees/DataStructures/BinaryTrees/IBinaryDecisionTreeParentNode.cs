@@ -2,7 +2,7 @@
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees
 {
-    public interface IBinaryDecisionTreeParentNode<TDecisionValue> : IDecisionTreeNode
+    public interface IBinaryDecisionTreeParentNode : IDecisionTreeNode
     {
         IDecisionTreeNode LeftChild { get; }
         IBinaryDecisionTreeLink LeftChildLink { get; }
@@ -10,7 +10,8 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTr
         IDecisionTreeNode RightChild { get; }
         IBinaryDecisionTreeLink RightChildLink { get; }
 
-        TDecisionValue DecisionValue { get; }
+        object DecisionValue { get; }
+        bool IsValueNumeric { get; }
         IDictionary<IBinaryDecisionTreeLink, IDecisionTreeNode> TestResultsWithChildren { get; }
     }
 }

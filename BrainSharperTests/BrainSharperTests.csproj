@@ -65,6 +65,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BestSplitSelectorsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\DataSplittersTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\EntropyResucersTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationModelBuilderTest.cs" />
@@ -94,6 +96,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="DataSets\WeatherData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DataSets\WeatherDataNumeric.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

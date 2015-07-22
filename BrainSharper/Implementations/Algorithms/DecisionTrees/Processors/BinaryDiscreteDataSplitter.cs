@@ -4,9 +4,7 @@ using System.Data;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Data;
-using BrainSharper.General.Utils;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
 
@@ -14,14 +12,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
     public class BinaryDiscreteDataSplitter<T> : IBinaryDataSplitter<T>
     {
-        public IList<ISplittingResult> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
+        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
         {
             var splittingFeatureName = splttingParams.SplitOnFeature;
             var splittingFeatureValue = splttingParams.SplitOnValue;
 
-            Predicate<DataRow> rowFilter =
-                row => Convert.ChangeType(row[splittingFeatureName], typeof(T))
-                            .Equals(splittingFeatureValue);
+            var rowFilter = BuildSplittingFunction(splittingFeatureName, splittingFeatureValue);
 
             var filteringResult = dataToSplit.GetRowsIndicesWhere(rowFilter);
             var rowsMeetingCriteria = filteringResult.IndicesOfRowsMeetingCriteria;
@@ -31,16 +27,16 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             var negativeDataFrame = dataToSplit.GetSubsetByRows(rowsNotMeetingCriteria);
 
             var totalRowsCount = (double)dataToSplit.RowCount;
-            var splitResults = new List<ISplittingResult>();
+            var splitResults = new List<ISplittedData>();
             foreach (var subset in new[] { positiveDataFrame, negativeDataFrame })
             {
                 var splitLink = GetSubsetStatistic(subset, totalRowsCount);
-                splitResults.Add(new SplittingResult(splitLink, subset));
+                splitResults.Add(new SplittedData(splitLink, subset));
             }
             return splitResults;
         }
 
-        public IList<ISplittingResult> SplitData(
+        public IList<ISplittedData> SplitData(
             IDataFrame dataToSplit,
             ISplittingParams splttingParams)
         {
@@ -51,11 +47,20 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             return SplitData(dataToSplit, (IBinarySplittingParams<T>) splttingParams);
         }
 
+        protected virtual Predicate<DataRow> BuildSplittingFunction(string splittingFeatureName, T splittingFeatureValue)
+        {
+            Predicate<DataRow> rowFilter =
+                row => Convert.ChangeType(row[splittingFeatureName], typeof(T))
+                    .Equals(splittingFeatureValue);
+            return rowFilter;
+        }
+
         private static BinaryDecisionTreeLink GetSubsetStatistic(IDataFrame subset, double totalRowsCount)
         {
             return new BinaryDecisionTreeLink(
-                subset.RowCount/totalRowsCount,
-                subset.RowCount, true);
+                subset.Any ? subset.RowCount/totalRowsCount : 0,
+                subset.RowCount,
+                true);
         }
     }
 }

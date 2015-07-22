@@ -1,0 +1,15 @@
+Outlook,Temperature,Humidity,Windy,Play
+Sunny,27,55,2,No
+Sunny,28,60,10,No
+Overcast,29,65,3,Yes
+Rainy,21,70,4,Yes
+Rainy,17,20,5,Yes
+Rainy,18,25,12,No
+Overcast,19,30,14,Yes
+Sunny,22,75,6,No
+Sunny,20,35,7,Yes
+Rainy,23,40,8,Yes
+Sunny,24,45,16,Yes
+Overcast,25,80,18,Yes
+Overcast,30,50,9,Yes
+Rainy,26,85,20,No

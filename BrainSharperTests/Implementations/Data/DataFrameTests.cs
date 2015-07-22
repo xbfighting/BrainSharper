@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using BrainSharper.Abstract.Data;
@@ -565,6 +566,21 @@ namespace BrainSharperTests.Implementations.Data
             // Then
             Assert.IsTrue(expectedMatrixMeetingCriteria.Equals(matrixMeetingCriteria));
             Assert.IsTrue(expectedMatrixNotMeetingCriteria.Equals(matrixNotMeetingCriteria));
+        }
+
+        [Test]
+        public void GetValuesForRows()
+        {
+            // Given
+            var baseDataFrame = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
+            var expectedValues = new[] { "Yes", "Yes", "No" };
+            var queryRows = new[] { 11, 12, 13 }; 
+
+            // When
+            var actualValues = baseDataFrame.GetValuesForRows<string>(queryRows, "Play");
+
+            // Then
+            CollectionAssert.AreEquivalent(expectedValues, actualValues);
         }
     }
 }

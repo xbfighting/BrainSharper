@@ -1,17 +1,19 @@
-﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Data;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
     public class SplittingResult : ISplittingResult
     {
-        public SplittingResult(IDecisionTreeLink splitLink, IDataFrame splittedDataFrame)
+        public SplittingResult(bool isSplitNumeric, string splittingFeatureName, IList<ISplittedData> splittedDataSets)
         {
-            SplitLink = splitLink;
-            SplittedDataFrame = splittedDataFrame;
+            IsSplitNumeric = isSplitNumeric;
+            SplittingFeatureName = splittingFeatureName;
+            SplittedDataSets = splittedDataSets;
         }
 
-        public IDecisionTreeLink SplitLink { get; }
-        public IDataFrame SplittedDataFrame { get; }
+        public bool IsSplitNumeric { get; }
+        public string SplittingFeatureName { get; }
+        public IList<ISplittedData> SplittedDataSets { get; }
     }
 }

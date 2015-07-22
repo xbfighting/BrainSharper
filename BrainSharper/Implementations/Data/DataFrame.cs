@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Data;
 using BrainSharper.General.Exceptions.Data;
@@ -81,6 +79,8 @@ namespace BrainSharper.Implementations.Data
             set { _rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value; }
         }
 
+        public bool Any => InnerTable != null && InnerTable.Rows.Count > 0;
+
         public int RowCount => DataTable.Rows.Count;
 
         public int ColumnsCount => DataTable.Columns.Count;
@@ -108,6 +108,16 @@ namespace BrainSharper.Implementations.Data
         #endregion Getters/setters
 
         #region Slicers
+
+        public Type GetColumnType(string columnName)
+        {
+            return InnerTable.Columns[columnName].DataType;
+        }
+
+        public Type GetColumnType(int columnIdx)
+        {
+            return InnerTable.Columns[columnIdx].DataType;
+        }
 
         public IDataVector<TValue> GetRowVector<TValue>(int index, bool useRowNames = false)
         {
@@ -191,6 +201,24 @@ namespace BrainSharper.Implementations.Data
                 newTable.Rows.Add(DataTable.Rows[rowIdx].ItemArray);
             }
             return new DataFrame(newTable, RowIndices.Where((rowName, rowIdx) => rowIndices.Contains(rowIdx)).ToList());
+        }
+
+        public IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, string columnName, bool useRowName = false)
+        {
+            var results = new ConcurrentBag<Tuple<int, TValue>>();
+            var indices = useRowName ? RowNamesToRowIndices(rowIndices) : rowIndices;
+            Parallel.ForEach(indices, rowIdx =>
+            {
+                    var row = InnerTable.Rows[rowIdx];
+                    var rowValue = (TValue)row[columnName];
+                    results.Add(new Tuple<int, TValue>(rowIdx, rowValue));
+            });
+            return results.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2).ToList();
+        }
+
+        public IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, int columnIndex, bool useRowName = false)
+        {
+            return GetValuesForRows<TValue>(rowIndices, ColumnNames[columnIndex], useRowName);
         }
 
         public IDataFrame Slice(IList<int> rows, IList<string> columns, bool useRowNames = false)

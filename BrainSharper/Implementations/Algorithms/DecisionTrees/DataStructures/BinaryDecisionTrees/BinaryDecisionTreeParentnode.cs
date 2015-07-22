@@ -5,13 +5,16 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
 {
-    public class BinaryDecisionTreeParentNode<TDecisionValue> : DecisionTreeParentNode, IBinaryDecisionTreeParentNode<TDecisionValue>
+    public class BinaryDecisionTreeParentNode : DecisionTreeParentNode, IBinaryDecisionTreeParentNode
     {
         public BinaryDecisionTreeParentNode(
             bool isLeaf, 
             string decisionFeatureName, 
-            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren, TDecisionValue decisionValue) : base(isLeaf, decisionFeatureName, linksToChildren)
+            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren, 
+            object decisionValue,
+            bool isSplitValueNumeric) : base(isLeaf, decisionFeatureName, linksToChildren)
         {
+            IsValueNumeric = isSplitValueNumeric;
             DecisionValue = decisionValue;
             TestResultsWithChildren = linksToChildren.ToDictionary(kvp => kvp.Key as IBinaryDecisionTreeLink, kvp => kvp.Value);
             foreach (var link in linksToChildren)
@@ -39,7 +42,8 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.B
         public IDecisionTreeNode RightChild { get; }
         public IBinaryDecisionTreeLink RightChildLink { get; }
 
-        public TDecisionValue DecisionValue { get; }
+        public object DecisionValue { get; }
+        public bool IsValueNumeric { get; }
         public IDictionary<IBinaryDecisionTreeLink, IDecisionTreeNode> TestResultsWithChildren { get; }
     }
 }

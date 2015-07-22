@@ -104,9 +104,14 @@ namespace BrainSharperTests.TestUtils
             return new DataFrame(dt);
         }
 
-        public static IDataFrame ReadWeatherData()
+        public static IDataFrame ReadWeatherDataWithCategoricalAttributes()
         {
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherData.txt", true));
+        }
+
+        public static IDataFrame ReadWeatherDataWithMixedAttributes()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherDataNumeric.txt", true));
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)

@@ -9,25 +9,37 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
     public class InformationGainCalculator<T> : ISplitQualityChecker
     {
         protected readonly IImpurityMeasure<T> ImpuryMeasure;
+        protected readonly ICategoricalImpurityMeasure<T> CategoricalImpuryMeasure;
 
-        public InformationGainCalculator(IImpurityMeasure<T> impuryMeasure)
+
+        public InformationGainCalculator(IImpurityMeasure<T> impuryMeasure, ICategoricalImpurityMeasure<T> categoricalImpurityMeasure)
         {
             ImpuryMeasure = impuryMeasure;
+            CategoricalImpuryMeasure = categoricalImpurityMeasure;
         }
 
-        public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName)
+        public double GetInitialEntropy(IDataFrame baseData, string dependentFeatureName)
         {
-            double initialEntropy = ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<T>(dependentFeatureName));
-            var totalRowsCount = baseData.RowCount;
+            return ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<T>(dependentFeatureName));
+        }
+
+        public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName)
+        {
+            double initialEntropy = GetInitialEntropy(baseData, dependentFeatureName);
+            return CalculateSplitQuality(initialEntropy, baseData.RowCount, splittingResults, dependentFeatureName);
+        }
+
+        public virtual double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName)
+        {
             var splittedDataWeightedEntopy = GetSplittedDataWeightedEntropy(
-                splittingResults, 
+                splittingResults,
                 totalRowsCount,
                 dependentFeatureName);
             return initialEntropy - splittedDataWeightedEntopy;
         }
 
         protected virtual double GetSplittedDataWeightedEntropy(
-            IList<ISplittingResult> splittingResults,
+            IList<ISplittedData> splittingResults,
             double baseDataRowsCount,
             string dependentFeatureName)
         {

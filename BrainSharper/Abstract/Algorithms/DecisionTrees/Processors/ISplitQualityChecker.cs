@@ -6,6 +6,8 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
     public interface ISplitQualityChecker
     {
-        double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName);
+        double GetInitialEntropy(IDataFrame baseData, string dependentFeatureName);
+        double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName);
+        double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName);
     }
 }

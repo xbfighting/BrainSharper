@@ -8,22 +8,33 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
     public class InformationGainRatioCalculator<T> : InformationGainCalculator<T>
     {
-        public InformationGainRatioCalculator(IImpurityMeasure<T> impuryMeasure) 
-            : base(impuryMeasure)
+        public InformationGainRatioCalculator(IImpurityMeasure<T> impuryMeasure, ICategoricalImpurityMeasure<T> categoricalImpurityMeasure) 
+            : base(impuryMeasure, categoricalImpurityMeasure)
         {
         }
 
-        public override double CalculateSplitQuality(IDataFrame baseData, IList<ISplittingResult> splittingResults, string dependentFeatureName)
+        public override double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName)
         {
             var informationGain = base.CalculateSplitQuality(baseData, splittingResults, dependentFeatureName);
             var splitEntropy = GetSplitEntropy(splittingResults, baseData.RowCount);
             return informationGain/splitEntropy;
         }
 
-        protected virtual double GetSplitEntropy(IList<ISplittingResult> splittingResults, double baseDataRowsCount)
+        public override double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName)
+        {
+            var informationGain = base.CalculateSplitQuality(initialEntropy, totalRowsCount, splittingResults,
+                dependentFeatureName);
+            var splittedDataWeightedEntopy = GetSplittedDataWeightedEntropy(
+                splittingResults,
+                totalRowsCount,
+                dependentFeatureName);
+            return initialEntropy - splittedDataWeightedEntopy;
+        }
+
+        protected virtual double GetSplitEntropy(IList<ISplittedData> splittingResults, double baseDataRowsCount)
         {
             var elementsInGroupsCount = splittingResults.Select(splitResult => splitResult.SplittedDataFrame.RowCount).ToList();
-            return ImpuryMeasure.ImpurityValue(elementsInGroupsCount);
+            return CategoricalImpuryMeasure.ImpurityValue(elementsInGroupsCount);
         }
     }
 }

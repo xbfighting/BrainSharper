@@ -6,7 +6,7 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
     public interface IDataSplitter
     {
-        IList<ISplittingResult> SplitData(
+        IList<ISplittedData> SplitData(
             IDataFrame dataToSplit, 
             ISplittingParams splttingParams);
     }
