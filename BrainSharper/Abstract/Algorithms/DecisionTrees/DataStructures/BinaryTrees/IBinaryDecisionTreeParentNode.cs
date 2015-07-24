@@ -4,9 +4,15 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTr
 {
     public interface IBinaryDecisionTreeParentNode : IDecisionTreeNode
     {
+        /// <summary>
+        /// Always represents the child, for which test evaluated to FALSE
+        /// </summary>
         IDecisionTreeNode LeftChild { get; }
         IBinaryDecisionTreeLink LeftChildLink { get; }
 
+        /// <summary>
+        /// Always represents the child, for which test evaluated to TRUE
+        /// </summary>
         IDecisionTreeNode RightChild { get; }
         IBinaryDecisionTreeLink RightChildLink { get; }
 

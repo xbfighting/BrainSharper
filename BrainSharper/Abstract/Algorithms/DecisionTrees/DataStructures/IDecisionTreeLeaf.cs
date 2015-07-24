@@ -1,7 +1,7 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
-    public interface IDecisionTreeLeaf<TDecisionValue> : IDecisionTreeNode
+    public interface IDecisionTreeLeaf : IDecisionTreeNode
     {
-        TDecisionValue LeafValue { get; }
+        object LeafValue { get; }
     }
 }

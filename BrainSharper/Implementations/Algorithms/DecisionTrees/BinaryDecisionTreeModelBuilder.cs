@@ -7,6 +7,7 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Data;
+using BrainSharper.General.Utils;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 
@@ -16,12 +17,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
     {
         private readonly ISplitQualityChecker _splitQualityChecker;
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly ILeafBuilder<T> _leafBuilder; 
+        private readonly ILeafBuilder _leafBuilder; 
 
         public BinaryDecisionTreeModelBuilder(
             ISplitQualityChecker splitQualityChecker, 
             IBinaryBestSplitSelector binaryBestSplitSelector,
-            ILeafBuilder<T> leafBuilder)
+            ILeafBuilder leafBuilder)
         {
             _splitQualityChecker = splitQualityChecker;
             _binaryBestSplitSelector = binaryBestSplitSelector;
@@ -30,16 +31,11 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
         {
-            if (dataFrame.GetColumnVector<T>(dependentFeatureName).DataItems.Distinct().Count() == 1)
+            if (ShouldStopRecusrsiveBuilding(dataFrame, dependentFeatureName))
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
-            return BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
-        }
-
-        private IDecisionTreeLeaf<T> BuildLeaf(IDataFrame dataFrame, string dependentFeatureName)
-        {
-            return _leafBuilder.BuildLeaf(dataFrame.GetColumnVector<T>(dependentFeatureName), dependentFeatureName);
+            return BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, false);
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex, IModelBuilderParams additionalParams)
@@ -53,11 +49,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             IModelBuilderParams additionalParams,
             bool isFirstSplit=false)
         {
-            if (dataFrame.GetColumnVector<T>(dependentFeatureName).DataItems.Distinct().Count() == 1)
+            if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1)
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
             // TODO: later on add additional params indicating which features were already used
+            // TODO: handle situation when best split is null - build leaf node immediately
             IBinarySplittingResult splitResult = (IBinarySplittingResult)_binaryBestSplitSelector.SelectBestSplit(
                 dataFrame,
                 dependentFeatureName,
@@ -83,6 +80,16 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
                 children,
                 splitResult.SplittingValue,
                 splitResult.IsSplitNumeric);
+        }
+
+        private static bool ShouldStopRecusrsiveBuilding(IDataFrame dataFrame, string dependentFeatureName)
+        {
+            return !dataFrame.GetColumnType(dependentFeatureName).IsNumericType() && dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1;
+        }
+
+        private IDecisionTreeLeaf BuildLeaf(IDataFrame dataFrame, string dependentFeatureName)
+        {
+            return _leafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
         }
 
         private void AddChildFromSplit(string dependentFeatureName, IModelBuilderParams additionalParams,

@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BestSplitSelectorsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\DataSplittersTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\EntropyResucersTests.cs" />

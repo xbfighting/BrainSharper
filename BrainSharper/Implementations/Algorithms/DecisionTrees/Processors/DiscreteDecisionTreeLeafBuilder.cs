@@ -7,11 +7,11 @@ using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    public class DiscreteDecisionTreeLeafBuilder<T> : ILeafBuilder<T>
+    public class DiscreteDecisionTreeLeafBuilder : ILeafBuilder
     {
-        public IDecisionTreeLeaf<T> BuildLeaf(IDataVector<T> finalValues, string dependentFeatureName)
+        public IDecisionTreeLeaf BuildLeaf(IDataVector<object> finalValues, string dependentFeatureName)
         {
-            var counts = new Dictionary<T, int>();
+            var counts = new Dictionary<object, int>();
             foreach (var val in finalValues)
             {
                 if (!(counts.ContainsKey(val)))
@@ -20,7 +20,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
                 }
                 counts[val] += 1;
             }
-            return new DecisionTreeLeaf<T>(dependentFeatureName, counts.OrderBy(kvp => kvp.Value).Reverse().First().Key);
+            return new DecisionTreeLeaf(dependentFeatureName, counts.OrderBy(kvp => kvp.Value).Reverse().First().Key);
         }
     }
 }

@@ -6,8 +6,8 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
     /// <summary>
     /// Selects the winning value in the given decision tree leaf - no matter if it is discrette or numerical
     /// </summary>
-    public interface ILeafBuilder<T>
+    public interface ILeafBuilder
     {
-        IDecisionTreeLeaf<T> BuildLeaf(IDataVector<T> finalValues, string dependentFeatureName);
+        IDecisionTreeLeaf BuildLeaf(IDataVector<object> finalValues, string dependentFeatureName);
     }
 }

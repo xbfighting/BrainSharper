@@ -2,9 +2,9 @@
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
-    public class DecisionTreeLeaf<TDecisionValue> : IDecisionTreeLeaf<TDecisionValue>
+    public class DecisionTreeLeaf : IDecisionTreeLeaf
     {
-        public DecisionTreeLeaf(string decisionFeatureName, TDecisionValue leafValue)
+        public DecisionTreeLeaf(string decisionFeatureName, object leafValue)
         {
             DecisionFeatureName = decisionFeatureName;
             LeafValue = leafValue;
@@ -12,6 +12,6 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 
         public bool IsLeaf => true;
         public string DecisionFeatureName { get; }
-        public TDecisionValue LeafValue { get; }
+        public object LeafValue { get; }
     }
 }

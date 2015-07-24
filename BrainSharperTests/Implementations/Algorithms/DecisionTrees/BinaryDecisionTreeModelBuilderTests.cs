@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
+﻿using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 using BrainSharper.Implementations.Algorithms.DecisionTrees;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
@@ -25,7 +20,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
             var binaryTreeBuilder = new BinaryDecisionTreeModelBuilder<string>(
                 new InformationGainRatioCalculator<string>(_shannonEntropy, _shannonEntropy as ICategoricalImpurityMeasure<string>),
                 new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
-                new DiscreteDecisionTreeLeafBuilder<string>());
+                new DiscreteDecisionTreeLeafBuilder());
 
             // When
             var decisionTree = binaryTreeBuilder.BuildModel(dataSet, "iris_class", null);

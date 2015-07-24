@@ -23,16 +23,15 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             var rowsMeetingCriteria = filteringResult.IndicesOfRowsMeetingCriteria;
             var rowsNotMeetingCriteria = filteringResult.IndicesOfRowsNotMeetingCriteria;
 
-            var positiveDataFrame = dataToSplit.GetSubsetByRows(rowsMeetingCriteria);
-            var negativeDataFrame = dataToSplit.GetSubsetByRows(rowsNotMeetingCriteria);
-
-            var totalRowsCount = (double)dataToSplit.RowCount;
             var splitResults = new List<ISplittedData>();
-            foreach (var subset in new[] { positiveDataFrame, negativeDataFrame })
-            {
-                var splitLink = GetSubsetStatistic(subset, totalRowsCount);
-                splitResults.Add(new SplittedData(splitLink, subset));
-            }
+            var totalRowsCount = (double)dataToSplit.RowCount;
+
+            var positiveDataFrame = dataToSplit.GetSubsetByRows(rowsMeetingCriteria);
+            splitResults.Add(new SplittedData(GetSubsetLink(positiveDataFrame, totalRowsCount, true), positiveDataFrame));
+
+            var negativeDataFrame = dataToSplit.GetSubsetByRows(rowsNotMeetingCriteria);
+            splitResults.Add(new SplittedData(GetSubsetLink(negativeDataFrame, totalRowsCount, false), negativeDataFrame));
+
             return splitResults;
         }
 
@@ -55,12 +54,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             return rowFilter;
         }
 
-        private static BinaryDecisionTreeLink GetSubsetStatistic(IDataFrame subset, double totalRowsCount)
+        private static BinaryDecisionTreeLink GetSubsetLink(IDataFrame subset, double totalRowsCount, bool testResult)
         {
             return new BinaryDecisionTreeLink(
                 subset.Any ? subset.RowCount/totalRowsCount : 0,
                 subset.RowCount,
-                true);
+                testResult);
         }
     }
 }

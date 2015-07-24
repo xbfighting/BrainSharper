@@ -5,11 +5,10 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    public class RegressionAndModelDecisionTreeLeafBuilder : ILeafBuilder<double>
+    public class RegressionAndModelDecisionTreeLeafBuilder : ILeafBuilder
     {
-        public IDecisionTreeLeaf<double> BuildLeaf(IDataVector<double> finalValues, string dependentFeatureName)
+        public IDecisionTreeLeaf BuildLeaf(IDataVector<object> finalValues, string dependentFeatureName)
         {
-            //TODO: think about refactoring the method signatre to include WHOLE DataFrame
             throw new NotImplementedException();
         }
     }
