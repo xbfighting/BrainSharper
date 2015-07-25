@@ -12,7 +12,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
     public class BinaryDiscreteDataSplitter<T> : IBinaryDataSplitter<T>
     {
-        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
+        public IList<ISplittedData<bool>> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
         {
             var splittingFeatureName = splttingParams.SplitOnFeature;
             var splittingFeatureValue = splttingParams.SplitOnValue;
@@ -23,19 +23,19 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             var rowsMeetingCriteria = filteringResult.IndicesOfRowsMeetingCriteria;
             var rowsNotMeetingCriteria = filteringResult.IndicesOfRowsNotMeetingCriteria;
 
-            var splitResults = new List<ISplittedData>();
+            var splitResults = new List<ISplittedData<bool>>();
             var totalRowsCount = (double)dataToSplit.RowCount;
 
             var positiveDataFrame = dataToSplit.GetSubsetByRows(rowsMeetingCriteria);
-            splitResults.Add(new SplittedData(GetSubsetLink(positiveDataFrame, totalRowsCount, true), positiveDataFrame));
+            splitResults.Add(new SplittedData<bool>(GetSubsetLink(positiveDataFrame, totalRowsCount, true), positiveDataFrame));
 
             var negativeDataFrame = dataToSplit.GetSubsetByRows(rowsNotMeetingCriteria);
-            splitResults.Add(new SplittedData(GetSubsetLink(negativeDataFrame, totalRowsCount, false), negativeDataFrame));
+            splitResults.Add(new SplittedData<bool>(GetSubsetLink(negativeDataFrame, totalRowsCount, false), negativeDataFrame));
 
             return splitResults;
         }
 
-        public IList<ISplittedData> SplitData(
+        public IList<ISplittedData<bool>> SplitData(
             IDataFrame dataToSplit,
             ISplittingParams splttingParams)
         {

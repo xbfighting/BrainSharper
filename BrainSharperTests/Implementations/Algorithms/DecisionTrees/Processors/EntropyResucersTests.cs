@@ -12,29 +12,29 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
     public class EntropyResucersTests
     {
         private readonly ShannonEntropy<string> _shannonEntropy = new ShannonEntropy<string>();
-        private readonly InformationGainCalculator<string> _informationGainCalculator;
-        private readonly InformationGainCalculator<string> _informationGainRatioCalculator;
+        private readonly InformationGainCalculator<string, string> _informationGainCalculator;
+        private readonly InformationGainCalculator<string, string> _informationGainRatioCalculator;
 
         public EntropyResucersTests()
         {
-            _informationGainCalculator = new InformationGainCalculator<string>(_shannonEntropy, _shannonEntropy);
-            _informationGainRatioCalculator = new InformationGainRatioCalculator<string>(_shannonEntropy, _shannonEntropy);
+            _informationGainCalculator = new InformationGainCalculator<string, string>(_shannonEntropy, _shannonEntropy);
+            _informationGainRatioCalculator = new InformationGainRatioCalculator<string, string>(_shannonEntropy, _shannonEntropy);
         }
 
         [Test]
-        public void TestInformationGainCalculator()
+        public void TestInformationGainCalculator_MultipleSplitByOvercast()
         {
             // Given
             var initialData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
-            var subset1 = initialData.GetSubsetByRows(new[] { 0,1,7,8,10 });
+            var subset1 = initialData.GetSubsetByRows(new[] { 0, 1, 7,8,10 });
             var subset2 = initialData.GetSubsetByRows(new[] { 2, 6, 11, 12 });
             var subset3 = initialData.GetSubsetByRows(new[] { 3, 4, 5, 9, 13 });
 
-            var splitResults = new List<ISplittedData>
+            var splitResults = new List<ISplittedData<string>>
             {
-                new SplittedData(new DecisionLink(0, 0), subset1),
-                new SplittedData(new DecisionLink(0, 0), subset2),
-                new SplittedData(new DecisionLink(0, 0), subset3)
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "sunny"), subset1),
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "overcast"), subset2),
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "rainy"), subset3)
             };
 
             var expectedGain = 0.246;
@@ -56,11 +56,11 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             var subset2 = initialData.GetSubsetByRows(new[] { 2, 6, 11, 12 });
             var subset3 = initialData.GetSubsetByRows(new[] { 3, 4, 5, 9, 13 });
 
-            var splitResults = new List<ISplittedData>
+            var splitResults = new List<ISplittedData<string>>
             {
-                new SplittedData(new DecisionLink(0, 0), subset1),
-                new SplittedData(new DecisionLink(0, 0), subset2),
-                new SplittedData(new DecisionLink(0, 0), subset3)
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "sunny"), subset1),
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "overcast"), subset2),
+                new SplittedData<string>(new DecisionLink<string>(0, 0, "rainy"), subset3)
             };
 
             var expectedGain = 0.156;

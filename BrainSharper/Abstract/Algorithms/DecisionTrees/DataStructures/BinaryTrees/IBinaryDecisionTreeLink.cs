@@ -1,7 +1,6 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees
 {
-    public interface IBinaryDecisionTreeLink : IDecisionTreeLink
+    public interface IBinaryDecisionTreeLink : IDecisionTreeLink<bool>
     {
-        bool TestValue { get; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    public interface IBinaryBestSplitSelector : IBestSplitSelector
+    public interface IBinaryBestSplitSelector : IBestSplitSelector<bool>
     {
     }
 }

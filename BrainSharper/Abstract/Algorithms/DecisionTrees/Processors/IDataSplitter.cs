@@ -4,9 +4,9 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface IDataSplitter
+    public interface IDataSplitter<TTestResult>
     {
-        IList<ISplittedData> SplitData(
+        IList<ISplittedData<TTestResult>> SplitData(
             IDataFrame dataToSplit, 
             ISplittingParams splttingParams);
     }

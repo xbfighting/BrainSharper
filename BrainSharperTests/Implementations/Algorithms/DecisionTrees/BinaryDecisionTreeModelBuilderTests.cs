@@ -18,7 +18,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
             // Given
             var dataSet = TestDataBuilder.ReadIrisData();
             var binaryTreeBuilder = new BinaryDecisionTreeModelBuilder<string>(
-                new InformationGainRatioCalculator<string>(_shannonEntropy, _shannonEntropy as ICategoricalImpurityMeasure<string>),
+                new InformationGainRatioCalculator<bool, string>(_shannonEntropy, _shannonEntropy as ICategoricalImpurityMeasure<string>),
                 new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
                 new DiscreteDecisionTreeLeafBuilder());
 

@@ -18,6 +18,5 @@ namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTr
 
         object DecisionValue { get; }
         bool IsValueNumeric { get; }
-        IDictionary<IBinaryDecisionTreeLink, IDecisionTreeNode> TestResultsWithChildren { get; }
     }
 }

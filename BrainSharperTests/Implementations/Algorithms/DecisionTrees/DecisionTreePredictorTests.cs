@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.DecisionTrees;
 using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 using BrainSharper.General.DataQuality;
@@ -24,7 +21,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
         public DecisionTreePredictorTests()
         {
             _binaryTreeBuilder =  new BinaryDecisionTreeModelBuilder<string>(
-                new InformationGainRatioCalculator<string>(_shannonEntropy, _shannonEntropy as ICategoricalImpurityMeasure<string>),
+                new InformationGainRatioCalculator<bool, string>(_shannonEntropy, _shannonEntropy as ICategoricalImpurityMeasure<string>),
                 new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
                 new DiscreteDecisionTreeLeafBuilder());
         }
@@ -36,7 +33,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
             var randomizer = new Random();
             var splitter = new CrossValidator<object>();
             var testData = TestDataBuilder.ReadIrisData();
-            var predictor = new DecisionTreePredictor();
+            var predictor = new DecisionTreePredictor<bool>();
 
             // When
             var accuracies = splitter.CrossValidate(

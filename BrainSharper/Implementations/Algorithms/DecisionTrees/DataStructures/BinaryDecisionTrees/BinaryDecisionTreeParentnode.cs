@@ -5,12 +5,12 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
 {
-    public class BinaryDecisionTreeParentNode : DecisionTreeParentNode, IBinaryDecisionTreeParentNode
+    public class BinaryDecisionTreeParentNode : DecisionTreeParentNode<bool>, IBinaryDecisionTreeParentNode
     {
         public BinaryDecisionTreeParentNode(
             bool isLeaf, 
             string decisionFeatureName, 
-            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren, 
+            IDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> linksToChildren, 
             object decisionValue,
             bool isSplitValueNumeric) : base(isLeaf, decisionFeatureName, linksToChildren)
         {
@@ -22,7 +22,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.B
                 var binaryTreeLink = link.Key as IBinaryDecisionTreeLink;
                 if (binaryTreeLink != null)
                 {
-                    if (!binaryTreeLink.TestValue)
+                    if (!binaryTreeLink.TestResult)
                     {
                         LeftChild = link.Value;
                         LeftChildLink = binaryTreeLink;

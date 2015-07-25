@@ -9,7 +9,7 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
-    public class DecisionTreePredictor : IPredictor<object>
+    public class DecisionTreePredictor<TTestResult> : IPredictor<object>
     {
         public IList<object> Predict(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex)
         {
@@ -48,7 +48,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             }
             else
             {
-                var parentNode = decisionTree as IDecisionTreeParentNode;
+                var parentNode = decisionTree as IDecisionTreeParentNode<TTestResult>;
                 if (parentNode is IBinaryDecisionTreeParentNode)
                 {
                     return ProcessBinarySplit(vector, parentNode as IBinaryDecisionTreeParentNode);

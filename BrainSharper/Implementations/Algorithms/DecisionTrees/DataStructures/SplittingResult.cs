@@ -3,9 +3,9 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
-    public class SplittingResult : ISplittingResult
+    public class SplittingResult<TTestResult> : ISplittingResult<TTestResult>
     {
-        public SplittingResult(bool isSplitNumeric, string splittingFeatureName, IList<ISplittedData> splittedDataSets)
+        public SplittingResult(bool isSplitNumeric, string splittingFeatureName, IList<ISplittedData<TTestResult>> splittedDataSets)
         {
             IsSplitNumeric = isSplitNumeric;
             SplittingFeatureName = splittingFeatureName;
@@ -14,6 +14,6 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 
         public bool IsSplitNumeric { get; }
         public string SplittingFeatureName { get; }
-        public IList<ISplittedData> SplittedDataSets { get; }
+        public IList<ISplittedData<TTestResult>> SplittedDataSets { get; }
     }
 }

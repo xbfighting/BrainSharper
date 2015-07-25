@@ -4,10 +4,11 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface ISplitQualityChecker
+    public interface ISplitQualityChecker<TTestResult>
     {
+        //TODO: replace IList<ISplittedData> with ISplitResult!!!
         double GetInitialEntropy(IDataFrame baseData, string dependentFeatureName);
-        double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName);
-        double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName);
+        double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName);
+        double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName);
     }
 }

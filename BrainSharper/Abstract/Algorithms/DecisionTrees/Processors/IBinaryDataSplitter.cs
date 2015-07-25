@@ -5,11 +5,11 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface IBinaryDataSplitter<T> : IDataSplitter
+    public interface IBinaryDataSplitter<TDecisionValueType> : IDataSplitter<bool>
     {
         //TODO: consider using ISPlittingResult as a result type
-        IList<ISplittedData> SplitData(
+        IList<ISplittedData<bool>> SplitData(
             IDataFrame dataToSplit, 
-            IBinarySplittingParams<T> splttingParams);
+            IBinarySplittingParams<TDecisionValueType> splttingParams);
     }
 }

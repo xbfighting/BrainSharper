@@ -3,15 +3,15 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
-    public class SplittedData : ISplittedData
+    public class SplittedData<TTestResult> : ISplittedData<TTestResult>
     {
-        public SplittedData(IDecisionTreeLink splitLink, IDataFrame splittedDataFrame)
+        public SplittedData(IDecisionTreeLink<TTestResult> splitLink, IDataFrame splittedDataFrame)
         {
             SplitLink = splitLink;
             SplittedDataFrame = splittedDataFrame;
         }
 
-        public IDecisionTreeLink SplitLink { get; }
+        public IDecisionTreeLink<TTestResult> SplitLink { get; }
         public IDataFrame SplittedDataFrame { get; }
     }
 }

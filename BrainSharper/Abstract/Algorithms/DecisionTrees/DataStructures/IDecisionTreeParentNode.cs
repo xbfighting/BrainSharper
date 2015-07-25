@@ -2,9 +2,10 @@
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
-    public interface IDecisionTreeParentNode : IDecisionTreeNode
+    public interface IDecisionTreeParentNode<TTestResult> : IDecisionTreeNode
     {
         IList<IDecisionTreeNode> Children { get; }
-        IDictionary<IDecisionTreeLink, IDecisionTreeNode> LinksToChildren { get; }
+        IDictionary<IDecisionTreeLink<TTestResult>, IDecisionTreeNode> LinksToChildren { get; }
+        IDictionary<TTestResult, IDecisionTreeNode> ChildrenByTestResults { get; }
     }
 }

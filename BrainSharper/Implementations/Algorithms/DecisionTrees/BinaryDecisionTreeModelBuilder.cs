@@ -15,12 +15,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
     public class BinaryDecisionTreeModelBuilder<T> : IDecisionTreeModelBuilder
     {
-        private readonly ISplitQualityChecker _splitQualityChecker;
+        private readonly ISplitQualityChecker<bool> _splitQualityChecker;
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
         private readonly ILeafBuilder _leafBuilder; 
 
         public BinaryDecisionTreeModelBuilder(
-            ISplitQualityChecker splitQualityChecker, 
+            ISplitQualityChecker<bool> splitQualityChecker, 
             IBinaryBestSplitSelector binaryBestSplitSelector,
             ILeafBuilder leafBuilder)
         {
@@ -59,7 +59,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
                 dataFrame,
                 dependentFeatureName,
                 _splitQualityChecker);
-            var children = new ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode>();
+            var children = new ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode>();
             if (isFirstSplit)
             {
                 Parallel.ForEach(splitResult.SplittedDataSets, splitData =>
@@ -83,7 +83,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
         }
 
         private void ProcessSplitResult(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams,
-            ISplittedData splitData, ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+            ISplittedData<bool> splitData, ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
         {
             if (splitData.SplittedDataFrame.RowCount == 0)
             {
@@ -108,9 +108,9 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
         private void AddLeafFromSplit(
             string dependentFeatureName,
             IModelBuilderParams additionalParams,
-            ISplittedData splitData,
+            ISplittedData<bool> splitData,
             IDataFrame baseData,
-            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children
+            ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children
             )
         {
             var leafNode = BuildLeaf(baseData, dependentFeatureName);
@@ -121,8 +121,8 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
         private void AddChildFromSplit(
             string dependentFeatureName, 
             IModelBuilderParams additionalParams,
-            ISplittedData splitData, 
-            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+            ISplittedData<bool> splitData, 
+            ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
         {
             var decisionTreeNode = BuildDecisionNode(
                 splitData.SplittedDataFrame,

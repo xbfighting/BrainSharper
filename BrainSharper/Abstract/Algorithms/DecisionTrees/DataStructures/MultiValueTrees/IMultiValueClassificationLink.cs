@@ -2,7 +2,7 @@
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.MultiValueTrees
 {
-    public interface IMultiValueClassificationLink<TDecisionValue> : IDecisionTreeLink
+    public interface IMultiValueClassificationLink<TDecisionValue> : IDecisionTreeLink<TDecisionValue>
     {
         TDecisionValue LinkDecisionValue { get; }
         IDictionary<TDecisionValue, int> ClassesCounts { get; }

@@ -21,12 +21,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             _binaryNumericDataSplitter = binaryNumericDataSplitter;
         }
 
-        public ISplittingResult SelectBestSplit(
+        public ISplittingResult<bool> SelectBestSplit(
             IDataFrame baseData, 
             string dependentFeatureName, 
-            ISplitQualityChecker splitQualityChecker)
+            ISplitQualityChecker<bool> splitQualityChecker)
         {
-            ISplittingResult bestSplit = null;
+            ISplittingResult<bool> bestSplit = null;
             double bestSplitQuality = float.NegativeInfinity;
             double initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
             int totalRowsCount = baseData.RowCount;
@@ -53,9 +53,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
                         {
                             var halfWay = (currentValue + previousValue)/2.0;
                             var splitParams = new BinarySplittingParams<double>(attributeToSplit, halfWay);
-                            IList<ISplittedData> splittedData = _binaryNumericDataSplitter.SplitData(baseData, splitParams);
-                            double splitQuality = splitQualityChecker.CalculateSplitQuality(initialEntropy, totalRowsCount,
-                                splittedData, dependentFeatureName);
+                            IList<ISplittedData<bool>> splittedData = _binaryNumericDataSplitter.SplitData(baseData, splitParams);
+                            double splitQuality = splitQualityChecker.CalculateSplitQuality(
+                                initialEntropy, 
+                                totalRowsCount,
+                                splittedData,
+                                dependentFeatureName);
                             if (splitQuality > bestSplitQuality)
                             {
                                 bestSplitQuality = splitQuality;
@@ -72,7 +75,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
                     foreach (var possibleValue in allPossibleValues)
                     {
                         var splitParams = new BinarySplittingParams<TValue>(attributeToSplit, possibleValue);
-                        IList<ISplittedData> splittedData = _binaryDataSplitter.SplitData(baseData, splitParams);
+                        IList<ISplittedData<bool>> splittedData = _binaryDataSplitter.SplitData(baseData, splitParams);
                         double splitQuality = splitQualityChecker.CalculateSplitQuality(initialEntropy, totalRowsCount,
                             splittedData, dependentFeatureName);
                         if (splitQuality > bestSplitQuality)

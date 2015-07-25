@@ -3,8 +3,8 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface IBestSplitSelector
+    public interface IBestSplitSelector<TTestResult>
     {
-        ISplittingResult SelectBestSplit(IDataFrame baseData, string dependentFeatureName, ISplitQualityChecker splitQualityChecker);
+        ISplittingResult<TTestResult> SelectBestSplit(IDataFrame baseData, string dependentFeatureName, ISplitQualityChecker<TTestResult> splitQualityChecker);
     }
 }

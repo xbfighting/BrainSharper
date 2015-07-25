@@ -2,9 +2,9 @@
 
 namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
-    public interface ISplittedData
+    public interface ISplittedData<TTestResult>
     {
-        IDecisionTreeLink SplitLink { get; }
+        IDecisionTreeLink<TTestResult> SplitLink { get; }
         IDataFrame SplittedDataFrame { get; }
     }
 }

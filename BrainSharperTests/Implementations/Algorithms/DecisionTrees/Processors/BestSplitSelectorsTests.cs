@@ -14,7 +14,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         private readonly IBinaryDataSplitter<string> _binaryDataSplitter;
         private readonly IBinaryNumericDataSplitter _binaryNumericDataSplitter;
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly ISplitQualityChecker _categoricalSplitQualityChecker;
+        private readonly ISplitQualityChecker<bool> _categoricalSplitQualityChecker;
 
         public BestSplitSelectorsTests()
         {
@@ -22,7 +22,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             _binaryDataSplitter = new BinaryDiscreteDataSplitter<string>();
             _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
             _binaryBestSplitSelector = new BinarySplitSelector<string>(_binaryDataSplitter, _binaryNumericDataSplitter);
-            _categoricalSplitQualityChecker = new InformationGainCalculator<string>(_shannonEntropy, _shannonEntropy);
+            _categoricalSplitQualityChecker = new InformationGainCalculator<bool, string>(_shannonEntropy, _shannonEntropy);
 
         }
 

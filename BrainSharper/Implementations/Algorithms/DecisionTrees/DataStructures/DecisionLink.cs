@@ -2,18 +2,20 @@
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
-    public class DecisionLink : IDecisionTreeLink
+    public class DecisionLink<TTestResult> : IDecisionTreeLink<TTestResult>
     {
-        public DecisionLink(double instancesPercentage, long instancesCount)
+        public DecisionLink(double instancesPercentage, long instancesCount, TTestResult testResult)
         {
             InstancesPercentage = instancesPercentage;
             InstancesCount = instancesCount;
+            TestResult = testResult;
         }
 
         public double InstancesPercentage { get; }
         public long InstancesCount { get; }
+        public TTestResult TestResult { get; }
 
-        protected bool Equals(DecisionLink other)
+        protected bool Equals(DecisionLink<TTestResult> other)
         {
             return InstancesPercentage.Equals(other.InstancesPercentage) && InstancesCount == other.InstancesCount;
         }
@@ -23,7 +25,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((DecisionLink) obj);
+            return Equals((DecisionLink<TTestResult>) obj);
         }
 
         public override int GetHashCode()

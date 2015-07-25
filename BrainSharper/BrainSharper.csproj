@@ -110,6 +110,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittedData.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictor.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryDiscreteDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryNumericDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinarySplitSelectorForCategoricalOutcome.cs" />
