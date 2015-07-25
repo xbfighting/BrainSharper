@@ -1,37 +1,37 @@
-﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
+    using System.Collections.Generic;
+
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.Processors;
+    using Abstract.Data;
+    using Abstract.MathUtils.ImpurityMeasures;
+
     public class InformationGainCalculator<TTestResult, TDecisionType> : ISplitQualityChecker<TTestResult>
     {
         protected readonly IImpurityMeasure<TDecisionType> ImpuryMeasure;
         protected readonly ICategoricalImpurityMeasure<TDecisionType> CategoricalImpuryMeasure;
 
-
         public InformationGainCalculator(IImpurityMeasure<TDecisionType> impuryMeasure, ICategoricalImpurityMeasure<TDecisionType> categoricalImpurityMeasure)
         {
-            ImpuryMeasure = impuryMeasure;
-            CategoricalImpuryMeasure = categoricalImpurityMeasure;
+            this.ImpuryMeasure = impuryMeasure;
+            this.CategoricalImpuryMeasure = categoricalImpurityMeasure;
         }
 
         public double GetInitialEntropy(IDataFrame baseData, string dependentFeatureName)
         {
-            return ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<TDecisionType>(dependentFeatureName));
+            return this.ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<TDecisionType>(dependentFeatureName));
         }
 
         public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName)
         {
-            double initialEntropy = GetInitialEntropy(baseData, dependentFeatureName);
-            return CalculateSplitQuality(initialEntropy, baseData.RowCount, splittingResults, dependentFeatureName);
+            double initialEntropy = this.GetInitialEntropy(baseData, dependentFeatureName);
+            return this.CalculateSplitQuality(initialEntropy, baseData.RowCount, splittingResults, dependentFeatureName);
         }
 
         public virtual double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName)
         {
-            var splittedDataWeightedEntopy = GetSplittedDataWeightedEntropy(
+            var splittedDataWeightedEntopy = this.GetSplittedDataWeightedEntropy(
                 splittingResults,
                 totalRowsCount,
                 dependentFeatureName);
@@ -46,8 +46,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             var splittedDataWeightedEntropy = 0.0;
             foreach (var splittingResult in splittingResults)
             {
-                var splittingResultEntropy =
-                    ImpuryMeasure.ImpurityValue(
+                var splittingResultEntropy = this.ImpuryMeasure.ImpurityValue(
                         splittingResult.SplittedDataFrame.GetColumnVector<TDecisionType>(dependentFeatureName));
                 var splittedDataCount = splittingResult.SplittedDataFrame.RowCount;
                 var weight = splittedDataCount / baseDataRowsCount;

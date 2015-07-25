@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 using BrainSharperTests.TestUtils;
@@ -12,6 +14,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
     {
         private static readonly IBinaryDataSplitter<string> _binaryDiscreteDataSplitter = new BinaryDiscreteDataSplitter<string>();
         private static readonly IBinaryDataSplitter<double> _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
+        private static readonly IDataSplitter<string> _multiValueDiscreteDataSplitter = new MultiValueDiscreteDataSplitter<string>();
 
         [Test]
         public void PerformBinaryDiscreteDataSplit()
@@ -51,6 +54,32 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             // Then
             Assert.IsTrue(expectedPositiveData.Equals(actualPositiveData));
             Assert.IsTrue(actualNegativeData.Equals(expectedNegativeData));
+        }
+
+        [Test]
+        public void PerformMultiValueDiscreteDataSplit()
+        {
+            // Given
+            var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
+            var splitParams = new SplittingParams<string>("Outlook");
+            var expectedRowCounts = new Dictionary<string, int>
+            {
+                ["Sunny"] = 5,
+                ["Overcast"] = 4,
+                ["Rainy"] = 5
+            };
+
+            // When
+            var splittedData = _multiValueDiscreteDataSplitter.SplitData(testData, splitParams);
+
+            // Then
+            Assert.AreEqual(expectedRowCounts.Count, splittedData.Count);
+            foreach (var splittedResult in splittedData)
+            {
+                var expectedCount = expectedRowCounts[splittedResult.SplitLink.TestResult];
+                Assert.AreEqual(expectedCount, splittedResult.SplittedDataFrame.RowCount);
+                Assert.AreEqual(expectedCount, splittedResult.SplitLink.InstancesCount);
+            }
         }
     }
 }

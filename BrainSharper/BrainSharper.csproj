@@ -108,6 +108,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeLeaf.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeParentNode.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittedData.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictor.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
@@ -118,6 +119,8 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\IBinaryBestSplitSelector.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueDiscreteDataSplitter.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueSplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\RegressionAndModelDecisionTreeLeafBuilder.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModelBuilder.cs" />

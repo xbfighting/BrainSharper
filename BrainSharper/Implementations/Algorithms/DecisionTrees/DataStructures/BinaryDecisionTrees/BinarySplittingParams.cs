@@ -3,15 +3,14 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
 {
-    public class BinarySplittingParams<T> : IBinarySplittingParams<T>
+    public class BinarySplittingParams<T> : SplittingParams<T>, IBinarySplittingParams<T>
     {
         public BinarySplittingParams(string splitOnFeature, T splitOnValue)
+            : base(splitOnFeature)
         {
-            SplitOnFeature = splitOnFeature;
             SplitOnValue = splitOnValue;
         }
 
-        public string SplitOnFeature { get; }
         public T SplitOnValue { get; }
 
         protected bool Equals(BinarySplittingParams<T> other)

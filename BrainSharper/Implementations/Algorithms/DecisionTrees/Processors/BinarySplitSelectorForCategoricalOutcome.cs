@@ -32,6 +32,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             int totalRowsCount = baseData.RowCount;
 
             // TODO: refactor this method to be nicer
+            // TODO: add support for excluding already used splits
 
             foreach (var attributeToSplit in baseData.ColumnNames.Except(new [] { dependentFeatureName }))
             {

@@ -1,77 +1,81 @@
-﻿using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-using BrainSharper.Abstract.Algorithms.DecisionTrees;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Algorithms.Infrastructure;
-using BrainSharper.Abstract.Data;
-using BrainSharper.General.Utils;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
+    using System.Collections.Concurrent;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Abstract.Algorithms.DecisionTrees;
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
+    using Abstract.Algorithms.DecisionTrees.Processors;
+    using Abstract.Algorithms.Infrastructure;
+    using Abstract.Data;
+
+    using DataStructures.BinaryDecisionTrees;
+    using General.Utils;
+    using Processors;
+
     public class BinaryDecisionTreeModelBuilder<T> : IDecisionTreeModelBuilder
     {
-        private readonly ISplitQualityChecker<bool> _splitQualityChecker;
-        private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly ILeafBuilder _leafBuilder; 
+        private readonly ISplitQualityChecker<bool> splitQualityChecker;
+        private readonly IBinaryBestSplitSelector binaryBestSplitSelector;
+        private readonly ILeafBuilder leafBuilder; 
 
         public BinaryDecisionTreeModelBuilder(
             ISplitQualityChecker<bool> splitQualityChecker, 
             IBinaryBestSplitSelector binaryBestSplitSelector,
             ILeafBuilder leafBuilder)
         {
-            _splitQualityChecker = splitQualityChecker;
-            _binaryBestSplitSelector = binaryBestSplitSelector;
-            _leafBuilder = leafBuilder;
+            this.splitQualityChecker = splitQualityChecker;
+            this.binaryBestSplitSelector = binaryBestSplitSelector;
+            this.leafBuilder = leafBuilder;
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
         {
             if (ShouldStopRecusrsiveBuilding(dataFrame, dependentFeatureName))
             {
-                return BuildLeaf(dataFrame, dependentFeatureName);
+                return this.BuildLeaf(dataFrame, dependentFeatureName);
             }
-            return BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
+            return this.BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex, IModelBuilderParams additionalParams)
         {
-            return BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
+            return this.BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
         }
 
         protected virtual IDecisionTreeNode BuildDecisionNode(
             IDataFrame dataFrame, 
-            string dependentFeatureName, 
+            string dependentFeatureName,
             IModelBuilderParams additionalParams,
-            bool isFirstSplit=false)
+            bool isFirstSplit = false)
         {
             if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1)
             {
-                return BuildLeaf(dataFrame, dependentFeatureName);
+                return this.BuildLeaf(dataFrame, dependentFeatureName);
             }
+
             // TODO: later on add additional params indicating which features were already used
-            // TODO: handle situation when best split is null - build leaf node immediately
-            IBinarySplittingResult splitResult = (IBinarySplittingResult)_binaryBestSplitSelector.SelectBestSplit(
+            IBinarySplittingResult splitResult = (IBinarySplittingResult)this.binaryBestSplitSelector.SelectBestSplit(
                 dataFrame,
                 dependentFeatureName,
-                _splitQualityChecker);
+                this.splitQualityChecker);
             var children = new ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode>();
             if (isFirstSplit)
             {
-                Parallel.ForEach(splitResult.SplittedDataSets, splitData =>
-                {
-                    ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
-                });
+                Parallel.ForEach(
+                    splitResult.SplittedDataSets,
+                    splitData =>
+                        {
+                            this.ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
+                        });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
+                    this.ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
                 }
             }
             return new BinaryDecisionTreeParentNode(
@@ -82,27 +86,31 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
                 splitResult.IsSplitNumeric);
         }
 
-        private void ProcessSplitResult(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams,
-            ISplittedData<bool> splitData, ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
-        {
-            if (splitData.SplittedDataFrame.RowCount == 0)
-            {
-                AddLeafFromSplit(dependentFeatureName, additionalParams, splitData, dataFrame, children);
-            }
-            else
-            {
-                AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
-            }
-        }
-
         private static bool ShouldStopRecusrsiveBuilding(IDataFrame dataFrame, string dependentFeatureName)
         {
             return !dataFrame.GetColumnType(dependentFeatureName).IsNumericType() && dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1;
         }
 
+        private void ProcessSplitResult(
+            IDataFrame dataFrame,
+            string dependentFeatureName,
+            IModelBuilderParams additionalParams,
+            ISplittedData<bool> splitData,
+            ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
+        {
+            if (splitData.SplittedDataFrame.RowCount == 0)
+            {
+                this.AddLeafFromSplit(dependentFeatureName, additionalParams, splitData, dataFrame, children);
+            }
+            else
+            {
+                this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+            }
+        }
+
         private IDecisionTreeLeaf BuildLeaf(IDataFrame dataFrame, string dependentFeatureName)
         {
-            return _leafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
+            return this.leafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
         }
 
         private void AddLeafFromSplit(
@@ -110,10 +118,9 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             IModelBuilderParams additionalParams,
             ISplittedData<bool> splitData,
             IDataFrame baseData,
-            ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children
-            )
+            ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
         {
-            var leafNode = BuildLeaf(baseData, dependentFeatureName);
+            var leafNode = this.BuildLeaf(baseData, dependentFeatureName);
             var link = (IBinaryDecisionTreeLink)splitData.SplitLink;
             children.TryAdd(link, leafNode);
         }
@@ -124,7 +131,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             ISplittedData<bool> splitData, 
             ConcurrentDictionary<IDecisionTreeLink<bool>, IDecisionTreeNode> children)
         {
-            var decisionTreeNode = BuildDecisionNode(
+            var decisionTreeNode = this.BuildDecisionNode(
                 splitData.SplittedDataFrame,
                 dependentFeatureName,
                 additionalParams);

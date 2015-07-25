@@ -1,4 +1,5 @@
-﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
@@ -10,46 +11,76 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
     [TestFixture]
     public class BestSplitSelectorsTests
     {
-        private readonly ICategoricalImpurityMeasure<string> _shannonEntropy;
-        private readonly IBinaryDataSplitter<string> _binaryDataSplitter;
         private readonly IBinaryNumericDataSplitter _binaryNumericDataSplitter;
+        private readonly IDataSplitter<string> _multiValueCategoricalDataSplitter; 
+
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly ISplitQualityChecker<bool> _categoricalSplitQualityChecker;
+        private readonly IBestSplitSelector<string> _multiValueBestSplitSelector; 
+
+
+        private readonly ISplitQualityChecker<bool> _categoricalBinarySplitQualityChecker;
+        private readonly ISplitQualityChecker<string> _categoricalMultiValueSplitQualityChecker;
 
         public BestSplitSelectorsTests()
         {
-            _shannonEntropy = new ShannonEntropy<string>();
-            _binaryDataSplitter = new BinaryDiscreteDataSplitter<string>();
+            ICategoricalImpurityMeasure<string> shannonEntropy = new ShannonEntropy<string>();
+            IBinaryDataSplitter<string> binaryDataSplitter = new BinaryDiscreteDataSplitter<string>();
             _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
-            _binaryBestSplitSelector = new BinarySplitSelector<string>(_binaryDataSplitter, _binaryNumericDataSplitter);
-            _categoricalSplitQualityChecker = new InformationGainCalculator<bool, string>(_shannonEntropy, _shannonEntropy);
-
+            _binaryBestSplitSelector = new BinarySplitSelector<string>(binaryDataSplitter, _binaryNumericDataSplitter);
+            _categoricalBinarySplitQualityChecker = new InformationGainCalculator<bool, string>(shannonEntropy, shannonEntropy);
+            _categoricalMultiValueSplitQualityChecker = new InformationGainCalculator<string,string>(shannonEntropy, shannonEntropy);
+            _multiValueCategoricalDataSplitter = new MultiValueDiscreteDataSplitter<string>();
+            _multiValueBestSplitSelector = new MultiValueSplitSelectorForCategoricalOutcome<string>(_multiValueCategoricalDataSplitter);
         }
 
         [Test]
-        public void SelectBestSplit_CategoricalAttributes_CategoricalOutput()
+        public void SelectBestSplit_BinarySplit_CategoricalAttributes_CategoricalOutput()
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
             
             // When
-            var bestSplit = _binaryBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalSplitQualityChecker);
+            var bestSplit = _binaryBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
 
             // Then
             Assert.IsNotNull(bestSplit);
         }
 
         [Test]
-        public void SelectBestSplit_NumericAttributes_CategoricalOutput()
+        public void SelectBestSplit_BinarySplit_NumericAttributes_CategoricalOutput()
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithMixedAttributes();
-            var subject = new BinarySplitSelector<object>(new BinaryDiscreteDataSplitter<object>(),
-                _binaryNumericDataSplitter);
+            var subject = new BinarySplitSelector<object>(new BinaryDiscreteDataSplitter<object>(), _binaryNumericDataSplitter);
 
             // When
-            var bestSplit = subject.SelectBestSplit(testData, "Play", _categoricalSplitQualityChecker);
+            var bestSplit = subject.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
+        }
 
+        [Test]
+        public void SelectBestSplit_MultiValue_CategoricalAtributes_CategoricalOutput()
+        {
+            // Given
+            var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
+            var expectedBestSplitAttribute = "Outlook";
+            var expectedRowCountsPerAttribute = new Dictionary<string, int>
+            {
+                ["Sunny"] = 5,
+                ["Overcast"] = 4,
+                ["Rainy"] = 5
+            };
+
+            // When
+            var bestSplit = _multiValueBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalMultiValueSplitQualityChecker);
+
+            // Then
+            Assert.AreEqual(expectedBestSplitAttribute, bestSplit.SplittingFeatureName);
+            Assert.AreEqual(expectedRowCountsPerAttribute.Count, bestSplit.SplittedDataSets.Count);
+            foreach (var splittedData in bestSplit.SplittedDataSets)
+            {
+                var expectedRowCounts = expectedRowCountsPerAttribute[splittedData.SplitLink.TestResult];
+                Assert.AreEqual(expectedRowCounts, splittedData.SplittedDataFrame.RowCount);
+            }
         }
     }
 }
