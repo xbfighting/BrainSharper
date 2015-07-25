@@ -88,7 +88,10 @@
     <Compile Include="Abstract\MathUtils\ImpurityMeasures\ICategoricalImpurityMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ImpurityMeasures\IImpurityMeasure.cs" />
     <Compile Include="Abstract\MathUtils\Normalizers\IQuantitativeDataNormalizer.cs" />
+    <Compile Include="General\DataQuality\ConfusionMatrixBuilder.cs" />
     <Compile Include="General\DataQuality\IConfusionMatrix.cs" />
+    <Compile Include="General\DataQuality\IDataQualityMeasure.cs" />
+    <Compile Include="General\DataQuality\IDataQualityReport.cs" />
     <Compile Include="General\DataUtils\ICrossValidator.cs" />
     <Compile Include="General\DataUtils\ITrainTestSplitter.cs" />
     <Compile Include="General\Exceptions\Data\InvalidColumnNamesException.cs" />

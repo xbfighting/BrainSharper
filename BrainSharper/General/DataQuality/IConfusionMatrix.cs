@@ -14,7 +14,7 @@ namespace BrainSharper.General.DataQuality
         double Accuracy { get; }
     }
 
-    public class ConfusionMatrix<TPredictionResult> : IConfusionMatrix<TPredictionResult>
+    public class ConfusionMatrix<TPredictionResult> : IConfusionMatrix<TPredictionResult>, IDataQualityReport<TPredictionResult>
     {
         private IList<double> _perClassPercentageCorrect;
         private IList<TPredictionResult> _allEncounteredValues; 

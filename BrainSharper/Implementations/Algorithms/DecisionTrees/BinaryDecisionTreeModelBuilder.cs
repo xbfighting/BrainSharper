@@ -35,7 +35,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
-            return BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, false);
+            return BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex, IModelBuilderParams additionalParams)
@@ -64,14 +64,14 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             {
                 Parallel.ForEach(splitResult.SplittedDataSets, splitData =>
                 {
-                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+                    ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
                 });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+                    ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
                 }
             }
             return new BinaryDecisionTreeParentNode(
@@ -80,6 +80,19 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
                 children,
                 splitResult.SplittingValue,
                 splitResult.IsSplitNumeric);
+        }
+
+        private void ProcessSplitResult(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams,
+            ISplittedData splitData, ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+        {
+            if (splitData.SplittedDataFrame.RowCount == 0)
+            {
+                AddLeafFromSplit(dependentFeatureName, additionalParams, splitData, dataFrame, children);
+            }
+            else
+            {
+                AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+            }
         }
 
         private static bool ShouldStopRecusrsiveBuilding(IDataFrame dataFrame, string dependentFeatureName)
@@ -92,8 +105,24 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees
             return _leafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
         }
 
-        private void AddChildFromSplit(string dependentFeatureName, IModelBuilderParams additionalParams,
-           ISplittedData splitData, ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+        private void AddLeafFromSplit(
+            string dependentFeatureName,
+            IModelBuilderParams additionalParams,
+            ISplittedData splitData,
+            IDataFrame baseData,
+            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children
+            )
+        {
+            var leafNode = BuildLeaf(baseData, dependentFeatureName);
+            var link = (IBinaryDecisionTreeLink)splitData.SplitLink;
+            children.TryAdd(link, leafNode);
+        }
+
+        private void AddChildFromSplit(
+            string dependentFeatureName, 
+            IModelBuilderParams additionalParams,
+            ISplittedData splitData, 
+            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
         {
             var decisionTreeNode = BuildDecisionNode(
                 splitData.SplittedDataFrame,
