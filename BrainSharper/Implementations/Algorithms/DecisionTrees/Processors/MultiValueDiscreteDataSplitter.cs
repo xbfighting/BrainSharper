@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.Processors;
+    using Abstract.Data;
+    using DataStructures;
+
     public class MultiValueDiscreteDataSplitter<TSplitValue> : IDataSplitter<TSplitValue>
     {
         public IList<ISplittedData<TSplitValue>> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams)
