@@ -34,13 +34,13 @@
         }
 
         [Test]
-        public void DiscreteClassification_NumericFeatures_IrisData_CrossValidation()
+        public void DiscreteClassification_NumericFeatures_BinarySplits_IrisData_CrossValidation()
         {
             // Given
             var randomizer = new Random();
             var splitter = new CrossValidator<object>();
             var testData = TestDataBuilder.ReadIrisData();
-            var predictor = new DecisionTreePredictor<bool>();
+            var predictor = new DecisionTreePredictor<bool, object>();
 
             // When
             var accuracies = splitter.CrossValidate(
@@ -50,6 +50,58 @@
                 new ConfusionMatrixBuilder<object>(),
                 testData,
                 "iris_class",
+                0.7,
+                10);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averageAccuracy >= 0.9);
+        }
+
+        [Test]
+        public void DiscreteClassification_NumericFeatures_MultiValuesSplits_IrisData_CrossValidation()
+        {
+            // TODO: add support for numeric attributes!!!
+            // Given
+            var randomizer = new Random();
+            var splitter = new CrossValidator<object>();
+            var testData = TestDataBuilder.ReadIrisData();
+            var predictor = new DecisionTreePredictor<bool, object>();
+
+            // When
+            var accuracies = splitter.CrossValidate(
+                this.multiValueTreeBuilder,
+                null,
+                predictor,
+                new ConfusionMatrixBuilder<object>(),
+                testData,
+                "iris_class",
+                0.7,
+                10);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averageAccuracy >= 0.9);
+        }
+
+        [Test]
+        public void DiscreteClassification_CategoricalFeatures_MultiValuesSplits_CongressVotingData_CrossValidation()
+        {
+            // TODO: add support for numeric attributes!!!
+            // Given
+            var randomizer = new Random();
+            var splitter = new CrossValidator<string>();
+            var testData = TestDataBuilder.ReadCongressData();
+            var predictor = new DecisionTreePredictor<string, string>();
+
+            // When
+            var accuracies = splitter.CrossValidate(
+                this.multiValueTreeBuilder,
+                null,
+                predictor,
+                new ConfusionMatrixBuilder<string>(),
+                testData,
+                "party",
                 0.7,
                 10);
 

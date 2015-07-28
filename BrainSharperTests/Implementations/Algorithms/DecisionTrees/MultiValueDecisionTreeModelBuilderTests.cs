@@ -42,18 +42,18 @@
             Assert.AreEqual("Outlook", model.DecisionFeatureName);
 
             // First child of the root
-            var sunnyChild = model.ChildrenByTestResults["Sunny"] as IDecisionTreeParentNode<string>;
+            var sunnyChild = model.GetChildForTestResult("Sunny") as IDecisionTreeParentNode<string>;
             Assert.IsNotNull(sunnyChild);
             Assert.AreEqual("Humidity", sunnyChild.DecisionFeatureName);
             Assert.AreEqual(2, sunnyChild.Children.Count);
             Assert.IsTrue(sunnyChild.Children.All(chd => chd is IDecisionTreeLeaf));
 
             // Second child of the root
-            var overcastChild = model.ChildrenByTestResults["Overcast"] as IDecisionTreeLeaf;
+            var overcastChild = model.GetChildForTestResult("Overcast") as IDecisionTreeLeaf;
             Assert.AreEqual("Yes", overcastChild.LeafValue);
 
             // Third child of the root
-            var rainyChild = model.ChildrenByTestResults["Rainy"] as IDecisionTreeParentNode<string>;
+            var rainyChild = model.GetChildForTestResult("Rainy") as IDecisionTreeParentNode<string>;
             Assert.IsNotNull(rainyChild);
             Assert.AreEqual("Windy", rainyChild.DecisionFeatureName);
             Assert.AreEqual(2, rainyChild.Children.Count);

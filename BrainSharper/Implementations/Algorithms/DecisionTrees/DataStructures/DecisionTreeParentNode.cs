@@ -4,8 +4,15 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
+    using System;
+
     public class DecisionTreeParentNode<TTestResult> : IDecisionTreeParentNode<TTestResult>
     {
+        protected IDictionary<IDecisionTreeLink<TTestResult>, IDecisionTreeNode> LinksToChildren { get; }
+        protected IDictionary<TTestResult, IDecisionTreeNode> ChildrenByTestResults { get; }
+        protected IDictionary<IDecisionTreeNode, IDecisionTreeLink<TTestResult>> LinksByChildren { get; }
+        protected IDictionary<IDecisionTreeNode, TTestResult> TestResultsByChildren { get; }
+
         public DecisionTreeParentNode(
             bool isLeaf, 
             string decisionFeatureName, 
@@ -16,11 +23,22 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
             this.Children = linksToChildren?.Values.ToList() ?? new List<IDecisionTreeNode>();
             this.LinksToChildren = linksToChildren ?? new Dictionary<IDecisionTreeLink<TTestResult>, IDecisionTreeNode>();
             this.ChildrenByTestResults = new Dictionary<TTestResult, IDecisionTreeNode>();
+            this.LinksByChildren = new Dictionary<IDecisionTreeNode, IDecisionTreeLink<TTestResult>>();
+            this.TestResultsByChildren = new Dictionary<IDecisionTreeNode, TTestResult>();
+            this.ChildrenWithTestResults = new List<Tuple<IDecisionTreeLink<TTestResult>, IDecisionTreeNode>>();
+            
             foreach (var childLink in this.LinksToChildren)
             {
+                this.ChildrenWithTestResults.Add(new Tuple<IDecisionTreeLink<TTestResult>, IDecisionTreeNode>(childLink.Key, childLink.Value));
+
                 if (!this.ChildrenByTestResults.ContainsKey(childLink.Key.TestResult))
                 {
                     this.ChildrenByTestResults.Add(childLink.Key.TestResult, childLink.Value);
+                }
+                if (!this.LinksByChildren.ContainsKey(childLink.Value))
+                {
+                    this.LinksByChildren.Add(childLink.Value, childLink.Key);
+                    this.TestResultsByChildren.Add(childLink.Value, childLink.Key.TestResult);
                 }
             }
             this.TrainingDataAccuracy = trainingDataAccuracy;
@@ -30,8 +48,33 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
         public bool IsLeaf => false;
         public string DecisionFeatureName { get; }
         public IList<IDecisionTreeNode> Children { get; }
-        public IDictionary<IDecisionTreeLink<TTestResult>, IDecisionTreeNode> LinksToChildren { get; }
-        public IDictionary<TTestResult, IDecisionTreeNode> ChildrenByTestResults { get; }
+
+        public IList<Tuple<IDecisionTreeLink<TTestResult>, IDecisionTreeNode>> ChildrenWithTestResults { get; }
+
+        public IDecisionTreeNode GetChildForTestResult(TTestResult testResult)
+        {
+            return this.ChildrenByTestResults[testResult];
+        }
+
+        public IDecisionTreeNode GetChildForLink(IDecisionTreeLink<TTestResult> link)
+        {
+            return this.LinksToChildren[link];
+        }
+
+        public TTestResult GetTestResultForChild(IDecisionTreeNode child)
+        {
+            return this.TestResultsByChildren[child];
+        }
+
+        public IDecisionTreeLink<TTestResult> GetChildLinkForChild(IDecisionTreeNode child)
+        {
+            return this.LinksByChildren[child];
+        }
+
+        public bool TestResultsContains(TTestResult testResult)
+        {
+            return this.ChildrenByTestResults.ContainsKey(testResult);
+        }
 
         public override bool Equals(object obj)
         {

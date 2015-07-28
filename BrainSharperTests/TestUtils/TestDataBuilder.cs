@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.OleDb;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Implementations.Data;
-
-namespace BrainSharperTests.TestUtils
+﻿namespace BrainSharperTests.TestUtils
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.OleDb;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+
+    using BrainSharper.Abstract.Data;
+    using BrainSharper.Implementations.Data;
+
     public static class TestDataBuilder
     {
-        public static string WeatherDataDependentFeatureName = "Play";
+        public const string WeatherDataDependentFeatureName = "Play";
 
         public static IDataFrame BuildSmallDataFrameMixedDataTypes()
         {
@@ -30,11 +29,12 @@ namespace BrainSharperTests.TestUtils
                     },
                     Rows =
                     {
-                        new object []{ "a1.1", 1, "b1.2", 2 },
-                        new object []{ "a2.1", 3, "b2.2", 4 },
-                        new object []{ "a3.1", 5, "b3.2", 6 },
+                        new object [] { "a1.1", 1, "b1.2", 2 },
+                        new object [] { "a2.1", 3, "b2.2", 4 },
+                        new object [] { "a3.1", 5, "b3.2", 6 },
                     }
-                }, new []{ 100, 101, 102 });
+                }, 
+                new [] { 100, 101, 102 });
         }
 
         public static IDataFrame BuildSmallDataFrameNumbersOnly()
@@ -51,11 +51,12 @@ namespace BrainSharperTests.TestUtils
                    },
                    Rows =
                    {
-                        new object []{ 1, 2, 3, 4 },
-                        new object []{ 5, 6, 7, 8 },
-                        new object []{ 9, 10, 11, 12 },
+                        new object [] { 1, 2, 3, 4 },
+                        new object [] { 5, 6, 7, 8 },
+                        new object [] { 9, 10, 11, 12 },
                    }
-               }, new [] { 100, 101, 102 });
+               }, 
+               new [] { 100, 101, 102 });
         }
 
         public static IDataVector<object> BuildMixedObjectsVector()
@@ -95,12 +96,18 @@ namespace BrainSharperTests.TestUtils
 
         public static double CalcualteLinearlyDependentFeatureValue(IList<double> features)
         {
-            return features[0] + 2 * features[1] - 3 * features[2];
+            return features[0] + (2 * features[1]) - (3 * features[2]);
         }
 
         public static IDataFrame ReadIrisData()
         {
             DataTable dt = ReadCsvIntoDataTable(@"DataSets\IrisData.txt", true);
+            return new DataFrame(dt);
+        }
+
+        public static IDataFrame ReadCongressData()
+        {
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\CongressVoting.txt", true);
             return new DataFrame(dt);
         }
 

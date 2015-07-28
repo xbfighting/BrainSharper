@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BrainSharper.Abstract.Algorithms.Infrastructure;
-using BrainSharper.Abstract.Data;
-using BrainSharper.General.DataQuality;
-using BrainSharper.General.Utils;
-
-namespace BrainSharper.General.DataUtils
+﻿namespace BrainSharper.General.DataUtils
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Abstract.Algorithms.Infrastructure;
+    using Abstract.Data;
+    using DataQuality;
+    using Utils;
+
     public interface ICrossValidator<TPredictionResult>
     {
         IList<IDataQualityReport<TPredictionResult>> CrossValidate(
@@ -33,11 +34,11 @@ namespace BrainSharper.General.DataUtils
             double percetnagOfTrainData,
             int folds)
         {
-            var trainingDataCount = (int)Math.Round(percetnagOfTrainData*dataFrame.RowCount);
+            var trainingDataCount = (int)Math.Round(percetnagOfTrainData * dataFrame.RowCount);
             var testDataCount = dataFrame.RowCount - trainingDataCount;
             var shuffledAllIndices = dataFrame.RowIndices.Shuffle();
-            var maxWindowsCount = dataFrame.RowCount/testDataCount;
-            
+            var maxWindowsCount = dataFrame.RowCount / testDataCount;
+
             var iterationAccuracies = new List<IDataQualityReport<TPredictionResult>>();
             var currentWindowNo = 0;
             for (var i = 0; i < folds; i++)
@@ -47,7 +48,7 @@ namespace BrainSharper.General.DataUtils
                     currentWindowNo = 0;
                     shuffledAllIndices = shuffledAllIndices.Shuffle();
                 }
-                var offset = currentWindowNo*testDataCount;
+                var offset = currentWindowNo * testDataCount;
                 var trainingIndices = shuffledAllIndices.Skip(offset).Take(trainingDataCount).ToList();
                 var trainingData = dataFrame.GetSubsetByRows(trainingIndices);
 
@@ -56,8 +57,7 @@ namespace BrainSharper.General.DataUtils
                 IPredictionModel model = modelBuilder.BuildModel(trainingData, dependentFeatureName, modelBuilderParams);
                 IList<TPredictionResult> predictions = predictor.Predict(testData, model, dependentFeatureName);
                 IList<TPredictionResult> expected = testData.GetColumnVector<TPredictionResult>(dependentFeatureName);
-                IDataQualityReport<TPredictionResult> qualityReport = qualityMeasure.GetReport(expected,
-                    predictions);
+                IDataQualityReport<TPredictionResult> qualityReport = qualityMeasure.GetReport(expected, predictions);
                 iterationAccuracies.Add(qualityReport);
                 currentWindowNo++;
             }
