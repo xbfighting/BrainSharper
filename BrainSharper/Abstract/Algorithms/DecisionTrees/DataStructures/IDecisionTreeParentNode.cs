@@ -3,20 +3,14 @@
     using System;
     using System.Collections.Generic;
 
-    public interface IDecisionTreeParentNode<TTestResult> : IDecisionTreeNode
+    public interface IDecisionTreeParentNode : IDecisionTreeNode
     {
         IList<IDecisionTreeNode> Children { get; }
-
-        IList<Tuple<IDecisionTreeLink<TTestResult>, IDecisionTreeNode>> ChildrenWithTestResults { get; } 
-            
-        IDecisionTreeNode GetChildForTestResult(TTestResult testResult);
-
-        IDecisionTreeNode GetChildForLink(IDecisionTreeLink<TTestResult> link);
-
-        TTestResult GetTestResultForChild(IDecisionTreeNode child);
-
-        IDecisionTreeLink<TTestResult> GetChildLinkForChild(IDecisionTreeNode child);
-
-        bool TestResultsContains(TTestResult testResult);
+        IList<Tuple<IDecisionTreeLink, IDecisionTreeNode>> ChildrenWithTestResults { get; } 
+        IDecisionTreeNode GetChildForTestResult(object testResult);
+        IDecisionTreeNode GetChildForLink(IDecisionTreeLink link);
+        object GetTestResultForChild(IDecisionTreeNode child);
+        IDecisionTreeLink GetChildLinkForChild(IDecisionTreeNode child);
+        bool TestResultsContains(object testResult);
     }
 }

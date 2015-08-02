@@ -1,11 +1,9 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
-    public interface IDecisionTreeLink<TTestResult>
+    public interface IDecisionTreeLink
     {
         double InstancesPercentage { get; }
-
         long InstancesCount { get; }
-
-        TTestResult TestResult { get; }
+        object TestResult { get; }
     }
 }

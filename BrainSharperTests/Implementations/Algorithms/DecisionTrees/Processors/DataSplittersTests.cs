@@ -12,9 +12,10 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
     [TestFixture]
     public class DataSplittersTests
     {
-        private static readonly IBinaryDataSplitter<string> _binaryDiscreteDataSplitter = new BinaryDiscreteDataSplitter<string>();
-        private static readonly IBinaryDataSplitter<double> _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
-        private static readonly IDataSplitter<string> _multiValueDiscreteDataSplitter = new MultiValueDiscreteDataSplitter<string>();
+        private static readonly IBinaryDataSplitter<string> BinaryDiscreteDataSplitter = new BinaryDiscreteDataSplitter<string>();
+        private static readonly IBinaryDataSplitter<double> BinaryNumericDataSplitter = new BinaryNumericDataSplitter();
+        private static readonly IDataSplitter<string> MultiValueDiscreteDataSplitter = new MultiValueDiscreteDataSplitter<string>();
+        private static readonly IDataSplitter<double> MultiValueNumericDataSplitter = new MultiValueNumericDataSplitter();
 
         [Test]
         public void PerformBinaryDiscreteDataSplit()
@@ -25,10 +26,10 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             var expectedNegativeData = testData.GetSubsetByRows(new[] { 0, 1, 2, 6, 7, 8, 10, 11, 12 });
 
 
-            var splitCriteria = new BinarySplittingParams<string>("Outlook", "Rainy");
+            var splitCriteria = new BinarySplittingParams<string>("Outlook", "Rainy", "Play");
 
             // When
-            var splitResults = _binaryDiscreteDataSplitter.SplitData(testData, splitCriteria);
+            var splitResults = BinaryDiscreteDataSplitter.SplitData(testData, splitCriteria);
             var actualPositiveData = splitResults.First().SplittedDataFrame;
             var actualNegativeData = splitResults.Last().SplittedDataFrame;
 
@@ -44,10 +45,10 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             var testData = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
             var expectedPositiveData = testData.GetSubsetByRows(new[] { 1, 2 });
             var expectedNegativeData = testData.GetSubsetByRows(new[] {0});
-            var splitCriterion = new BinarySplittingParams<double>("Col1", 5);
+            var splitCriterion = new BinarySplittingParams<double>("Col1", 5, null);
 
             // When
-            var splitResults = _binaryNumericDataSplitter.SplitData(testData, splitCriterion);
+            var splitResults = BinaryNumericDataSplitter.SplitData(testData, splitCriterion);
             var actualPositiveData = splitResults.First().SplittedDataFrame;
             var actualNegativeData = splitResults.Last().SplittedDataFrame;
 
@@ -61,8 +62,8 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
-            var splitParams = new SplittingParams<string>("Outlook");
-            var expectedRowCounts = new Dictionary<string, int>
+            var splitParams = new SplittingParams<string>("Outlook", "Play");
+            var expectedRowCounts = new Dictionary<object, int>
             {
                 ["Sunny"] = 5,
                 ["Overcast"] = 4,
@@ -70,7 +71,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             };
 
             // When
-            var splittedData = _multiValueDiscreteDataSplitter.SplitData(testData, splitParams);
+            var splittedData = MultiValueDiscreteDataSplitter.SplitData(testData, splitParams);
 
             // Then
             Assert.AreEqual(expectedRowCounts.Count, splittedData.Count);

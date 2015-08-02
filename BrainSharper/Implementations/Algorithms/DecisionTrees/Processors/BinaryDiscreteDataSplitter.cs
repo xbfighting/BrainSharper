@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
+    using Abstract.Algorithms.DecisionTrees.Processors;
+    using Abstract.Data;
+    using DataStructures;
+    using DataStructures.BinaryDecisionTrees;
+
+
     public class BinaryDiscreteDataSplitter<T> : IBinaryDataSplitter<T>
     {
-        public IList<ISplittedData<bool>> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
+        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
         {
             var splittingFeatureName = splttingParams.SplitOnFeature;
             var splittingFeatureValue = splttingParams.SplitOnValue;
@@ -23,7 +24,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             var rowsMeetingCriteria = filteringResult.IndicesOfRowsMeetingCriteria;
             var rowsNotMeetingCriteria = filteringResult.IndicesOfRowsNotMeetingCriteria;
 
-            var splitResults = new List<ISplittedData<bool>>();
+            var splitResults = new List<ISplittedData>();
             var totalRowsCount = (double)dataToSplit.RowCount;
 
             var positiveDataFrame = dataToSplit.GetSubsetByRows(rowsMeetingCriteria);
@@ -35,7 +36,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             return splitResults;
         }
 
-        public IList<ISplittedData<bool>> SplitData(
+        public IList<ISplittedData> SplitData(
             IDataFrame dataToSplit,
             ISplittingParams splttingParams)
         {

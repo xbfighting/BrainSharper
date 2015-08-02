@@ -13,14 +13,16 @@
 
     public class MultiValueDiscreteDataSplitter<TSplitValue> : IDataSplitter<TSplitValue>
     {
-        public IList<ISplittedData<TSplitValue>> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams)
+        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams)
         {
             var splittingFeature = splttingParams.SplitOnFeature;
-            var distinctValues = dataToSplit.GetColumnVector<TSplitValue>(splittingFeature).Distinct();
             var results = new ConcurrentBag<Tuple<TSplitValue, int>>();
-            Parallel.For(0, dataToSplit.RowCount, rowIdx =>
-            {
-                var row = dataToSplit.GetRowVector<TSplitValue>(rowIdx);
+            Parallel.For(
+                0,
+                dataToSplit.RowCount,
+                rowIdx =>
+                    {
+                        var row = dataToSplit.GetRowVector<TSplitValue>(rowIdx);
                 var rowValue = row[splittingFeature];
                 results.Add(new Tuple<TSplitValue, int>(rowValue, rowIdx));
             });
@@ -36,14 +38,13 @@
                 from grp in resultsGroupedByValue
                 let grpCount = grp.Count()
                 select new SplittedData<TSplitValue>(
-                    new DecisionLink<TSplitValue>(CalcInstancesPercentage(totalRowsCount, grpCount), grpCount, grp.Key),
-                    dataToSplit.GetSubsetByRows(grp.ToList())
-                    ) as ISplittedData<TSplitValue>).ToList();
+                    new DecisionLink(this.CalcInstancesPercentage(totalRowsCount, grpCount), grpCount, grp.Key),
+                           dataToSplit.GetSubsetByRows(grp.ToList())) as ISplittedData).ToList();
         }
 
         private double CalcInstancesPercentage(int totalRowsCount, int splitRowsCount)
         {
-            return splitRowsCount/(double) totalRowsCount;
+            return splitRowsCount / (double)totalRowsCount;
         }
     }
 }

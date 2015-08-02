@@ -7,7 +7,7 @@
     using Abstract.Data;
     using Abstract.MathUtils.ImpurityMeasures;
 
-    public class InformationGainCalculator<TTestResult, TDecisionType> : ISplitQualityChecker<TTestResult>
+    public class InformationGainCalculator<TDecisionType> : ISplitQualityChecker
     {
         protected readonly IImpurityMeasure<TDecisionType> ImpuryMeasure;
         protected readonly ICategoricalImpurityMeasure<TDecisionType> CategoricalImpuryMeasure;
@@ -23,13 +23,13 @@
             return this.ImpuryMeasure.ImpurityValue(baseData.GetColumnVector<TDecisionType>(dependentFeatureName));
         }
 
-        public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName)
+        public virtual double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName)
         {
             double initialEntropy = this.GetInitialEntropy(baseData, dependentFeatureName);
             return this.CalculateSplitQuality(initialEntropy, baseData.RowCount, splittingResults, dependentFeatureName);
         }
 
-        public virtual double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData<TTestResult>> splittingResults, string dependentFeatureName)
+        public virtual double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName)
         {
             var splittedDataWeightedEntopy = this.GetSplittedDataWeightedEntropy(
                 splittingResults,
@@ -39,7 +39,7 @@
         }
 
         protected virtual double GetSplittedDataWeightedEntropy(
-            IList<ISplittedData<TTestResult>> splittingResults,
+            IList<ISplittedData> splittingResults,
             double baseDataRowsCount,
             string dependentFeatureName)
         {

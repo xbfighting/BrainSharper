@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using BrainSharper.Abstract.Data;
-using BrainSharper.General.Exceptions.Data;
-using BrainSharper.General.Utils;
-using MathNet.Numerics.LinearAlgebra;
-
-namespace BrainSharper.Implementations.Data
+﻿namespace BrainSharper.Implementations.Data
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Abstract.Data;
+    using General.Exceptions.Data;
+    using General.Utils;
+    using MathNet.Numerics.LinearAlgebra;
+
     public class DataFrame : IDataFrame
     {
         #region Fields
 
         protected readonly DataTable DataTable;
-        private readonly object _locker = new object();
-        private IList<int> _rowIndices;
-        private readonly Lazy<Matrix<double>> _numericMatrix; 
+        private readonly object locker = new object();
+        private IList<int> rowIndices;
+        private readonly Lazy<Matrix<double>> numericMatrix; 
 
         #endregion Fields
 
@@ -29,13 +29,13 @@ namespace BrainSharper.Implementations.Data
             DataTable = dataTable;
             if (rowIndices == null)
             {
-                _rowIndices = dataTable.AsEnumerable().Select((row, rowIdx) => (int)rowIdx).ToList();
+                this.rowIndices = dataTable.AsEnumerable().Select((row, rowIdx) => (int)rowIdx).ToList();
             }
             else
             {
-                _rowIndices = rowIndices.Take(dataTable.Rows.Count).ToList();
+                this.rowIndices = rowIndices.Take(dataTable.Rows.Count).ToList();
             }
-            _numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
+            this.numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
         }
 
         public DataFrame(Matrix<double> matrix, IList<string> columnNames = null, IList<int> rowIndices = null)
@@ -75,8 +75,8 @@ namespace BrainSharper.Implementations.Data
 
         public IList<int> RowIndices
         {
-            get { return _rowIndices; }
-            set { _rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value; }
+            get { return this.rowIndices; }
+            set { this.rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value; }
         }
 
         public bool Any => InnerTable != null && InnerTable.Rows.Count > 0;
@@ -253,7 +253,7 @@ namespace BrainSharper.Implementations.Data
                 for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
                     var newVal = rowOperator(rowIdx, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (_locker)
+                    lock (this.locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -271,7 +271,7 @@ namespace BrainSharper.Implementations.Data
                 for (int colIdx = 0; colIdx < ColumnNames.Count; colIdx++)
                 {
                     var newVal = rowOperator(rowIdx, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (_locker)
+                    lock (this.locker)
                     {
                         newData.Rows[rowIdx][colIdx] = newVal;
                     }
@@ -286,11 +286,11 @@ namespace BrainSharper.Implementations.Data
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                var rowName = _rowIndices[rowIdx];
+                var rowName = this.rowIndices[rowIdx];
                 for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
                     var newVal = rowOperator(rowName, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (_locker)
+                    lock (this.locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -305,11 +305,11 @@ namespace BrainSharper.Implementations.Data
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                var rowName = _rowIndices[rowIdx];
+                var rowName = this.rowIndices[rowIdx];
                 for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
                     var newVal = rowOperator(rowName, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (_locker)
+                    lock (this.locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -341,7 +341,7 @@ namespace BrainSharper.Implementations.Data
 
         public Matrix<double> GetAsMatrix()
         {
-            return _numericMatrix.Value;
+            return this.numericMatrix.Value;
         }
 
         #endregion Slicers
@@ -411,9 +411,9 @@ namespace BrainSharper.Implementations.Data
                     }
                 }
 
-                if (_rowIndices != null)
+                if (this.rowIndices != null)
                 {
-                    hash = _rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
+                    hash = this.rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
                 }
                 return hash;
             }

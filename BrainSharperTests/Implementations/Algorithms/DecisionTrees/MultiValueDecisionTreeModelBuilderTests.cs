@@ -21,20 +21,20 @@
 
         public MultiValueDecisionTreeModelBuilderTests()
         {
-             this.categoricalSubject = new MultiSplitDecisionTreeModelBuilder<string>(
-            new InformationGainRatioCalculator<string, string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
-            new MultiValueSplitSelectorForCategoricalOutcome<string>(new MultiValueDiscreteDataSplitter<string>()),
+             this.categoricalSubject = new MultiSplitDecisionTreeModelBuilder(
+            new InformationGainRatioCalculator<string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
+            new MultiValueSplitSelectorForCategoricalOutcome<string>(new MultiValueDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
             new CategoricalDecisionTreeLeafBuilder());
         }
 
         [Test]
-        public void BuildMultiValueDecisionTree_CategoricalVariablesOnly()
+        public void BuildMultiValueDecisionTreeCategoricalVariablesOnly()
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
             
             // When
-            var model = this.categoricalSubject.BuildModel(testData, "Play", null) as IDecisionTreeParentNode<string>;
+            var model = categoricalSubject.BuildModel(testData, "Play", null) as IDecisionTreeParentNode;
 
             // Then
             Assert.IsNotNull(model);
@@ -42,7 +42,7 @@
             Assert.AreEqual("Outlook", model.DecisionFeatureName);
 
             // First child of the root
-            var sunnyChild = model.GetChildForTestResult("Sunny") as IDecisionTreeParentNode<string>;
+            var sunnyChild = model.GetChildForTestResult("Sunny") as IDecisionTreeParentNode;
             Assert.IsNotNull(sunnyChild);
             Assert.AreEqual("Humidity", sunnyChild.DecisionFeatureName);
             Assert.AreEqual(2, sunnyChild.Children.Count);
@@ -53,7 +53,7 @@
             Assert.AreEqual("Yes", overcastChild.LeafValue);
 
             // Third child of the root
-            var rainyChild = model.GetChildForTestResult("Rainy") as IDecisionTreeParentNode<string>;
+            var rainyChild = model.GetChildForTestResult("Rainy") as IDecisionTreeParentNode;
             Assert.IsNotNull(rainyChild);
             Assert.AreEqual("Windy", rainyChild.DecisionFeatureName);
             Assert.AreEqual(2, rainyChild.Children.Count);

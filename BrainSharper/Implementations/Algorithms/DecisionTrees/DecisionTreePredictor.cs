@@ -9,7 +9,7 @@
     using Abstract.Algorithms.Infrastructure;
     using Abstract.Data;
 
-    public class DecisionTreePredictor<TTestResult, TDecisionValue> : IPredictor<TDecisionValue>
+    public class DecisionTreePredictor<TDecisionValue> : IPredictor<TDecisionValue>
     {
         public IList<TDecisionValue> Predict(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex)
         {
@@ -46,12 +46,12 @@
                 var classificationLeaf = decisionTree as IDecisionTreeLeaf;
                 return new Tuple<TDecisionValue, double>((TDecisionValue)classificationLeaf.LeafValue, probabilitiesProductSoFar);
             }
-            var parentNode = decisionTree as IDecisionTreeParentNode<TTestResult>;
+            var parentNode = decisionTree as IDecisionTreeParentNode;
             if (parentNode is IBinaryDecisionTreeParentNode)
             {
                 return this.ProcessBinarySplit(vector, parentNode as IBinaryDecisionTreeParentNode, probabilitiesProductSoFar);
             }
-            return this.ProcessMultiValueSplit(vector, parentNode as IDecisionTreeParentNode<TDecisionValue>, probabilitiesProductSoFar);
+            return this.ProcessMultiValueSplit(vector, parentNode, probabilitiesProductSoFar);
         }
 
         private Tuple<TDecisionValue, double> ProcessBinarySplit(
@@ -82,7 +82,7 @@
 
         private Tuple<TDecisionValue, double> ProcessMultiValueSplit(
             IDataVector<TDecisionValue> vector,
-            IDecisionTreeParentNode<TDecisionValue> multiValueDecisionTreeNode,
+            IDecisionTreeParentNode multiValueDecisionTreeNode,
             double probabilitiesProductSoFar)
         {
             string decisionFeature = multiValueDecisionTreeNode.DecisionFeatureName;

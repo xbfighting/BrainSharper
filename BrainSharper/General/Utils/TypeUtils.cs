@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace BrainSharper.General.Utils
+﻿namespace BrainSharper.General.Utils
 {
+    using System;
+
     public static class TypeUtils
     {
         /// <summary>

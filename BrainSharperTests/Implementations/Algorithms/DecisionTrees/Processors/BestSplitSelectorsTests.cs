@@ -15,11 +15,11 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         private readonly IDataSplitter<string> _multiValueCategoricalDataSplitter; 
 
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly IBestSplitSelector<string> _multiValueBestSplitSelector; 
+        private readonly IBestSplitSelector _multiValueBestSplitSelector; 
 
 
-        private readonly ISplitQualityChecker<bool> _categoricalBinarySplitQualityChecker;
-        private readonly ISplitQualityChecker<string> _categoricalMultiValueSplitQualityChecker;
+        private readonly ISplitQualityChecker _categoricalBinarySplitQualityChecker;
+        private readonly ISplitQualityChecker _categoricalMultiValueSplitQualityChecker;
 
         public BestSplitSelectorsTests()
         {
@@ -27,10 +27,10 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             IBinaryDataSplitter<string> binaryDataSplitter = new BinaryDiscreteDataSplitter<string>();
             _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
             _binaryBestSplitSelector = new BinarySplitSelector<string>(binaryDataSplitter, _binaryNumericDataSplitter);
-            _categoricalBinarySplitQualityChecker = new InformationGainCalculator<bool, string>(shannonEntropy, shannonEntropy);
-            _categoricalMultiValueSplitQualityChecker = new InformationGainCalculator<string,string>(shannonEntropy, shannonEntropy);
+            _categoricalBinarySplitQualityChecker = new InformationGainCalculator<string>(shannonEntropy, shannonEntropy);
+            _categoricalMultiValueSplitQualityChecker = new InformationGainCalculator<string>(shannonEntropy, shannonEntropy);
             _multiValueCategoricalDataSplitter = new MultiValueDiscreteDataSplitter<string>();
-            _multiValueBestSplitSelector = new MultiValueSplitSelectorForCategoricalOutcome<string>(_multiValueCategoricalDataSplitter);
+            _multiValueBestSplitSelector = new MultiValueSplitSelectorForCategoricalOutcome<string>(_multiValueCategoricalDataSplitter, _binaryNumericDataSplitter);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
             var expectedBestSplitAttribute = "Outlook";
-            var expectedRowCountsPerAttribute = new Dictionary<string, int>
+            var expectedRowCountsPerAttribute = new Dictionary<object, int>
             {
                 ["Sunny"] = 5,
                 ["Overcast"] = 4,

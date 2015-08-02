@@ -8,7 +8,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
         public BinarySplittingResult(
             bool isSplitNumeric, 
             string splittingFeatureName, 
-            IList<ISplittedData<bool>> splittedDataSets, 
+            IList<ISplittedData> splittedDataSets, 
             object splittingValue) 
             : base(isSplitNumeric, splittingFeatureName, splittedDataSets)
         {

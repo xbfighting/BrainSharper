@@ -1,32 +1,46 @@
-﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+
     public class SplittingParams<TValue> : ISplittingParams
     {
-        public SplittingParams(string splitOnFeature)
+        public SplittingParams(string splitOnFeature, string dependentFeatureName)
         {
-            SplitOnFeature = splitOnFeature;
+            this.SplitOnFeature = splitOnFeature;
+            this.DependentFeatureName = dependentFeatureName;
         }
 
         public string SplitOnFeature { get; }
-
-        protected bool Equals(SplittingParams<TValue> other)
-        {
-            return string.Equals(SplitOnFeature, other.SplitOnFeature);
-        }
+        public string DependentFeatureName { get; }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((SplittingParams<TValue>) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return this.Equals((SplittingParams<TValue>)obj);
         }
 
         public override int GetHashCode()
         {
-            return SplitOnFeature?.GetHashCode() ?? 0;
+            unchecked
+            {
+                return ((this.SplitOnFeature?.GetHashCode() ?? 0) * 397) ^ (this.DependentFeatureName?.GetHashCode() ?? 0);
+            }
+        }
+
+        protected bool Equals(SplittingParams<TValue> other)
+        {
+            return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && string.Equals(this.DependentFeatureName, other.DependentFeatureName);
         }
     }
 }

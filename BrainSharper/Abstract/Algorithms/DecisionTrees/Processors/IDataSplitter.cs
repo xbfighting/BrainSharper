@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Data;
-
-namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
+    using System.Collections.Generic;
+
+    using DataStructures;
+    using Data;
+
     public interface IDataSplitter<TTestResult>
     {
-        IList<ISplittedData<TTestResult>> SplitData(
+        IList<ISplittedData> SplitData(
             IDataFrame dataToSplit, 
             ISplittingParams splttingParams);
     }

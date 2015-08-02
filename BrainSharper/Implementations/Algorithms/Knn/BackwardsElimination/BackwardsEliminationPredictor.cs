@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BrainSharper.Abstract.Algorithms.Infrastructure;
-using BrainSharper.Abstract.Algorithms.Knn;
-using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Abstract.MathUtils.DistanceMeaseures;
-using BrainSharper.Abstract.MathUtils.Normalizers;
-using MathNet.Numerics.LinearAlgebra;
-
-namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
+﻿namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Abstract.Algorithms.Infrastructure;
+    using Abstract.Algorithms.Knn;
+    using Abstract.Algorithms.Knn.BackwardsElimination;
+    using Abstract.Data;
+    using Abstract.MathUtils.DistanceMeaseures;
+    using Abstract.MathUtils.Normalizers;
+
+    using MathNet.Numerics.LinearAlgebra;
+
     public abstract class BackwardsEliminationPredictor<TPredictionResult> : SimpleKnnPredictor<TPredictionResult>
     {
         protected BackwardsEliminationPredictor(
@@ -27,8 +29,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
         protected override Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel<TPredictionResult> knnModel, int dependentFeatureIdx)
         {
             var backwardsEliminationModel = knnModel as IBackwardsEliminationKnnModel<TPredictionResult>;
-            var featureIndicesToRemove =
-                backwardsEliminationModel.RemovedFeaturesData.Select(f => queryDataFrame.ColumnNames.IndexOf(f.FeatureName)).OrderBy(i => i).ToList();
+            var featureIndicesToRemove = backwardsEliminationModel.RemovedFeaturesData.Select(f => queryDataFrame.ColumnNames.IndexOf(f.FeatureName)).OrderBy(i => i).ToList();
             var relevantFeatures =
                 queryDataFrame.ColumnNames.Where((colName, colIdx) => !featureIndicesToRemove.Contains(colIdx) && colIdx != dependentFeatureIdx).ToList();
 

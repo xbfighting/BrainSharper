@@ -1,10 +1,11 @@
-﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Data;
-
-namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface IBestSplitSelector<TTestResult>
+    using Data;
+
+    using DataStructures;
+
+    public interface IBestSplitSelector
     {
-        ISplittingResult<TTestResult> SelectBestSplit(IDataFrame baseData, string dependentFeatureName, ISplitQualityChecker<TTestResult> splitQualityChecker);
+        ISplittingResult SelectBestSplit(IDataFrame baseData, string dependentFeatureName, ISplitQualityChecker splitQualityChecker);
     }
 }

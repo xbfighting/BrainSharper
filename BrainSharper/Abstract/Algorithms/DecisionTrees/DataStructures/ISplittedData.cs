@@ -1,10 +1,10 @@
-﻿using BrainSharper.Abstract.Data;
-
-namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
+﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures
 {
-    public interface ISplittedData<TTestResult>
+    using Data;
+
+    public interface ISplittedData
     {
-        IDecisionTreeLink<TTestResult> SplitLink { get; }
+        IDecisionTreeLink SplitLink { get; }
         IDataFrame SplittedDataFrame { get; }
     }
 }

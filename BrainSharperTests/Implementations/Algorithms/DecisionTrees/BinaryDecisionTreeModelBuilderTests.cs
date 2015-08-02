@@ -15,12 +15,12 @@
         private readonly IImpurityMeasure<string> shannonEntropy = new ShannonEntropy<string>();
 
         [Test]
-        public void BinaryTree_NumericAttributes_DiscreteDependentFeatures()
+        public void BinaryTreeNumericAttributesDiscreteDependentFeatures()
         {
             // Given
             var dataSet = TestDataBuilder.ReadIrisData();
-            var binaryTreeBuilder = new BinaryDecisionTreeModelBuilder<string>(
-                new InformationGainRatioCalculator<bool, string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
+            var binaryTreeBuilder = new BinaryDecisionTreeModelBuilder(
+                new InformationGainRatioCalculator<string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
                 new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
                 new CategoricalDecisionTreeLeafBuilder());
 

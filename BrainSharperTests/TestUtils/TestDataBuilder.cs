@@ -105,6 +105,12 @@
             return new DataFrame(dt);
         }
 
+        public static IDataFrame ReadAdultCensusDataFrame()
+        {
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\AdultCensusIncomeBinaryClassification.txt", true);
+            return new DataFrame(dt);
+        }
+
         public static IDataFrame ReadCongressData()
         {
             DataTable dt = ReadCsvIntoDataTable(@"DataSets\CongressVoting.txt", true);

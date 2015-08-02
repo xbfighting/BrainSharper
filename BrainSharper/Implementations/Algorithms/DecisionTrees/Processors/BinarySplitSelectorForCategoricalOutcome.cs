@@ -1,32 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
-using BrainSharper.Abstract.Data;
-using BrainSharper.General.Utils;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
-using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.Processors;
+    using Abstract.Data;
+
+    using DataStructures;
+    using DataStructures.BinaryDecisionTrees;
+
+    using General.Utils;
+
     public class BinarySplitSelector<TValue> : IBinaryBestSplitSelector
     {
-        private readonly IBinaryDataSplitter<TValue> _binaryDataSplitter;
-        private readonly IBinaryNumericDataSplitter _binaryNumericDataSplitter;
+        private readonly IBinaryDataSplitter<TValue> binaryDataSplitter;
+        private readonly IBinaryNumericDataSplitter binaryNumericDataSplitter;
 
         public BinarySplitSelector(IBinaryDataSplitter<TValue> binaryDataSplitter, IBinaryNumericDataSplitter binaryNumericDataSplitter)
         {
-            _binaryDataSplitter = binaryDataSplitter;
-            _binaryNumericDataSplitter = binaryNumericDataSplitter;
+            this.binaryDataSplitter = binaryDataSplitter;
+            this.binaryNumericDataSplitter = binaryNumericDataSplitter;
         }
 
-        public ISplittingResult<bool> SelectBestSplit(
+        public ISplittingResult SelectBestSplit(
             IDataFrame baseData, 
             string dependentFeatureName, 
-            ISplitQualityChecker<bool> splitQualityChecker)
+            ISplitQualityChecker splitQualityChecker)
         {
-            ISplittingResult<bool> bestSplit = null;
+            ISplittingResult bestSplit = null;
             double bestSplitQuality = float.NegativeInfinity;
             double initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
             int totalRowsCount = baseData.RowCount;
@@ -34,7 +37,7 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
             // TODO: refactor this method to be nicer
             // TODO: add support for excluding already used splits
 
-            foreach (var attributeToSplit in baseData.ColumnNames.Except(new [] { dependentFeatureName }))
+            foreach (var attributeToSplit in baseData.ColumnNames.Except(new[] { dependentFeatureName }))
             {
                 if (baseData.GetColumnType(attributeToSplit).TypeIsNumeric())
                 {
@@ -52,9 +55,12 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
                         var currentClass = baseData[currentRowIndex, dependentFeatureName].FeatureValue;
                         if (!currentClass.Equals(previousClass))
                         {
-                            var halfWay = (currentValue + previousValue)/2.0;
-                            var splitParams = new BinarySplittingParams<double>(attributeToSplit, halfWay);
-                            IList<ISplittedData<bool>> splittedData = _binaryNumericDataSplitter.SplitData(baseData, splitParams);
+                            var halfWay = (currentValue + previousValue) / 2.0;
+                            var splitParams = new BinarySplittingParams<double>(
+                                attributeToSplit,
+                                halfWay,
+                                dependentFeatureName);
+                            IList<ISplittedData> splittedData = this.binaryNumericDataSplitter.SplitData(baseData, splitParams);
                             double splitQuality = splitQualityChecker.CalculateSplitQuality(
                                 initialEntropy, 
                                 totalRowsCount,
@@ -75,10 +81,15 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
                     var allPossibleValues = baseData.GetColumnVector<TValue>(attributeToSplit).Distinct();
                     foreach (var possibleValue in allPossibleValues)
                     {
-                        var splitParams = new BinarySplittingParams<TValue>(attributeToSplit, possibleValue);
-                        IList<ISplittedData<bool>> splittedData = _binaryDataSplitter.SplitData(baseData, splitParams);
-                        double splitQuality = splitQualityChecker.CalculateSplitQuality(initialEntropy, totalRowsCount,
-                            splittedData, dependentFeatureName);
+                        var splitParams = new BinarySplittingParams<TValue>(attributeToSplit, possibleValue, dependentFeatureName);
+                        IList<ISplittedData> splittedData = this.binaryDataSplitter.SplitData(
+                            baseData,
+                            splitParams);
+                        double splitQuality = splitQualityChecker.CalculateSplitQuality(
+                            initialEntropy,
+                            totalRowsCount,
+                            splittedData,
+                            dependentFeatureName);
                         if (splitQuality > bestSplitQuality)
                         {
                             bestSplitQuality = splitQuality;

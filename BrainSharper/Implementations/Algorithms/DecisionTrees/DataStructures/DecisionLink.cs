@@ -2,11 +2,11 @@
 {
     using System.Collections.Generic;
 
-    using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
 
-    public class DecisionLink<TTestResult> : IDecisionTreeLink<TTestResult>
+    public class DecisionLink : IDecisionTreeLink
     {
-        public DecisionLink(double instancesPercentage, long instancesCount, TTestResult testResult)
+        public DecisionLink(double instancesPercentage, long instancesCount, object testResult)
         {
             this.InstancesPercentage = instancesPercentage;
             this.InstancesCount = instancesCount;
@@ -14,10 +14,8 @@
         }
 
         public double InstancesPercentage { get; }
-
         public long InstancesCount { get; }
-
-        public TTestResult TestResult { get; }
+        public object TestResult { get; }
 
         public override bool Equals(object obj)
         {
@@ -33,7 +31,7 @@
             {
                 return false;
             }
-            return this.Equals((DecisionLink<TTestResult>)obj);
+            return this.Equals((DecisionLink)obj);
         }
 
         public override int GetHashCode()
@@ -42,14 +40,14 @@
             {
                 var hashCode = this.InstancesPercentage.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.InstancesCount.GetHashCode();
-                hashCode = (hashCode * 397) ^ EqualityComparer<TTestResult>.Default.GetHashCode(this.TestResult);
+                hashCode = (hashCode * 397) ^ this.TestResult.GetHashCode();
                 return hashCode;
             }
         }
 
-        protected bool Equals(DecisionLink<TTestResult> other)
+        protected bool Equals(DecisionLink other)
         {
-            return this.InstancesPercentage.Equals(other.InstancesPercentage) && this.InstancesCount == other.InstancesCount && EqualityComparer<TTestResult>.Default.Equals(this.TestResult, other.TestResult);
+            return this.InstancesPercentage.Equals(other.InstancesPercentage) && this.InstancesCount == other.InstancesCount && Equals(this.TestResult, other.TestResult);
         }
 
     }

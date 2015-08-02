@@ -60,6 +60,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\ISplittingParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\ISplittedData.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\ISplittingResult.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueNumericRangeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueRegressionLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueClassificationLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeBuilderAdditionalParams.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ILeafBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IMultiValueNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="General\Utils\CollectionUtils.cs" />
     <Compile Include="General\Utils\DataTableExtensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\BaseDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeLink.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeParentNode.cs" />
@@ -107,6 +110,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionLink.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeLeaf.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeParentNode.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\MultiValueNumericRangeLink.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittedData.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
@@ -120,6 +124,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueDiscreteDataSplitter.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueNumericDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueSplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\RegressionAndModelDecisionTreeLeafBuilder.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />

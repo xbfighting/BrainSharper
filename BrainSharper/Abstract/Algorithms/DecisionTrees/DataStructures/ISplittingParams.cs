@@ -3,5 +3,6 @@
     public interface ISplittingParams
     {
         string SplitOnFeature { get; }
+        string DependentFeatureName { get; }
     }
 }
