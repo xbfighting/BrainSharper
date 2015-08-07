@@ -1,14 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using MathNet.Numerics.LinearAlgebra;
-
-namespace BrainSharper.Abstract.Data
+﻿namespace BrainSharper.Abstract.Data
 {
-    public delegate TValue DataFrameRowIndexColumnNameOperator<TValue>(int rowIndex, string columnName, TValue actualValue);
-    public delegate TValue DataFrameRowIndexColumnIndexOperator<TValue>(int rowIndex, int columnIndex, TValue actualValue);
+    #region
+
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+
+    using MathNet.Numerics.LinearAlgebra;
+
+    #endregion
+
+    public delegate TValue DataFrameRowIndexColumnNameOperator<TValue>(
+        int rowIndex, 
+        string columnName, 
+        TValue actualValue);
+
+    public delegate TValue DataFrameRowIndexColumnIndexOperator<TValue>(
+        int rowIndex, 
+        int columnIndex, 
+        TValue actualValue);
 
     public delegate TValue DataFrameRowNameColumnNameOperator<TValue>(int rowName, string columnName, TValue actualValue);
+
     public delegate TValue DataFrameRowNameColumnIndexOperator<TValue>(int rowName, int columnIndex, TValue actualValue);
 
     /// <summary>
@@ -44,12 +57,15 @@ namespace BrainSharper.Abstract.Data
         bool Any { get; }
 
         int RowCount { get; }
+
         int ColumnsCount { get; }
 
-        IDataItem<object> this[int rowIdx, int columnIdx] {get;}
+        IDataItem<object> this[int rowIdx, int columnIdx] { get; }
+
         IDataItem<object> this[int rowIdx, string columnName] { get; }
 
         Type GetColumnType(string columnName);
+
         Type GetColumnType(int columnIdx);
 
         /// <summary>
@@ -68,6 +84,7 @@ namespace BrainSharper.Abstract.Data
         /// <param name="useRowNames">Should the number passed in 'index' parameter interpreted as row name or natural row index?</param>
         /// <returns>IDataVector of generic type TValue</returns>
         IDataVector<object> GetRowVector(int index, bool useRowNames = false);
+
         Vector<double> GetNumericRowVector(int index, bool useRowNames = false);
 
         /// <summary>
@@ -135,6 +152,13 @@ namespace BrainSharper.Abstract.Data
         IDataFrame GetSubsetByRows(IList<int> rowIndices, bool useRowNames = false);
 
         /// <summary>
+        /// Performs sql-like query to the underlying storage. A simple, standard SQL query syntax should be used
+        /// </summary>
+        /// <param name="query">Simple sql query.</param>
+        /// <returns>IDataFrame</returns>
+        IDataFrame GetSubsetByQuery(string query);
+
+        /// <summary>
         /// Gets values for selected rows from a selected column.
         /// </summary>
         /// <typeparam name="TValue">Generic type to be returned</typeparam>
@@ -155,16 +179,30 @@ namespace BrainSharper.Abstract.Data
         IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, int columnIndex, bool useRowName = false);
 
         IDataFrame Slice(IList<int> rows, IList<string> columns, bool useRowNames = false);
+
         IDataFrame Slice(IList<int> rows, IList<int> columnIndices, bool useRowNames = false);
 
         IDataFrame Set<TValue>(TValue value, int rowIndex, int columnIndex, bool useRowNames = false);
+
         IDataFrame Set<TValue>(TValue value, int rowIndex, string columnName, bool useRowNames = false);
+
         IDataFrame ProcessMultiple<TValue>(DataFrameRowIndexColumnNameOperator<TValue> rowOperator);
+
         IDataFrame ProcessMultiple<TValue>(DataFrameRowIndexColumnIndexOperator<TValue> rowOperator);
+
         IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnIndexOperator<TValue> rowOperator);
+
         IDataFrame ProcessMultiple<TValue>(DataFrameRowNameColumnNameOperator<TValue> rowOperator);
+
         IFilteringResult GetRowsIndicesWhere(Predicate<DataRow> rowsFilter);
 
         Matrix<double> GetAsMatrix();
+
+        /// <summary>
+        /// Compares two DataFrames using only internal table storage, ignoring the row names.
+        /// </summary>
+        /// <param name="other">Other data frame</param>
+        /// <returns>True or false</returns>
+        bool ContentEquals(IDataFrame other);
     }
 }

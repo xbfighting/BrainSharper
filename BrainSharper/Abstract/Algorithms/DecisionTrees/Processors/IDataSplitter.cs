@@ -5,7 +5,7 @@
     using DataStructures;
     using Data;
 
-    public interface IDataSplitter<TTestResult>
+    public interface IDataSplitter
     {
         IList<ISplittedData> SplitData(
             IDataFrame dataToSplit, 

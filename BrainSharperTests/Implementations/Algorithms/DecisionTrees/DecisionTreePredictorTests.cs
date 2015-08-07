@@ -1,14 +1,17 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
 {
     using System;
+    using System.Data;
     using System.Linq;
 
     using BrainSharper.Abstract.Algorithms.DecisionTrees;
+    using BrainSharper.Abstract.Data;
     using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
     using BrainSharper.General.DataQuality;
     using BrainSharper.General.DataUtils;
     using BrainSharper.Implementations.Algorithms.DecisionTrees;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+    using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
     using NUnit.Framework;
@@ -23,18 +26,18 @@
 
         public DecisionTreePredictorTests()
         {
-            this.binaryTreeBuilder = new BinaryDecisionTreeModelBuilder(
+            binaryTreeBuilder = new BinaryDecisionTreeModelBuilder(
                 new InformationGainRatioCalculator<string>(shannonEntropy, shannonEntropy as ICategoricalImpurityMeasure<string>),
-                new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
+                new BinarySplitSelectorForCategoricalOutcome(new BinaryDiscreteDataSplitter(), new BinaryNumericDataSplitter(), new ClassBreakpointsNumericSplitFinder()),
                 new CategoricalDecisionTreeLeafBuilder());
-            this.multiValueTreeBuilder = new MultiSplitDecisionTreeModelBuilder(
+            multiValueTreeBuilder = new MultiSplitDecisionTreeModelBuilder(
                 new InformationGainRatioCalculator<string>(shannonEntropy, shannonEntropy as ICategoricalImpurityMeasure<string>),
-                new MultiValueSplitSelectorForCategoricalOutcome<string>(new MultiValueDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
+                new MultiValueSplitSelectorForCategoricalOutcome(new MultiValueDiscreteDataSplitter(), new BinaryNumericDataSplitter(), new ClassBreakpointsNumericSplitFinder()),
                 new CategoricalDecisionTreeLeafBuilder());
         }
 
         [Test]
-        public void DiscreteClassificationNumericFeaturesBinarySplitsIrisDataCrossValidation()
+        public void DiscreteClassification_NumericFeatures_BinarySplits_IrisData_CrossValidation()
         {
             // Given
             var randomizer = new Random();
@@ -59,12 +62,13 @@
         }
 
         [Test]
-        public void DiscreteClassificationNumericFeaturesMultiValuesSplitsAdultCensusDataCrossValidation()
+        public void DiscreteClassification_NumericFeatures_MultiValuesSplits_AdultCensusData_CrossValidation()
         {
             // TODO: add support for numeric attributes!!!
             // Given
             var splitter = new CrossValidator<string>();
             var testData = TestDataBuilder.ReadAdultCensusDataFrame();
+
             var predictor = new DecisionTreePredictor<string>();
 
             // When
@@ -84,29 +88,91 @@
         }
 
         [Test]
-        public void DiscreteClassificationCategoricalFeaturesMultiValuesSplitsCongressVotingDataCrossValidation()
+        public void DiscreteClassification_CategoricalFeatures_MultiValuesSplits_CongressVotingData_CrossValidation()
         {
-            // TODO: add support for numeric attributes!!!
             // Given
-            var randomizer = new Random();
-            var splitter = new CrossValidator<string>();
-            var testData = TestDataBuilder.ReadCongressData();
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<string>(randomizer);
+            var testData = TestDataBuilder.ReadCongressData() as DataFrame;
+
             var predictor = new DecisionTreePredictor<string>();
 
             // When
-            var accuracies = splitter.CrossValidate(
-                this.multiValueTreeBuilder,
-                null,
-                predictor,
-                new ConfusionMatrixBuilder<string>(),
-                testData,
-                "party",
-                0.7,
-                10);
+            var accuracies = splitter.CrossValidate(modelBuilder: this.multiValueTreeBuilder, modelBuilderParams: null, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
             Assert.IsTrue(averageAccuracy >= 0.9);
         }
+
+        [Test]
+        public void DiscreteClassification_CategoricalFeatures_BinarySplits_ConvressVotingData_CrossValidation()
+        {
+            // Given
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<string>(randomizer);
+            var testData = TestDataBuilder.ReadCongressData() as DataFrame;
+
+            var predictor = new DecisionTreePredictor<string>();
+
+            // When
+            var accuracies = splitter.CrossValidate(modelBuilder: binaryTreeBuilder, modelBuilderParams: null, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averageAccuracy >= 0.9);
+        }
+
+        [Test]
+        public void Mushroom_MultiSplit()
+        {
+            // Given
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<string>(randomizer);
+            var testData = TestDataBuilder.ReadMushroomDataWithCategoricalAttributes();
+
+            var predictor = new DecisionTreePredictor<string>();
+
+            // When
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: multiValueTreeBuilder, 
+                modelBuilderParams: null, 
+                predictor: predictor, 
+                qualityMeasure: new ConfusionMatrixBuilder<string>(), 
+                dataFrame: testData, 
+                dependentFeatureName: "type", 
+                percetnagOfTrainData: 0.7, 
+                folds: 2);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averageAccuracy >= 0.9);
+        }
+
+        [Test]
+        public void Mushroom_BinarySplit()
+        {
+            // Given
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<string>(randomizer);
+            var testData = TestDataBuilder.ReadMushroomDataWithCategoricalAttributes();
+
+            var predictor = new DecisionTreePredictor<string>();
+
+            // When
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: binaryTreeBuilder,
+                modelBuilderParams: null,
+                predictor: predictor,
+                qualityMeasure: new ConfusionMatrixBuilder<string>(),
+                dataFrame: testData,
+                dependentFeatureName: "type",
+                percetnagOfTrainData: 0.7,
+                folds: 2);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.AreEqual(averageAccuracy, 0.9);
+            Assert.IsTrue(averageAccuracy >= 0.9);
     }
 }

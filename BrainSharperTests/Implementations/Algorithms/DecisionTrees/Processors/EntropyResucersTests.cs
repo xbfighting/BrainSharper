@@ -43,13 +43,13 @@
 
             var splitResults = new List<ISplittedData>
                                    {
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "sunny"), 
                                            subset1), 
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "overcast"), 
                                            subset2), 
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "rainy"), 
                                            subset3)
                                    };
@@ -77,13 +77,13 @@
 
             var splitResults = new List<ISplittedData>
                                    {
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "sunny"), 
                                            subset1), 
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "overcast"), 
                                            subset2), 
-                                       new SplittedData<string>(
+                                       new SplittedData(
                                            new DecisionLink(0, 0, "rainy"), 
                                            subset3)
                                    };

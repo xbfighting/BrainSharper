@@ -12,33 +12,37 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
     public class BestSplitSelectorsTests
     {
         private readonly IBinaryNumericDataSplitter _binaryNumericDataSplitter;
-        private readonly IDataSplitter<string> _multiValueCategoricalDataSplitter; 
+        private readonly IDataSplitter _multiValueCategoricalDataSplitter;
 
         private readonly IBinaryBestSplitSelector _binaryBestSplitSelector;
-        private readonly IBestSplitSelector _multiValueBestSplitSelector; 
+        private readonly IBestSplitSelector _multiValueBestSplitSelector;
 
+        private readonly IBinaryNumericAttributeBestSplitPointSelector _binaryNumericBestSplitPointSelector;
 
         private readonly ISplitQualityChecker _categoricalBinarySplitQualityChecker;
         private readonly ISplitQualityChecker _categoricalMultiValueSplitQualityChecker;
 
+        
+
         public BestSplitSelectorsTests()
         {
             ICategoricalImpurityMeasure<string> shannonEntropy = new ShannonEntropy<string>();
-            IBinaryDataSplitter<string> binaryDataSplitter = new BinaryDiscreteDataSplitter<string>();
+            IBinaryDataSplitter binaryDataSplitter = new BinaryDiscreteDataSplitter();
             _binaryNumericDataSplitter = new BinaryNumericDataSplitter();
-            _binaryBestSplitSelector = new BinarySplitSelector<string>(binaryDataSplitter, _binaryNumericDataSplitter);
+            _binaryNumericBestSplitPointSelector = new ClassBreakpointsNumericSplitFinder();
+            _binaryBestSplitSelector = new BinarySplitSelectorForCategoricalOutcome(binaryDataSplitter, _binaryNumericDataSplitter, _binaryNumericBestSplitPointSelector);
             _categoricalBinarySplitQualityChecker = new InformationGainCalculator<string>(shannonEntropy, shannonEntropy);
             _categoricalMultiValueSplitQualityChecker = new InformationGainCalculator<string>(shannonEntropy, shannonEntropy);
-            _multiValueCategoricalDataSplitter = new MultiValueDiscreteDataSplitter<string>();
-            _multiValueBestSplitSelector = new MultiValueSplitSelectorForCategoricalOutcome<string>(_multiValueCategoricalDataSplitter, _binaryNumericDataSplitter);
+            _multiValueCategoricalDataSplitter = new MultiValueDiscreteDataSplitter();
+            _multiValueBestSplitSelector = new MultiValueSplitSelectorForCategoricalOutcome(_multiValueCategoricalDataSplitter, _binaryNumericDataSplitter, _binaryNumericBestSplitPointSelector);
         }
 
         [Test]
-        public void SelectBestSplit_BinarySplit_CategoricalAttributes_CategoricalOutput()
+        public void SelectBestSplitBinarySplitCategoricalAttributesCategoricalOutput()
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
-            
+
             // When
             var bestSplit = _binaryBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
 
@@ -47,18 +51,18 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         }
 
         [Test]
-        public void SelectBestSplit_BinarySplit_NumericAttributes_CategoricalOutput()
+        public void SelectBestSplitBinarySplitNumericAttributesCategoricalOutput()
         {
             // Given
-            var testData = TestDataBuilder.ReadWeatherDataWithMixedAttributes();
-            var subject = new BinarySplitSelector<object>(new BinaryDiscreteDataSplitter<object>(), _binaryNumericDataSplitter);
+            var testData = TestDataBuilder.ReadWeatherDataWithMixedAttributes().GetSubsetByColumns(new[] { "Temperature", "Humidity", "Windy", "Play" });
+            var subject = new BinarySplitSelectorForCategoricalOutcome(new BinaryDiscreteDataSplitter(), _binaryNumericDataSplitter, _binaryNumericBestSplitPointSelector);
 
             // When
             var bestSplit = subject.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
         }
 
         [Test]
-        public void SelectBestSplit_MultiValue_CategoricalAtributes_CategoricalOutput()
+        public void SelectBestSplitMultiValueCategoricalAtributesCategoricalOutput()
         {
             // Given
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();

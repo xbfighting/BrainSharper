@@ -1,6 +1,8 @@
 ﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
+    using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -9,6 +11,8 @@
     using Abstract.Algorithms.DecisionTrees.Processors;
     using Abstract.Algorithms.Infrastructure;
     using Abstract.Data;
+
+    using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 
     using General.Utils;
 
@@ -34,7 +38,8 @@
             {
                 return this.BuildLeaf(dataFrame, dependentFeatureName);
             }
-            return this.BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
+            var node = BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
+            return node;
         }
 
         public IPredictionModel BuildModel(
@@ -62,7 +67,7 @@
         {
             if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1)
             {
-                return this.BuildLeaf(dataFrame, dependentFeatureName);
+                return BuildLeaf(dataFrame, dependentFeatureName);
             }
 
             // TODO: later on add additional params indicating which features were already used
@@ -70,6 +75,11 @@
                 dataFrame,
                 dependentFeatureName,
                 SplitQualityChecker);
+            if (SplitIsEmpty(splitResult))
+            {
+                return BuildLeaf(dataFrame, dependentFeatureName);
+            }
+
             var children = new ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode>();
             if (isFirstSplit)
             {
@@ -77,34 +87,17 @@
                     splitResult.SplittedDataSets,
                     splitData =>
                     {
-                        this.ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
+                        AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
                     });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    this.ProcessSplitResult(dataFrame, dependentFeatureName, additionalParams, splitData, children);
+                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
                 }
             }
             return BuildConcreteDecisionTreeNode(splitResult, children);
-        }
-
-        protected void ProcessSplitResult(
-          IDataFrame dataFrame,
-          string dependentFeatureName,
-          IModelBuilderParams additionalParams,
-          ISplittedData splitData,
-          ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
-        {
-            if (splitData.SplittedDataFrame.RowCount == 0)
-            {
-                this.AddLeafFromSplit(dependentFeatureName, additionalParams, splitData, dataFrame, children);
-            }
-            else
-            {
-                this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
-            }
         }
 
         protected virtual void AddChildFromSplit(
@@ -136,6 +129,13 @@
         protected IDecisionTreeLeaf BuildLeaf(IDataFrame dataFrame, string dependentFeatureName)
         {
             return LeafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
+        }
+
+        private static bool SplitIsEmpty(ISplittingResult splitResult)
+        {
+            return splitResult == null
+                   || splitResult.SplittedDataSets.Any(
+                       splitSet => splitSet?.SplittedDataFrame == null || splitSet.SplittedDataFrame.RowCount == 0);
         }
     }
 }

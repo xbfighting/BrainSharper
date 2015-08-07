@@ -1,7 +1,7 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees
 {
-    public interface IBinarySplittingParams<TSplittingValueType> : ISplittingParams
+    public interface IBinarySplittingParams : ISplittingParams
     {
-        TSplittingValueType SplitOnValue { get; } 
+        object SplitOnValue { get; } 
     }
 }

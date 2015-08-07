@@ -3,7 +3,7 @@
     using Abstract.Algorithms.DecisionTrees.DataStructures;
     using Abstract.Data;
 
-    public class SplittedData<TTestResult> : ISplittedData
+    public class SplittedData : ISplittedData
     {
         public SplittedData(IDecisionTreeLink splitLink, IDataFrame splittedDataFrame)
         {

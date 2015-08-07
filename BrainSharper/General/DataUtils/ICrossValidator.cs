@@ -24,6 +24,13 @@
 
     public class CrossValidator<TPredictionResult> : ICrossValidator<TPredictionResult>
     {
+        private readonly Random _randomizer;
+
+        public CrossValidator(Random randomizer = null)
+        {
+            _randomizer = randomizer;
+        }
+
         public IList<IDataQualityReport<TPredictionResult>> CrossValidate(
             IPredictionModelBuilder modelBuilder, 
             IModelBuilderParams modelBuilderParams, 
@@ -36,7 +43,7 @@
         {
             var trainingDataCount = (int)Math.Round(percetnagOfTrainData * dataFrame.RowCount);
             var testDataCount = dataFrame.RowCount - trainingDataCount;
-            var shuffledAllIndices = dataFrame.RowIndices.Shuffle();
+            var shuffledAllIndices = dataFrame.RowIndices.Shuffle(_randomizer);
             var maxWindowsCount = dataFrame.RowCount / testDataCount;
 
             var iterationAccuracies = new List<IDataQualityReport<TPredictionResult>>();

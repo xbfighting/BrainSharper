@@ -22,9 +22,12 @@
         public MultiValueDecisionTreeModelBuilderTests()
         {
              this.categoricalSubject = new MultiSplitDecisionTreeModelBuilder(
-            new InformationGainRatioCalculator<string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
-            new MultiValueSplitSelectorForCategoricalOutcome<string>(new MultiValueDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
-            new CategoricalDecisionTreeLeafBuilder());
+                new InformationGainRatioCalculator<string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
+                new MultiValueSplitSelectorForCategoricalOutcome(
+                    new MultiValueDiscreteDataSplitter(), 
+                    new BinaryNumericDataSplitter(),
+                    new ClassBreakpointsNumericSplitFinder()),
+                new CategoricalDecisionTreeLeafBuilder());
         }
 
         [Test]

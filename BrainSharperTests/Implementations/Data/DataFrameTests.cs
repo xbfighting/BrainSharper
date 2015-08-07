@@ -1,82 +1,88 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using BrainSharper.Abstract.Data;
-using BrainSharper.Implementations.Data;
-using BrainSharperTests.TestUtils;
-using MathNet.Numerics.LinearAlgebra;
-using NUnit.Framework;
-
-namespace BrainSharperTests.Implementations.Data
+﻿namespace BrainSharperTests.Implementations.Data
 {
+    #region
+
+    using System;
+    using System.Data;
+    using System.Linq;
+
+    using BrainSharper.Abstract.Data;
+    using BrainSharper.Implementations.Data;
+
+    using BrainSharperTests.TestUtils;
+
+    using MathNet.Numerics.LinearAlgebra;
+
+    using NUnit.Framework;
+
+    #endregion
+
     [TestFixture]
     public class DataFrameTests
     {
-        private IDataFrame _subject;
-
         [SetUp]
         public void SetUpSubject()
         {
             _subject = TestDataBuilder.BuildSmallDataFrameMixedDataTypes();
         }
 
+        private IDataFrame _subject;
+
         [Test]
-        public void Test_GetRowVector_StronglyTypedVersion_UseRowIndex()
+        public void GetRowsWhere()
         {
             // Given
-            var expectedVector = new DataVector<string>(
-                new[] { "a1.1", "1", "b1.2", "2" },
-                _subject.ColumnNames
-                );
+            var expectedMatrixMeetingCriteria = Matrix<double>.Build.DenseOfArray(new double[,] { { 9, 10, 11, 12 } });
+
+            var expectedMatrixNotMeetingCriteria =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } });
+
+            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+            Predicate<DataRow> rowFilter = row => Convert.ToDouble(row[0]) > 5;
 
             // When
-            var actualVector = _subject.GetRowVector<string>(0);
+            var filteredRows = baseDataFrame.GetRowsIndicesWhere(rowFilter);
+            var matrixMeetingCriteria =
+                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsMeetingCriteria).GetAsMatrix();
+            var matrixNotMeetingCriteria =
+                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsNotMeetingCriteria).GetAsMatrix();
 
             // Then
-            Assert.AreEqual(expectedVector, actualVector);
+            Assert.IsTrue(expectedMatrixMeetingCriteria.Equals(matrixMeetingCriteria));
+            Assert.IsTrue(expectedMatrixNotMeetingCriteria.Equals(matrixNotMeetingCriteria));
         }
 
         [Test]
-        public void Test_DataFrameFrom_Matrix_NoColumnNames()
+        public void GetValuesForRows()
         {
             // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-           {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-           });
+            var baseDataFrame = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
+            var expectedValues = new[] { "Yes", "Yes", "No" };
+            var queryRows = new[] { 11, 12, 13 };
 
             // When
-            var dataTableFromMatrix = new DataFrame(expectedMatrix);
-            var actualMatrix = dataTableFromMatrix.GetAsMatrix();
+            var actualValues = baseDataFrame.GetValuesForRows<string>(queryRows, "Play");
 
             // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
+            CollectionAssert.AreEquivalent(expectedValues, actualValues);
         }
 
         [Test]
         public void Test_DataFrameFrom_Matrix_CustomColumnNames()
         {
             // Given
-            var baseMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-           {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-           });
+            var baseMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
             var columnNames = new[] { "Col1", "Col2", "Col3", "Col4" };
             var dataTable = new DataTable("some")
-            {
-                Columns = { "Col1", "Col2", "Col3", "Col4" },
-                Rows =
-                {
-                    { 1, 2, 3, 4 },
-                    { 5, 6, 666, 8 },
-                    { 9, 10, 11, 12 },
-                }
-            };
+                                {
+                                    Columns = {
+                                                 "Col1", "Col2", "Col3", "Col4" 
+                                              }, 
+                                    Rows = {
+                                              { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } 
+                                           }
+                                };
             var expectedDataFrame = new DataFrame(dataTable);
 
             // When
@@ -87,48 +93,44 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
-        public void Test_GetRowVector_StronglyTypedVersion_UseRowName()
+        public void Test_DataFrameFrom_Matrix_NoColumnNames()
         {
             // Given
-            var expectedVector = new DataVector<string>(
-                new[] { "a1.1", "1", "b1.2", "2" },
-                _subject.ColumnNames
-                );
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
 
             // When
-            var actualVector = _subject.GetRowVector<string>(100, true);
+            var dataTableFromMatrix = new DataFrame(expectedMatrix);
+            var actualMatrix = dataTableFromMatrix.GetAsMatrix();
 
             // Then
-            Assert.AreEqual(expectedVector, actualVector);
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
         }
 
         [Test]
-        public void Test_GetRowVector_ObjectBasedVersion_UseRowIndex()
+        public void Test_GetAsMatrix()
         {
             // Given
-            var expectedVector = new DataVector<object>(
-                new object[] { "a1.1", 1, "b1.2", 2 },
-                _subject.ColumnNames
-                );
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 } });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
             // When
-            var actualVector = _subject.GetRowVector(0);
+            var actualMatrix = basicDataFrame.GetAsMatrix();
 
             // Then
-            Assert.AreEqual(expectedVector, actualVector);
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
         }
 
         [Test]
-        public void Test_GetRowVector_ObjectBasedVersion_UseRowName()
+        public void Test_GetColumnVector_ByIndex_ObjectVarsion()
         {
             // Given
-            var expectedVector = new DataVector<object>(
-                new object[] { "a1.1", 1, "b1.2", 2 },
-                _subject.ColumnNames
-                );
+            var expectedVector = new DataVector<object>(new object[] { "a1.1", "a2.1", "a3.1" }, "C1");
 
             // When
-            var actualVector = _subject.GetRowVector(100, true);
+            var actualVector = _subject.GetColumnVector<object>(0);
 
             // Then
             Assert.AreEqual(expectedVector, actualVector);
@@ -148,32 +150,6 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
-        public void Test_GetColumnVector_ByName_StronglyTypedVarsion()
-        {
-            // Given
-            var expectedVector = new DataVector<string>(new[] { "a1.1", "a2.1", "a3.1" }, "Col1");
-
-            // When
-            var actualVector = _subject.GetColumnVector<string>("Col1");
-
-            // Then
-            Assert.IsTrue(expectedVector.Equals(actualVector));
-        }
-
-        [Test]
-        public void Test_GetColumnVector_ByIndex_ObjectVarsion()
-        {
-            // Given
-            var expectedVector = new DataVector<object>(new object[] { "a1.1", "a2.1", "a3.1" }, "C1");
-
-            // When
-            var actualVector = _subject.GetColumnVector<object>(0);
-
-            // Then
-            Assert.AreEqual(expectedVector, actualVector);
-        }
-
-        [Test]
         public void Test_GetColumnVector_ByName_ObjectVarsion()
         {
             // Given
@@ -181,6 +157,19 @@ namespace BrainSharperTests.Implementations.Data
 
             // When
             var actualVector = _subject.GetColumnVector<object>("Col1");
+
+            // Then
+            Assert.IsTrue(expectedVector.Equals(actualVector));
+        }
+
+        [Test]
+        public void Test_GetColumnVector_ByName_StronglyTypedVarsion()
+        {
+            // Given
+            var expectedVector = new DataVector<string>(new[] { "a1.1", "a2.1", "a3.1" }, "Col1");
+
+            // When
+            var actualVector = _subject.GetColumnVector<string>("Col1");
 
             // Then
             Assert.IsTrue(expectedVector.Equals(actualVector));
@@ -241,23 +230,75 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
+        public void Test_GetRowVector_ObjectBasedVersion_UseRowIndex()
+        {
+            // Given
+            var expectedVector = new DataVector<object>(new object[] { "a1.1", 1, "b1.2", 2 }, _subject.ColumnNames);
+
+            // When
+            var actualVector = _subject.GetRowVector(0);
+
+            // Then
+            Assert.AreEqual(expectedVector, actualVector);
+        }
+
+        [Test]
+        public void Test_GetRowVector_ObjectBasedVersion_UseRowName()
+        {
+            // Given
+            var expectedVector = new DataVector<object>(new object[] { "a1.1", 1, "b1.2", 2 }, _subject.ColumnNames);
+
+            // When
+            var actualVector = _subject.GetRowVector(100, true);
+
+            // Then
+            Assert.AreEqual(expectedVector, actualVector);
+        }
+
+        [Test]
+        public void Test_GetRowVector_StronglyTypedVersion_UseRowIndex()
+        {
+            // Given
+            var expectedVector = new DataVector<string>(new[] { "a1.1", "1", "b1.2", "2" }, _subject.ColumnNames);
+
+            // When
+            var actualVector = _subject.GetRowVector<string>(0);
+
+            // Then
+            Assert.AreEqual(expectedVector, actualVector);
+        }
+
+        [Test]
+        public void Test_GetRowVector_StronglyTypedVersion_UseRowName()
+        {
+            // Given
+            var expectedVector = new DataVector<string>(new[] { "a1.1", "1", "b1.2", "2" }, _subject.ColumnNames);
+
+            // When
+            var actualVector = _subject.GetRowVector<string>(100, true);
+
+            // Then
+            Assert.AreEqual(expectedVector, actualVector);
+        }
+
+        [Test]
         public void Test_GetSubset_ByColumns_UsingColumnIndices()
         {
             // Given
-            var newDataTable = new DataTable()
-            {
-                Columns =
-                {
-                    new DataColumn("Col1", typeof (string)),
-                    new DataColumn("Col3", typeof (string))
-                },
-                Rows =
-                {
-                    new object[] {"a1.1", "b1.2"},
-                    new object[] {"a2.1", "b2.2"},
-                    new object[] {"a3.1", "b3.2"},
-                }
-            };
+            var newDataTable = new DataTable
+                                   {
+                                       Columns =
+                                           {
+                                               new DataColumn("Col1", typeof(string)), 
+                                               new DataColumn("Col3", typeof(string))
+                                           }, 
+                                       Rows =
+                                           {
+                                               new object[] { "a1.1", "b1.2" }, 
+                                               new object[] { "a2.1", "b2.2" }, 
+                                               new object[] { "a3.1", "b3.2" }
+                                           }
+                                   };
             var expectedDataFrame = new DataFrame(newDataTable, new[] { 100, 101, 102, 103 });
 
             // When
@@ -271,23 +312,23 @@ namespace BrainSharperTests.Implementations.Data
         public void Test_GetSubset_ByColumns_UsingColumnNames()
         {
             var vec = new DataVector<object>(new object[] { "aa", 50, "bb" }, new[] { "f1", "f2", "f3" });
-            vec.MemberwiseSet((string name, object val) => name == "f1" ? name.ToString().ToUpper() : name.ToUpper());
+            vec.MemberwiseSet((string name, object val) => name == "f1" ? name.ToUpper() : name.ToUpper());
 
             // Given
-            var newDataTable = new DataTable()
-            {
-                Columns =
-                {
-                    new DataColumn("Col1", typeof (string)),
-                    new DataColumn("Col3", typeof (string))
-                },
-                Rows =
-                {
-                    new object[] {"a1.1", "b1.2"},
-                    new object[] {"a2.1", "b2.2"},
-                    new object[] {"a3.1", "b3.2"},
-                }
-            };
+            var newDataTable = new DataTable
+                                   {
+                                       Columns =
+                                           {
+                                               new DataColumn("Col1", typeof(string)), 
+                                               new DataColumn("Col3", typeof(string))
+                                           }, 
+                                       Rows =
+                                           {
+                                               new object[] { "a1.1", "b1.2" }, 
+                                               new object[] { "a2.1", "b2.2" }, 
+                                               new object[] { "a3.1", "b3.2" }
+                                           }
+                                   };
             var expectedDataFrame = new DataFrame(newDataTable, new[] { 100, 101, 102 });
 
             // When
@@ -298,24 +339,40 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
+        public void Test_GetSubset_BySqlQuery()
+        {
+            // Given
+            var subject = TestDataBuilder.ReadWeatherDataWithMixedAttributes();
+            var query = "Outlook = 'Sunny' OR Temperature < 20";
+            var expectedDataFrame = subject.GetSubsetByRows(new[] { 0, 1, 4, 5, 6, 7, 8, 10 });
+            expectedDataFrame.RowIndices = Enumerable.Range(0, expectedDataFrame.RowCount).ToList();
+
+            // When
+            var actualDataFrame = subject.GetSubsetByQuery(query);
+
+            // Then
+            Assert.IsTrue(expectedDataFrame.Equals(actualDataFrame));
+        }
+
+        [Test]
         public void Test_GetSubset_ByRows_UsingRowIndices()
         {
             // Given
-            var newDataTable = new DataTable()
-            {
-                Columns =
-                {
-                    new DataColumn("Col1", typeof (string)),
-                    new DataColumn("Col2", typeof (int)),
-                    new DataColumn("Col3", typeof (string)),
-                    new DataColumn("Col4", typeof (int))
-                },
-                Rows =
-                {
-                    new object []{ "a1.1", 1, "b1.2", 2 },
-                    new object []{ "a3.1", 5, "b3.2", 6 }
-                }
-            };
+            var newDataTable = new DataTable
+                                   {
+                                       Columns =
+                                           {
+                                               new DataColumn("Col1", typeof(string)), 
+                                               new DataColumn("Col2", typeof(int)), 
+                                               new DataColumn("Col3", typeof(string)), 
+                                               new DataColumn("Col4", typeof(int))
+                                           }, 
+                                       Rows =
+                                           {
+                                               new object[] { "a1.1", 1, "b1.2", 2 }, 
+                                               new object[] { "a3.1", 5, "b3.2", 6 }
+                                           }
+                                   };
             var expectedDataFrame = new DataFrame(newDataTable, new[] { 100, 102 });
 
             // When
@@ -326,104 +383,19 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
-        public void Test_GetAsMatrix()
+        public void Test_ProcessMultiple_WithRowIndex_ColumnIndex()
         {
             // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-            {
-                { 1, 2, 3, 4 },
-                { 5, 6, 7, 8 },
-                { 9, 10, 11, 12 },
-            });
+            DataFrameRowIndexColumnIndexOperator<double> rowOperator =
+                (rowIdx, colIdx, currentVal) => colIdx == 0 ? Math.Pow(currentVal, 2) : currentVal;
 
-            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 25, 6, 7, 8 }, { 81, 10, 11, 12 } });
 
-            // When
-            var actualMatrix = basicDataFrame.GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_Set_UsingRowIndex_ColumnIndex()
-        {
-            // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-            {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-            });
-
-            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
             // When
-            var actualDataFrame = basicDataFrame.Set(666, 1, 2);
-            var actualMatrix = actualDataFrame.GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_Set_UsingRowName_ColumnIndex()
-        {
-            // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-            {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-            });
-
-            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-
-            // When
-            var actualDataFrame = basicDataFrame.Set(666, 101, 2, true);
-            var actualMatrix = actualDataFrame.GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_Set_UsingRowIndex_ColumnName()
-        {
-            // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-            {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-            });
-
-            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-
-            // When
-            var actualDataFrame = basicDataFrame.Set(666, 1, "Col3");
-            var actualMatrix = actualDataFrame.GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_Set_UsingRowName_ColumnName()
-        {
-            // Given
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-            {
-                { 1, 2, 3, 4 },
-                { 5, 6, 666, 8 },
-                { 9, 10, 11, 12 },
-            });
-
-            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-
-            // When
-            var actualDataFrame = basicDataFrame.Set(666, 101, "Col3", true);
-            var actualMatrix = actualDataFrame.GetAsMatrix();
+            var actualMatrix = baseDataFrame.ProcessMultiple(rowOperator).GetAsMatrix();
 
             // Then
             Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
@@ -434,71 +406,17 @@ namespace BrainSharperTests.Implementations.Data
         {
             // Given
             DataFrameRowIndexColumnNameOperator<double> rowOperator = (rowIdx, colName, currentVal) =>
-            {
-                if (colName == "Col1")
                 {
-                    return Math.Pow(currentVal, 2);
-                }
-                return currentVal;
-            };
+                    if (colName == "Col1")
+                    {
+                        return Math.Pow(currentVal, 2);
+                    }
 
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-               {
-                    { 1, 2, 3, 4 },
-                    { 25, 6, 7, 8 },
-                    { 81, 10, 11, 12 },
-               });
+                    return currentVal;
+                };
 
-            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-
-            // When
-            var actualMatrix = baseDataFrame.ProcessMultiple(rowOperator).GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_ProcessMultiple_WithRowIndex_ColumnIndex()
-        {
-            // Given
-            DataFrameRowIndexColumnIndexOperator<double> rowOperator = (rowIdx, colIdx, currentVal) => colIdx == 0 ? Math.Pow(currentVal, 2) : currentVal;
-
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-               {
-                    { 1, 2, 3, 4 },
-                    { 25, 6, 7, 8 },
-                    { 81, 10, 11, 12 },
-               });
-
-            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-
-            // When
-            var actualMatrix = baseDataFrame.ProcessMultiple(rowOperator).GetAsMatrix();
-
-            // Then
-            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
-        }
-
-        [Test]
-        public void Test_ProcessMultiple_WithRowName_ColumnName()
-        {
-            // Given
-            DataFrameRowNameColumnNameOperator<double> rowOperator = (rowName, colName, currentVal) =>
-            {
-                if (colName == "Col1" && rowName != 101)
-                {
-                    return Math.Pow(currentVal, 2);
-                }
-                return currentVal;
-            };
-
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-               {
-                    { 1, 2, 3, 4 },
-                    { 5, 6, 7, 8 },
-                    { 81, 10, 11, 12 },
-               });
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 25, 6, 7, 8 }, { 81, 10, 11, 12 } });
 
             var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
@@ -514,20 +432,17 @@ namespace BrainSharperTests.Implementations.Data
         {
             // Given
             DataFrameRowNameColumnIndexOperator<double> rowOperator = (rowName, colIdx, currentVal) =>
-            {
-                if (colIdx == 0 && rowName != 101)
                 {
-                    return Math.Pow(currentVal, 2);
-                }
-                return currentVal;
-            };
+                    if (colIdx == 0 && rowName != 101)
+                    {
+                        return Math.Pow(currentVal, 2);
+                    }
 
-            var expectedMatrix = Matrix<double>.Build.DenseOfArray(new double[,]
-               {
-                    { 1, 2, 3, 4 },
-                    { 5, 6, 7, 8 },
-                    { 81, 10, 11, 12 },
-               });
+                    return currentVal;
+                };
+
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 81, 10, 11, 12 } });
 
             var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
@@ -539,48 +454,97 @@ namespace BrainSharperTests.Implementations.Data
         }
 
         [Test]
-        public void GetRowsWhere()
+        public void Test_ProcessMultiple_WithRowName_ColumnName()
         {
             // Given
-            var expectedMatrixMeetingCriteria = Matrix<double>.Build.DenseOfArray(new double[,]
-              {
-                  { 9, 10, 11, 12 },
-              });
+            DataFrameRowNameColumnNameOperator<double> rowOperator = (rowName, colName, currentVal) =>
+                {
+                    if (colName == "Col1" && rowName != 101)
+                    {
+                        return Math.Pow(currentVal, 2);
+                    }
 
-            var expectedMatrixNotMeetingCriteria = Matrix<double>.Build.DenseOfArray(new double[,]
-              {
-                    { 1, 2, 3, 4 },
-                    { 5, 6, 7, 8 }
-              });
+                    return currentVal;
+                };
+
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 81, 10, 11, 12 } });
 
             var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
-            Predicate<DataRow> rowFilter = row => Convert.ToDouble(row[0]) > 5;
 
             // When
-            var filteredRows = baseDataFrame.GetRowsIndicesWhere(rowFilter);
-            var matrixMeetingCriteria =
-                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsMeetingCriteria).GetAsMatrix();
-            var matrixNotMeetingCriteria =
-                baseDataFrame.GetSubsetByRows(filteredRows.IndicesOfRowsNotMeetingCriteria).GetAsMatrix();
+            var actualMatrix = baseDataFrame.ProcessMultiple(rowOperator).GetAsMatrix();
 
             // Then
-            Assert.IsTrue(expectedMatrixMeetingCriteria.Equals(matrixMeetingCriteria));
-            Assert.IsTrue(expectedMatrixNotMeetingCriteria.Equals(matrixNotMeetingCriteria));
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
         }
 
         [Test]
-        public void GetValuesForRows()
+        public void Test_Set_UsingRowIndex_ColumnIndex()
         {
             // Given
-            var baseDataFrame = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
-            var expectedValues = new[] { "Yes", "Yes", "No" };
-            var queryRows = new[] { 11, 12, 13 }; 
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
             // When
-            var actualValues = baseDataFrame.GetValuesForRows<string>(queryRows, "Play");
+            var actualDataFrame = basicDataFrame.Set(666, 1, 2);
+            var actualMatrix = actualDataFrame.GetAsMatrix();
 
             // Then
-            CollectionAssert.AreEquivalent(expectedValues, actualValues);
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
+        }
+
+        [Test]
+        public void Test_Set_UsingRowIndex_ColumnName()
+        {
+            // Given
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+
+            // When
+            var actualDataFrame = basicDataFrame.Set(666, 1, "Col3");
+            var actualMatrix = actualDataFrame.GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
+        }
+
+        [Test]
+        public void Test_Set_UsingRowName_ColumnIndex()
+        {
+            // Given
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+
+            // When
+            var actualDataFrame = basicDataFrame.Set(666, 101, 2, true);
+            var actualMatrix = actualDataFrame.GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
+        }
+
+        [Test]
+        public void Test_Set_UsingRowName_ColumnName()
+        {
+            // Given
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 666, 8 }, { 9, 10, 11, 12 } });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+
+            // When
+            var actualDataFrame = basicDataFrame.Set(666, 101, "Col3", true);
+            var actualMatrix = actualDataFrame.GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
         }
     }
 }

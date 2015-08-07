@@ -42,7 +42,7 @@
                     var subsetPercentage = dataSubset.RowCount / totalRowsCount;
                     rangeEnd = double.PositiveInfinity;
                     var splitLink = new MultiValueNumericRangeLink(subsetPercentage, dataSubset.RowCount, halfWayValue, rangeStart, rangeEnd);
-                    numericRangeSplits.Add(new SplittedData<double>(splitLink, dataSubset));
+                    numericRangeSplits.Add(new SplittedData(splitLink, dataSubset));
                     rangeStart = halfWayValue;
                     previousClass = currentClass;
                     gatheredRows.Clear();
@@ -64,7 +64,7 @@
                 var dataSubset = dataToSplit.GetSubsetByRows(gatheredRows);
                 var subsetPercentage = dataSubset.RowCount / totalRowsCount;
                 var splitLink = new MultiValueNumericRangeLink(subsetPercentage, dataSubset.RowCount, halfWayValue, rangeStart, rangeEnd);
-                numericRangeSplits.Add(new SplittedData<double>(splitLink, dataSubset));
+                numericRangeSplits.Add(new SplittedData(splitLink, dataSubset));
             }
 
             return numericRangeSplits;

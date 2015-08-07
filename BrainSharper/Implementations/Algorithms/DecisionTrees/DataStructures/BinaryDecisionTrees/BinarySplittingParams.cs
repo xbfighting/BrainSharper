@@ -3,35 +3,35 @@
     using System.Collections.Generic;
     using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
-    public class BinarySplittingParams<T> : SplittingParams<T>, IBinarySplittingParams<T>
+    public class BinarySplittingParams : SplittingParams, IBinarySplittingParams
     {
-        public BinarySplittingParams(string splitOnFeature, T splitOnValue, string dependentFeatureName)
+        public BinarySplittingParams(string splitOnFeature, object splitOnValue, string dependentFeatureName)
             : base(splitOnFeature, dependentFeatureName)
         {
-            this.SplitOnValue = splitOnValue;
+            SplitOnValue = splitOnValue;
         }
 
-        public T SplitOnValue { get; }
+        public object SplitOnValue { get; }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return this.Equals((BinarySplittingParams<T>) obj);
+            return this.Equals((BinarySplittingParams) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((this.SplitOnFeature?.GetHashCode() ?? 0)*397) ^ EqualityComparer<T>.Default.GetHashCode(this.SplitOnValue);
+                return ((this.SplitOnFeature?.GetHashCode() ?? 0) * 397) ^ SplitOnValue.GetHashCode();
             }
         }
 
-        protected bool Equals(BinarySplittingParams<T> other)
+        protected bool Equals(BinarySplittingParams other)
         {
-            return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && EqualityComparer<T>.Default.Equals(this.SplitOnValue, other.SplitOnValue);
+            return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && Equals(SplitOnValue, other.SplitOnValue);
         }
     }
 }

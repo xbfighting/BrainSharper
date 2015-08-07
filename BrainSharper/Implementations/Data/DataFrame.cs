@@ -203,6 +203,14 @@
             return new DataFrame(newTable, RowIndices.Where((rowName, rowIdx) => rowIndices.Contains(rowIdx)).ToList());
         }
 
+        public IDataFrame GetSubsetByQuery(string query)
+        {
+            var view = InnerTable.DefaultView;
+            view.RowFilter = query;
+            var newDataTable = view.ToTable();
+            return new DataFrame(newDataTable);
+        }
+
         public IList<TValue> GetValuesForRows<TValue>(IList<int> rowIndices, string columnName, bool useRowName = false)
         {
             var results = new ConcurrentBag<Tuple<int, TValue>>();
@@ -342,6 +350,20 @@
         public Matrix<double> GetAsMatrix()
         {
             return this.numericMatrix.Value;
+        }
+
+        public bool ContentEquals(IDataFrame other)
+        {
+            for (int i = 0; i < RowCount; i++)
+            {
+                var row = GetRowVector(i);
+                var otherRow = other.GetRowVector(i);
+                if (!row.Equals(otherRow))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         #endregion Slicers

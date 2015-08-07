@@ -91,6 +91,33 @@
                 features[5] = CalcualteLinearlyDependentFeatureValue(features);
                 dataTable.Rows.Add(features.Select(val => val as object).ToArray());
             }
+
+            return new DataFrame(dataTable);
+        }
+
+        /// <summary>
+        /// Build fish example taken from the book "Machine learning in action" Harrington P., 1st edition page 40
+        /// </summary>
+        /// <returns>DataFrame</returns>
+        public static IDataFrame BuildTrivialAniamlsExample()
+        {
+            var dataTable = new DataTable()
+                                {
+                                    Columns =
+                                        {
+                                            new DataColumn("can survive without coming to surface"),
+                                            new DataColumn("Has flippers"),
+                                            new DataColumn("Is Fish")
+                                        },
+                                    Rows =
+                                        {
+                                            { "y", "y", "y" },
+                                            { "y", "y", "y" },
+                                            { "y", "n", "n" },
+                                            { "n", "y", "n" },
+                                            { "n", "y", "n" }
+                                        }
+                                };
             return new DataFrame(dataTable);
         }
 
@@ -125,6 +152,11 @@
         public static IDataFrame ReadWeatherDataWithMixedAttributes()
         {
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherDataNumeric.txt", true));
+        }
+
+        public static IDataFrame ReadMushroomDataWithCategoricalAttributes()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Mushroom.txt", true));
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)

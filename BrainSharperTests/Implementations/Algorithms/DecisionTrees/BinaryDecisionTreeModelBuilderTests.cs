@@ -21,7 +21,7 @@
             var dataSet = TestDataBuilder.ReadIrisData();
             var binaryTreeBuilder = new BinaryDecisionTreeModelBuilder(
                 new InformationGainRatioCalculator<string>(this.shannonEntropy, this.shannonEntropy as ICategoricalImpurityMeasure<string>),
-                new BinarySplitSelector<string>(new BinaryDiscreteDataSplitter<string>(), new BinaryNumericDataSplitter()),
+                new BinarySplitSelectorForCategoricalOutcome(new BinaryDiscreteDataSplitter(), new BinaryNumericDataSplitter(), new ClassBreakpointsNumericSplitFinder()),
                 new CategoricalDecisionTreeLeafBuilder());
 
             // When

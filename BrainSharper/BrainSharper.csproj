@@ -67,6 +67,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBestSplitSelector.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryDataSplitter.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericAttributeBestSplitPointSelector.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ILeafBuilder.cs" />
@@ -116,10 +117,12 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictor.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BaseSplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryDiscreteDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryNumericDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinarySplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\CategoricalDecisionTreeLeafBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\ClassBreakpointsNumericSplitFinder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\IBinaryBestSplitSelector.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />

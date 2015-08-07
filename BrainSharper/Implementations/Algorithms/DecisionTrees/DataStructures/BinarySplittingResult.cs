@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
-
-namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
+﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
-    public class BinarySplittingResult : SplittingResult<bool>, IBinarySplittingResult
+    using System.Collections.Generic;
+    using Abstract.Algorithms.DecisionTrees.DataStructures;
+
+    public class BinarySplittingResult : SplittingResult, IBinarySplittingResult
     {
         public BinarySplittingResult(
             bool isSplitNumeric, 

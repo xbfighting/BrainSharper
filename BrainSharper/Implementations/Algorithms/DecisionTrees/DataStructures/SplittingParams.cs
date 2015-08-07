@@ -2,7 +2,7 @@
 {
     using Abstract.Algorithms.DecisionTrees.DataStructures;
 
-    public class SplittingParams<TValue> : ISplittingParams
+    public class SplittingParams : ISplittingParams
     {
         public SplittingParams(string splitOnFeature, string dependentFeatureName)
         {
@@ -27,7 +27,7 @@
             {
                 return false;
             }
-            return this.Equals((SplittingParams<TValue>)obj);
+            return Equals(obj as SplittingParams);
         }
 
         public override int GetHashCode()
@@ -38,7 +38,7 @@
             }
         }
 
-        protected bool Equals(SplittingParams<TValue> other)
+        protected bool Equals(SplittingParams other)
         {
             return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && string.Equals(this.DependentFeatureName, other.DependentFeatureName);
         }

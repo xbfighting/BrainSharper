@@ -11,28 +11,19 @@
     using DataStructures.BinaryDecisionTrees;
 
 
-    public class BinaryDiscreteDataSplitter<T> : IBinaryDataSplitter<T>
+    public class BinaryDiscreteDataSplitter : IBinaryDataSplitter
     {
-        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, IBinarySplittingParams<T> splttingParams)
+        public IList<ISplittedData> SplitData(IDataFrame dataToSplit, IBinarySplittingParams splttingParams)
         {
-            var splittingFeatureName = splttingParams.SplitOnFeature;
-            var splittingFeatureValue = splttingParams.SplitOnValue;
-
-            var rowFilter = BuildSplittingFunction(splittingFeatureName, splittingFeatureValue);
-
-            var filteringResult = dataToSplit.GetRowsIndicesWhere(rowFilter);
-            var rowsMeetingCriteria = filteringResult.IndicesOfRowsMeetingCriteria;
-            var rowsNotMeetingCriteria = filteringResult.IndicesOfRowsNotMeetingCriteria;
-
+            var queries = BuildQueries(splttingParams.SplitOnFeature, splttingParams.SplitOnValue);
             var splitResults = new List<ISplittedData>();
             var totalRowsCount = (double)dataToSplit.RowCount;
 
-            var positiveDataFrame = dataToSplit.GetSubsetByRows(rowsMeetingCriteria);
-            splitResults.Add(new SplittedData<bool>(GetSubsetLink(positiveDataFrame, totalRowsCount, true), positiveDataFrame));
-
-            var negativeDataFrame = dataToSplit.GetSubsetByRows(rowsNotMeetingCriteria);
-            splitResults.Add(new SplittedData<bool>(GetSubsetLink(negativeDataFrame, totalRowsCount, false), negativeDataFrame));
-
+            foreach (var boolAndQuery in queries)
+            {
+                var resultDataFrame = dataToSplit.GetSubsetByQuery(boolAndQuery.Value);
+                splitResults.Add(new SplittedData(GetSubsetLink(resultDataFrame, totalRowsCount, boolAndQuery.Key), resultDataFrame));
+            }
             return splitResults;
         }
 
@@ -40,25 +31,34 @@
             IDataFrame dataToSplit,
             ISplittingParams splttingParams)
         {
-            if (!(splttingParams is IBinarySplittingParams<T>))
+            if (!(splttingParams is IBinarySplittingParams))
             {
                 throw new ArgumentException("Invalid splitting params passed to binary splitter");
             }
-            return SplitData(dataToSplit, (IBinarySplittingParams<T>) splttingParams);
+            return SplitData(dataToSplit, (IBinarySplittingParams) splttingParams);
         }
 
-        protected virtual Predicate<DataRow> BuildSplittingFunction(string splittingFeatureName, T splittingFeatureValue)
+        protected virtual Predicate<DataRow> BuildSplittingFunction(string splittingFeatureName, object splittingFeatureValue)
         {
-            Predicate<DataRow> rowFilter =
-                row => Convert.ChangeType(row[splittingFeatureName], typeof(T))
-                    .Equals(splittingFeatureValue);
+            Predicate<DataRow> rowFilter = row => row[splittingFeatureName].Equals(splittingFeatureValue);
             return rowFilter;
+        }
+
+        protected virtual Dictionary<bool, string> BuildQueries(
+            string splittingFeatureName,
+            object splittingFeatureValue)
+        {
+            return new Dictionary<bool, string>
+                       {
+                           [true] = $"[{splittingFeatureName}] = '{splittingFeatureValue}'",
+                           [false] = $"[{splittingFeatureName}] <> '{splittingFeatureValue}'"
+                       };
         }
 
         private static BinaryDecisionTreeLink GetSubsetLink(IDataFrame subset, double totalRowsCount, bool testResult)
         {
             return new BinaryDecisionTreeLink(
-                subset.Any ? subset.RowCount/totalRowsCount : 0,
+                subset.Any ? subset.RowCount / totalRowsCount : 0,
                 subset.RowCount,
                 testResult);
         }

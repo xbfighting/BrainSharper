@@ -1,6 +1,6 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    public interface IMultiValueNumericDataSplitter : IDataSplitter<double>
+    public interface IMultiValueNumericDataSplitter : IDataSplitter
     {
     }
 }

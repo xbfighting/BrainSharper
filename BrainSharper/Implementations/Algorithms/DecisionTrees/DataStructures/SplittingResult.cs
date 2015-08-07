@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Abstract.Algorithms.DecisionTrees.DataStructures;
 
-    public class SplittingResult<TTestResult> : ISplittingResult
+    public class SplittingResult : ISplittingResult
     {
         public SplittingResult(bool isSplitNumeric, string splittingFeatureName, IList<ISplittedData> splittedDataSets)
         {

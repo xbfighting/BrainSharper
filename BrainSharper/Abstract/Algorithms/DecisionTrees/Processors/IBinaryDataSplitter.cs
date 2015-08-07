@@ -7,11 +7,11 @@
     using DataStructures;
     using DataStructures.BinaryTrees;
 
-    public interface IBinaryDataSplitter<TDecisionValueType> : IDataSplitter<bool>
+    public interface IBinaryDataSplitter : IDataSplitter
     {
         // TODO: consider using ISPlittingResult as a result type
         IList<ISplittedData> SplitData(
             IDataFrame dataToSplit, 
-            IBinarySplittingParams<TDecisionValueType> splttingParams);
+            IBinarySplittingParams splttingParams);
     }
 }

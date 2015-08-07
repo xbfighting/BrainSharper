@@ -11,35 +11,32 @@
     using Abstract.Data;
     using DataStructures;
 
-    public class MultiValueDiscreteDataSplitter<TSplitValue> : IDataSplitter<TSplitValue>
+    public class MultiValueDiscreteDataSplitter : IDataSplitter
     {
         public IList<ISplittedData> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams)
         {
-            var splittingFeature = splttingParams.SplitOnFeature;
-            var results = new ConcurrentBag<Tuple<TSplitValue, int>>();
-            Parallel.For(
-                0,
-                dataToSplit.RowCount,
-                rowIdx =>
-                    {
-                        var row = dataToSplit.GetRowVector<TSplitValue>(rowIdx);
-                var rowValue = row[splittingFeature];
-                results.Add(new Tuple<TSplitValue, int>(rowValue, rowIdx));
-            });
+            var splitFeature = splttingParams.SplitOnFeature;
             var totalRowsCount = dataToSplit.RowCount;
+            var uniqueValues = dataToSplit.GetColumnVector(splitFeature).Distinct();
+            var splittedData = new List<ISplittedData>();
+            //TODO: AAA emarassingly parallel - test it for performance
+            foreach (var uniqueValue in uniqueValues)
+            {
+                var query = BuildQuery(splitFeature, uniqueValue);
+                var splitResult = dataToSplit.GetSubsetByQuery(query);
+                var subsetCount = splitResult.RowCount;
+                var link = new DecisionLink(
+                    CalcInstancesPercentage(totalRowsCount, subsetCount),
+                    subsetCount,
+                    uniqueValue);
+                splittedData.Add(new SplittedData(link, splitResult));
+            }
+            return splittedData;
+        }
 
-            var resultsGroupedByValue = from result in results
-                                        let rowIdx = result.Item2
-                                        let groupKey = result.Item1
-                                        group rowIdx by groupKey
-                                        into grp
-                                        select grp;
-            return (
-                from grp in resultsGroupedByValue
-                let grpCount = grp.Count()
-                select new SplittedData<TSplitValue>(
-                    new DecisionLink(this.CalcInstancesPercentage(totalRowsCount, grpCount), grpCount, grp.Key),
-                           dataToSplit.GetSubsetByRows(grp.ToList())) as ISplittedData).ToList();
+        private string BuildQuery(string featureName, object featureValue)
+        {
+            return $"[{featureName}] = '{featureValue}'";
         }
 
         private double CalcInstancesPercentage(int totalRowsCount, int splitRowsCount)
