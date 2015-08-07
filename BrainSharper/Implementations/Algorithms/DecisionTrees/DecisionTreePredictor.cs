@@ -75,7 +75,7 @@
             else
             {
                 var isEqual = vectorValue.Equals(decisionValue);
-                var childToFollow = isEqual ? binaryDecisionTreeNode.LeftChild : binaryDecisionTreeNode.RightChild;
+                var childToFollow = isEqual ? binaryDecisionTreeNode.RightChild : binaryDecisionTreeNode.LeftChild;
                 return this.ProcessInstance(vector, childToFollow, probabilitiesProductSoFar * binaryDecisionTreeNode.LeftChildLink.InstancesPercentage);
             }
         }

@@ -116,7 +116,14 @@
             var predictor = new DecisionTreePredictor<string>();
 
             // When
-            var accuracies = splitter.CrossValidate(modelBuilder: binaryTreeBuilder, modelBuilderParams: null, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: binaryTreeBuilder, 
+                modelBuilderParams: null, 
+                predictor: predictor, 
+                qualityMeasure: new ConfusionMatrixBuilder<string>(), 
+                dataFrame: testData, 
+                dependentFeatureName: "party", 
+                percetnagOfTrainData: 0.7, folds: 10);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
@@ -146,7 +153,7 @@
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
-            Assert.IsTrue(averageAccuracy >= 0.9);
+            Assert.IsTrue(averageAccuracy >= 0.99);
         }
 
         [Test]
@@ -172,7 +179,7 @@
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
-            Assert.AreEqual(averageAccuracy, 0.9);
-            Assert.IsTrue(averageAccuracy >= 0.9);
+            Assert.IsTrue(averageAccuracy >= 0.99);
+        }
     }
 }
