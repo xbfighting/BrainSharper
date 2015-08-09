@@ -70,6 +70,7 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericAttributeBestSplitPointSelector.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IDataSplitter.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IAlredyUsedAttributesInfo.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ILeafBuilder.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IMultiValueNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictor.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\AlreadyUsedAttributesInfo.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BaseSplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryDiscreteDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryNumericDataSplitter.cs" />

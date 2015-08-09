@@ -6,6 +6,10 @@
 
     public interface IBestSplitSelector
     {
-        ISplittingResult SelectBestSplit(IDataFrame baseData, string dependentFeatureName, ISplitQualityChecker splitQualityChecker);
+        ISplittingResult SelectBestSplit(
+            IDataFrame baseData, 
+            string dependentFeatureName, 
+            ISplitQualityChecker splitQualityChecker,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo);
     }
 }

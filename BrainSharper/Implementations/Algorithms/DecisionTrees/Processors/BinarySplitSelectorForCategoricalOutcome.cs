@@ -30,7 +30,8 @@
             string splittingFeatureName,
             double bestSplitQualitySoFar,
             double initialEntropy,
-            ISplitQualityChecker splitQualityChecker)
+            ISplitQualityChecker splitQualityChecker,
+            IAlredyUsedAttributesInfo alredyUsedAttributesInfo)
         {
             var totalRowsCount = dataToSplit.RowCount;
             var uniqueFeatureValues = dataToSplit.GetColumnVector(splittingFeatureName).Distinct();
@@ -39,26 +40,29 @@
             IList<ISplittedData> locallyBestSplitData = null;
             foreach (var featureValue in uniqueFeatureValues)
             {
-                var binarySplitParams = new BinarySplittingParams(splittingFeatureName, featureValue, dependentFeatureName);
-                var splittedData = CategoricalDataSplitter.SplitData(dataToSplit, binarySplitParams);
-                if (splittedData.Count == 1)
+                if (!alredyUsedAttributesInfo.WasAttributeAlreadyUsedWithValue(splittingFeatureName, featureValue))
                 {
-                    return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
-                        new List<ISplittedData>(),
-                        binarySplitParams,
-                        double.NegativeInfinity);
-                }
+                    var binarySplitParams = new BinarySplittingParams(splittingFeatureName, featureValue, dependentFeatureName);
+                    var splittedData = CategoricalDataSplitter.SplitData(dataToSplit, binarySplitParams);
+                    if (splittedData.Count == 1)
+                    {
+                        return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
+                            new List<ISplittedData>(),
+                            binarySplitParams,
+                            double.NegativeInfinity);
+                    }
 
-                var splitQuality = splitQualityChecker.CalculateSplitQuality(
-                    initialEntropy,
-                    totalRowsCount,
-                    splittedData,
-                    dependentFeatureName);
-                if (splitQuality > locallyBestSplitQuality)
-                {
-                    locallyBestSplitQuality = splitQuality;
-                    locallyBestSplitData = splittedData;
-                    localBestSplitParams = binarySplitParams;
+                    var splitQuality = splitQualityChecker.CalculateSplitQuality(
+                        initialEntropy,
+                        totalRowsCount,
+                        splittedData,
+                        dependentFeatureName);
+                    if (splitQuality > locallyBestSplitQuality)
+                    {
+                        locallyBestSplitQuality = splitQuality;
+                        locallyBestSplitData = splittedData;
+                        localBestSplitParams = binarySplitParams;
+                    }
                 }
             }
 
@@ -76,6 +80,12 @@
                 throw new ArgumentException("Invalid type of splitting params passed to binary split selector!");
             }
             return new BinarySplittingResult(false, binarySplittingParams.SplitOnFeature, splittedData, binarySplittingParams.SplitOnValue);
+        }
+
+        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams, IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
+        {
+            var binarySplittingParams = splittingParams as IBinarySplittingParams;
+            alreadyUsedAttributesInfo.AddAlreadyUsedAttribute(splittingParams.SplitOnFeature, binarySplittingParams.SplitOnValue);
         }
     }
 }

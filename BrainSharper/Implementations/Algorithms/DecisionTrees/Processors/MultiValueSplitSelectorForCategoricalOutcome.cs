@@ -26,8 +26,16 @@
             string splittingFeatureName,
             double bestSplitQualitySoFar,
             double initialEntropy,
-            ISplitQualityChecker splitQualityChecker)
+            ISplitQualityChecker splitQualityChecker,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
         {
+            if (alreadyUsedAttributesInfo.WasAttributeAlreadyUsed(splittingFeatureName))
+            {
+                return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
+                    new List<ISplittedData>(), 
+                    new SplittingParams(splittingFeatureName, dependentFeatureName), 
+                    double.NegativeInfinity);
+            }
             var totalRowsCount = dataToSplit.RowCount;
             var splitParams = new SplittingParams(splittingFeatureName, dependentFeatureName);
             var splitData = CategoricalDataSplitter.SplitData(dataToSplit, splitParams);
@@ -49,6 +57,11 @@
                 false,
                 splittingParams.SplitOnFeature,
                 splittedData);
+        }
+
+        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams, IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
+        {
+            alreadyUsedAttributesInfo.AddAlreadyUsedAttribute(splittingParams.SplitOnFeature);
         }
     }
 }

@@ -36,9 +36,10 @@
         {
             if (ShouldStopRecusrsiveBuilding(dataFrame, dependentFeatureName))
             {
-                return this.BuildLeaf(dataFrame, dependentFeatureName);
+                return BuildLeaf(dataFrame, dependentFeatureName);
             }
-            var node = BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, true);
+            var alreadyUsedAttributesInfo = new AlreadyUsedAttributesInfo();
+            var node = BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, alreadyUsedAttributesInfo, false);
             return node;
         }
 
@@ -47,7 +48,7 @@
             int dependentFeatureIndex,
             IModelBuilderParams additionalParams)
         {
-            return this.BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
+            return BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
         }
 
         protected static bool ShouldStopRecusrsiveBuilding(IDataFrame dataFrame, string dependentFeatureName)
@@ -63,6 +64,7 @@
           IDataFrame dataFrame,
           string dependentFeatureName,
           IModelBuilderParams additionalParams,
+          IAlredyUsedAttributesInfo alreadyUsedAttributesInfo,
           bool isFirstSplit = false)
         {
             if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1)
@@ -74,7 +76,8 @@
             ISplittingResult splitResult = BestSplitSelector.SelectBestSplit(
                 dataFrame,
                 dependentFeatureName,
-                SplitQualityChecker);
+                SplitQualityChecker,
+                alreadyUsedAttributesInfo);
             if (SplitIsEmpty(splitResult))
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
@@ -87,14 +90,14 @@
                     splitResult.SplittedDataSets,
                     splitData =>
                     {
-                        AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+                        AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo);
                     });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children);
+                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo);
                 }
             }
             return BuildConcreteDecisionTreeNode(splitResult, children);
@@ -104,12 +107,14 @@
            string dependentFeatureName,
            IModelBuilderParams additionalParams,
            ISplittedData splitData,
-           ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+           ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children,
+           IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
         {
             var decisionTreeNode = BuildDecisionNode(
                 splitData.SplittedDataFrame,
                 dependentFeatureName,
-                additionalParams);
+                additionalParams,
+                alreadyUsedAttributesInfo);
             var link = splitData.SplitLink;
             children.TryAdd(link, decisionTreeNode);
         }

@@ -29,7 +29,8 @@
         public ISplittingResult SelectBestSplit(
             IDataFrame baseData,
             string dependentFeatureName,
-            ISplitQualityChecker splitQualityChecker)
+            ISplitQualityChecker splitQualityChecker,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
         {
             ISplittingResult bestSplit = null;
             double bestSplitQuality = float.NegativeInfinity;
@@ -41,12 +42,12 @@
                 if (baseData.GetColumnType(attributeToSplit).TypeIsNumeric())
                 {
                     var bestNumericSplitPointAndQuality =
-                        this.BinaryNumericBestSplitingPointSelector.FindBestSplitPoint(
+                        BinaryNumericBestSplitingPointSelector.FindBestSplitPoint(
                             baseData,
                             dependentFeatureName,
                             attributeToSplit,
                             splitQualityChecker,
-                            this.BinaryNumericDataSplitter,
+                            BinaryNumericDataSplitter,
                             initialEntropy);
                     if (bestNumericSplitPointAndQuality.Item2 > bestSplitQuality)
                     {
@@ -62,7 +63,8 @@
                         attributeToSplit,
                         bestSplitQuality,
                         initialEntropy,
-                        splitQualityChecker);
+                        splitQualityChecker,
+                        alreadyUsedAttributesInfo);
                     if (bestSplitForAttribute.Item3 > bestSplitQuality)
                     {
                         bestSplit = BuildBestSplitObject(bestSplitForAttribute.Item2, bestSplitForAttribute.Item1);
@@ -80,10 +82,15 @@
             string splittingFeatureName, 
             double bestSplitQualitySoFar,
             double initialEntropy,
-            ISplitQualityChecker splitQualityChecker);
+            ISplitQualityChecker splitQualityChecker,
+            IAlredyUsedAttributesInfo alredyUsedAttributesInfo);
 
         protected abstract ISplittingResult BuildBestSplitObject(
             ISplittingParams splittingParams,
             IList<ISplittedData> splittedData);
+
+        protected abstract void UpdateAlreadyUsedAttributes(
+            ISplittingParams splittingParams,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo);
     }
 }

@@ -1,11 +1,9 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees
 {
     using System;
-    using System.Data;
     using System.Linq;
 
     using BrainSharper.Abstract.Algorithms.DecisionTrees;
-    using BrainSharper.Abstract.Data;
     using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
     using BrainSharper.General.DataQuality;
     using BrainSharper.General.DataUtils;

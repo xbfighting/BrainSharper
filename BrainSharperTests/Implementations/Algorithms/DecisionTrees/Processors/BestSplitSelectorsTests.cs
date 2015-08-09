@@ -44,7 +44,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             var testData = TestDataBuilder.ReadWeatherDataWithCategoricalAttributes();
 
             // When
-            var bestSplit = _binaryBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
+            var bestSplit = _binaryBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker, new AlreadyUsedAttributesInfo());
 
             // Then
             Assert.IsNotNull(bestSplit);
@@ -58,7 +58,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             var subject = new BinarySplitSelectorForCategoricalOutcome(new BinaryDiscreteDataSplitter(), _binaryNumericDataSplitter, _binaryNumericBestSplitPointSelector);
 
             // When
-            var bestSplit = subject.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker);
+            var bestSplit = subject.SelectBestSplit(testData, "Play", _categoricalBinarySplitQualityChecker, new AlreadyUsedAttributesInfo());
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             };
 
             // When
-            var bestSplit = _multiValueBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalMultiValueSplitQualityChecker);
+            var bestSplit = _multiValueBestSplitSelector.SelectBestSplit(testData, "Play", _categoricalMultiValueSplitQualityChecker, new AlreadyUsedAttributesInfo());
 
             // Then
             Assert.AreEqual(expectedBestSplitAttribute, bestSplit.SplittingFeatureName);
