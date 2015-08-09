@@ -63,8 +63,8 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueNumericRangeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueRegressionLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\IMultiValueClassificationLink.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeBuilderAdditionalParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBestSplitSelector.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericAttributeBestSplitPointSelector.cs" />
@@ -116,6 +116,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittedData.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreeModelBuilderParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictor.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\AlreadyUsedAttributesInfo.cs" />

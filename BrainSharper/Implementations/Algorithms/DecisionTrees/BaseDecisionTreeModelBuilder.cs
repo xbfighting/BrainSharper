@@ -34,12 +34,18 @@
             string dependentFeatureName,
             IModelBuilderParams additionalParams)
         {
+            if (!(additionalParams is IDecisionTreeModelBuilderParams))
+            {
+                throw new ArgumentException("Invalid params passed for Decision Tree Model Builder!");
+            }
             if (ShouldStopRecusrsiveBuilding(dataFrame, dependentFeatureName))
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
+            var useParallelProcessing =
+                ((IDecisionTreeModelBuilderParams)additionalParams).ProcessSubtreesCreationInParallel;
             var alreadyUsedAttributesInfo = new AlreadyUsedAttributesInfo();
-            var node = BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, alreadyUsedAttributesInfo, false);
+            var node = BuildDecisionNode(dataFrame, dependentFeatureName, additionalParams, alreadyUsedAttributesInfo, useParallelProcessing);
             return node;
         }
 

@@ -21,6 +21,7 @@
     {
         private readonly IImpurityMeasure<string> shannonEntropy = new ShannonEntropy<string>();
         private readonly IDecisionTreeModelBuilder binaryTreeBuilder, multiValueTreeBuilder;
+        private readonly IDecisionTreeModelBuilderParams modelBuilderParams = new DecisionTreeModelBuilderParams(false);
 
         public DecisionTreePredictorTests()
         {
@@ -45,8 +46,8 @@
 
             // When
             var accuracies = splitter.CrossValidate(
-                this.binaryTreeBuilder,
-                null,
+                binaryTreeBuilder,
+                modelBuilderParams,
                 predictor,
                 new ConfusionMatrixBuilder<object>(),
                 testData,
@@ -72,7 +73,7 @@
             // When
             var accuracies = splitter.CrossValidate(
                 multiValueTreeBuilder,
-                null,
+                modelBuilderParams,
                 predictor,
                 new ConfusionMatrixBuilder<string>(),
                 testData,
@@ -96,7 +97,7 @@
             var predictor = new DecisionTreePredictor<string>();
 
             // When
-            var accuracies = splitter.CrossValidate(modelBuilder: this.multiValueTreeBuilder, modelBuilderParams: null, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
+            var accuracies = splitter.CrossValidate(modelBuilder: this.multiValueTreeBuilder, modelBuilderParams: modelBuilderParams, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
@@ -116,7 +117,7 @@
             // When
             var accuracies = splitter.CrossValidate(
                 modelBuilder: binaryTreeBuilder, 
-                modelBuilderParams: null, 
+                modelBuilderParams: modelBuilderParams, 
                 predictor: predictor, 
                 qualityMeasure: new ConfusionMatrixBuilder<string>(), 
                 dataFrame: testData, 
@@ -141,7 +142,7 @@
             // When
             var accuracies = splitter.CrossValidate(
                 modelBuilder: multiValueTreeBuilder, 
-                modelBuilderParams: null, 
+                modelBuilderParams: modelBuilderParams, 
                 predictor: predictor, 
                 qualityMeasure: new ConfusionMatrixBuilder<string>(), 
                 dataFrame: testData, 
@@ -167,7 +168,7 @@
             // When
             var accuracies = splitter.CrossValidate(
                 modelBuilder: binaryTreeBuilder,
-                modelBuilderParams: null,
+                modelBuilderParams: modelBuilderParams,
                 predictor: predictor,
                 qualityMeasure: new ConfusionMatrixBuilder<string>(),
                 dataFrame: testData,
