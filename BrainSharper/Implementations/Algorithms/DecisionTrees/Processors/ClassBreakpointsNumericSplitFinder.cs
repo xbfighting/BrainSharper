@@ -36,7 +36,6 @@
                             .ToList();
             var previousClass = sortedRowData[0].DependentFeatureValue;
             var previousFeatureVal = sortedRowData[0].FeatureValue;
-            // TODO: AAA try to code it optimally, using the dynamic programming
             foreach (var rowData in sortedRowData)
             {
                 var currentClass = rowData.DependentFeatureValue;

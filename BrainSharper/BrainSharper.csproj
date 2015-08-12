@@ -126,6 +126,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinarySplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\CategoricalDecisionTreeLeafBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\ClassBreakpointsNumericSplitFinder.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\DynamicProgrammingNumericSplitFinder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\IBinaryBestSplitSelector.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />

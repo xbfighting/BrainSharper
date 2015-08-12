@@ -41,6 +41,7 @@
             {
                 if (baseData.GetColumnType(attributeToSplit).TypeIsNumeric())
                 {
+                    // TODO: add checking for the already used attribtues
                     var bestNumericSplitPointAndQuality =
                         BinaryNumericBestSplitingPointSelector.FindBestSplitPoint(
                             baseData,

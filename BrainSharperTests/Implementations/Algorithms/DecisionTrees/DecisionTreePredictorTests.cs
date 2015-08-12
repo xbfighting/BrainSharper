@@ -20,7 +20,7 @@
     public class DecisionTreePredictorTests
     {
         private readonly IImpurityMeasure<string> shannonEntropy = new ShannonEntropy<string>();
-        private readonly IDecisionTreeModelBuilder binaryTreeBuilder, multiValueTreeBuilder;
+        private readonly IDecisionTreeModelBuilder binaryTreeBuilder, multiValueTreeBuilder, multiValueTreeBuilderWithBetterNumercValsHandler;
         private readonly IDecisionTreeModelBuilderParams modelBuilderParams = new DecisionTreeModelBuilderParams(false);
 
         public DecisionTreePredictorTests()
@@ -32,6 +32,10 @@
             multiValueTreeBuilder = new MultiSplitDecisionTreeModelBuilder(
                 new InformationGainRatioCalculator<string>(shannonEntropy, shannonEntropy as ICategoricalImpurityMeasure<string>),
                 new MultiValueSplitSelectorForCategoricalOutcome(new MultiValueDiscreteDataSplitter(), new BinaryNumericDataSplitter(), new ClassBreakpointsNumericSplitFinder()),
+                new CategoricalDecisionTreeLeafBuilder());
+            multiValueTreeBuilderWithBetterNumercValsHandler = new MultiSplitDecisionTreeModelBuilder(
+                new InformationGainRatioCalculator<string>(shannonEntropy, shannonEntropy as ICategoricalImpurityMeasure<string>),
+                new MultiValueSplitSelectorForCategoricalOutcome(new MultiValueDiscreteDataSplitter(), new BinaryNumericDataSplitter(), new DynamicProgrammingNumericSplitFinder()),
                 new CategoricalDecisionTreeLeafBuilder());
         }
 
@@ -65,25 +69,25 @@
         {
             // TODO: add support for numeric attributes!!!
             // Given
-            var splitter = new CrossValidator<string>();
+            var splitter = new CrossValidator<object>();
             var testData = TestDataBuilder.ReadAdultCensusDataFrame();
 
-            var predictor = new DecisionTreePredictor<string>();
+            var predictor = new DecisionTreePredictor<object>();
 
             // When
             var accuracies = splitter.CrossValidate(
-                multiValueTreeBuilder,
+                multiValueTreeBuilderWithBetterNumercValsHandler,
                 modelBuilderParams,
                 predictor,
-                new ConfusionMatrixBuilder<string>(),
+                new ConfusionMatrixBuilder<object>(),
                 testData,
                 "income",
                 0.7,
-                10);
+                5);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
-            Assert.IsTrue(averageAccuracy >= 0.9);
+            Assert.IsTrue(averageAccuracy >= 0.8);
         }
 
         [Test]
@@ -122,7 +126,8 @@
                 qualityMeasure: new ConfusionMatrixBuilder<string>(), 
                 dataFrame: testData, 
                 dependentFeatureName: "party", 
-                percetnagOfTrainData: 0.7, folds: 10);
+                percetnagOfTrainData: 0.7, 
+                folds: 10);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();

@@ -70,7 +70,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiValueDecisionTreeModelBuilderTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BestSplitSelectorsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\DataSplittersTests.cs" />
-    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\EntropyResucersTests.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\SplitQualityCheckersTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationModelBuilderTest.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnPredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\SimpleKnnPredictorTests.cs" />

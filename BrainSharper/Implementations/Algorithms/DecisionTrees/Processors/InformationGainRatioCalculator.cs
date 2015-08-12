@@ -17,7 +17,7 @@
         public override double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName)
         {
             var informationGain = base.CalculateSplitQuality(baseData, splittingResults, dependentFeatureName);
-            var splitEntropy = this.GetSplitEntropy(splittingResults, baseData.RowCount);
+            var splitEntropy = GetSplitEntropy(splittingResults, baseData.RowCount);
             return informationGain / splitEntropy;
         }
 
@@ -27,7 +27,7 @@
             IList<ISplittedData> splittingResults, 
             string dependentFeatureName)
         {
-            var splittedDataWeightedEntopy = this.GetSplittedDataWeightedEntropy(
+            var splittedDataWeightedEntopy = GetSplittedDataWeightedEntropy(
                 splittingResults,
                 totalRowsCount,
                 dependentFeatureName);
@@ -37,7 +37,7 @@
         protected virtual double GetSplitEntropy(IList<ISplittedData> splittingResults, double baseDataRowsCount)
         {
             var elementsInGroupsCount = splittingResults.Select(splitResult => splitResult.SplittedDataFrame.RowCount).ToList();
-            return this.CategoricalImpuryMeasure.ImpurityValue(elementsInGroupsCount);
+            return CategoricalImpuryMeasure.ImpurityValue(elementsInGroupsCount);
         }
     }
 }

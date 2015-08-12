@@ -3,10 +3,13 @@
     #region
 
     using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
 
     using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+    using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
     using BrainSharperTests.TestUtils;
@@ -16,7 +19,7 @@
     #endregion
 
     [TestFixture]
-    public class EntropyResucersTests
+    public class SplitQualityCheckersTests
     {
         private readonly ShannonEntropy<string> shannonEntropy = new ShannonEntropy<string>();
 
@@ -24,7 +27,7 @@
 
         private readonly InformationGainCalculator<string> informationGainRatioCalculator;
 
-        public EntropyResucersTests()
+        public SplitQualityCheckersTests()
         {
             this.informationGainCalculator = new InformationGainCalculator<string>(this.shannonEntropy, this.shannonEntropy);
             this.informationGainRatioCalculator = new InformationGainRatioCalculator<string>(
@@ -91,13 +94,61 @@
             var expectedGain = 0.156;
 
             // When
-            var actualGain = this.informationGainRatioCalculator.CalculateSplitQuality(
+            var actualGain = informationGainRatioCalculator.CalculateSplitQuality(
                 initialData, 
                 splitResults, 
                 TestDataBuilder.WeatherDataDependentFeatureName);
 
             // Then
             Assert.AreEqual(expectedGain, actualGain, 0.0009);
+        }
+
+        [Test]
+        public void TestInformationGainCalculator_WithGroupsCountsOnly()
+        {
+            // Given
+            var initialDataTable = new DataFrame(
+                                      new DataTable()
+                                       {
+                                           Columns = { new DataColumn("Col1", typeof(string)) },
+                                           Rows =
+                                               {
+                                                    new object[] { "A" },
+                                                    new object[] { "A" },
+                                                    new object[] { "A" },
+                                                    new object[] { "B" },
+                                                    new object[] { "B" },
+                                               }
+                                       });
+            var group1 = initialDataTable.GetSubsetByRows(new[] { 0, 1, 3 });
+            var splittedDataGroup1 = new SplittedData(null, group1);
+            var group1UniqueValuesCount =
+                group1.GetColumnVector("Col1")
+                    .Values.GroupBy(val => val, val => val)
+                    .Select(grp => grp.Count())
+                    .ToList();
+
+            var group2 = initialDataTable.GetSubsetByRows(new[] { 2, 4 });
+            var splittedDataGroup2 = new SplittedData(null, group2);
+            var group2UniqueValuesCount =
+                group2.GetColumnVector("Col1")
+                    .Values.GroupBy(val => val, val => val)
+                    .Select(grp => grp.Count())
+                    .ToList();
+
+            var groupsCounts = new List<IList<int>> { group1UniqueValuesCount, group2UniqueValuesCount };
+
+            // When
+            var entropyFromGroups = informationGainCalculator.CalculateSplitQuality(
+                1.0,
+                5,
+                new List<ISplittedData> { splittedDataGroup1, splittedDataGroup2 },
+                "Col1");
+
+            var entropyFromGroupCounts = informationGainCalculator.CalculateSplitQuality(1.0, 5, groupsCounts);
+            
+            // Then
+            Assert.AreEqual(entropyFromGroupCounts, entropyFromGroups);
         }
     }
 }

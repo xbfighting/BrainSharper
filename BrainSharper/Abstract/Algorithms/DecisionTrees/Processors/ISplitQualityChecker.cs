@@ -1,8 +1,10 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
     using System.Collections.Generic;
-    using DataStructures;
+
     using Data;
+
+    using DataStructures;
 
     public interface ISplitQualityChecker
     {
@@ -10,5 +12,6 @@
         double GetInitialEntropy(IDataFrame baseData, string dependentFeatureName);
         double CalculateSplitQuality(IDataFrame baseData, IList<ISplittedData> splittingResults, string dependentFeatureName);
         double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<ISplittedData> splittingResults, string dependentFeatureName);
+        double CalculateSplitQuality(double initialEntropy, int totalRowsCount, IList<IList<int>> elementsInGroupsCounts);
     }
 }
