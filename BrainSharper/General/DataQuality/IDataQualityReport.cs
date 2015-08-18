@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace BrainSharper.General.DataQuality
+﻿namespace BrainSharper.General.DataQuality
 {
+    using System.Collections.Generic;
+
     public interface IDataQualityReport<TPredictionResult>
     {
         IList<TPredictionResult> ExpectedValues { get; }

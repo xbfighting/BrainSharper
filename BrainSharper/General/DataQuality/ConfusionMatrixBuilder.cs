@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace BrainSharper.General.DataQuality
+﻿namespace BrainSharper.General.DataQuality
 {
+    using System.Collections.Generic;
+
     public class ConfusionMatrixBuilder<TPredictionResult> : IDataQualityMeasure<TPredictionResult>
     {
         public double MeasureAccuracy(IList<TPredictionResult> expected, IList<TPredictionResult> actual)

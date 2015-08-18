@@ -26,7 +26,7 @@
         public object DependentVal { get; }
     }
 
-    public class DynamicProgrammingNumericSplitFinder : IBinaryNumericAttributeBestSplitPointSelector
+    public class DynamicProgrammingNumericSplitFinder : IBinaryNumericSplitPointSelectorCategoricalOutcome
     {
         public Tuple<ISplittingResult, double> FindBestSplitPoint(
             IDataFrame baseData,
@@ -36,7 +36,23 @@
             IBinaryNumericDataSplitter binaryNumericDataSplitter,
             double initialEntropy)
         {
-            //TODO: AAA make it nicer, refactor it
+            return FindBestSplitPoint(
+                baseData,
+                dependentFeatureName,
+                numericFeatureToProcess,
+                splitQualityChecker as ICategoricalSplitQualityChecker,
+                binaryNumericDataSplitter,
+                initialEntropy);
+        }
+
+        public Tuple<ISplittingResult, double> FindBestSplitPoint(
+            IDataFrame baseData,
+            string dependentFeatureName,
+            string numericFeatureToProcess,
+            ICategoricalSplitQualityChecker splitQualityChecker,
+            IBinaryNumericDataSplitter binaryNumericDataSplitter,
+            double initialEntropy)
+        {
             var uniqueDependentValues = baseData.GetColumnVector(dependentFeatureName).Values.Distinct().ToList();
             var dependentValuesSortedByNumericFeature = OrderColumn(baseData, dependentFeatureName, numericFeatureToProcess);
             var dependentValsCounts = new List<Vector<double>>();

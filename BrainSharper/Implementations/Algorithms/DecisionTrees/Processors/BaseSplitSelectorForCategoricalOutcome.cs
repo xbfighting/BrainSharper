@@ -14,16 +14,16 @@
     {
         protected readonly IDataSplitter CategoricalDataSplitter;
         protected readonly IBinaryNumericDataSplitter BinaryNumericDataSplitter;
-        protected readonly IBinaryNumericAttributeBestSplitPointSelector BinaryNumericBestSplitingPointSelector;
+        protected readonly IBinaryNumericAttributeSplitPointSelector BinaryNumericBestSplitingPointSelector;
 
         protected BaseSplitSelectorForCategoricalOutcome(
             IDataSplitter binarySplitter, 
             IBinaryNumericDataSplitter binaryNumericSplitter, 
-            IBinaryNumericAttributeBestSplitPointSelector binaryNumericBestSplitPointSelector)
+            IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
         {
-            this.CategoricalDataSplitter = binarySplitter;
-            this.BinaryNumericDataSplitter = binaryNumericSplitter;
-            this.BinaryNumericBestSplitingPointSelector = binaryNumericBestSplitPointSelector;
+            CategoricalDataSplitter = binarySplitter;
+            BinaryNumericDataSplitter = binaryNumericSplitter;
+            BinaryNumericBestSplitingPointSelector = binaryNumericBestSplitPointSelector;
         }
 
         public ISplittingResult SelectBestSplit(
@@ -35,7 +35,6 @@
             ISplittingResult bestSplit = null;
             double bestSplitQuality = float.NegativeInfinity;
             double initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
-            int totalRowsCount = baseData.RowCount;
 
             foreach (var attributeToSplit in baseData.ColumnNames.Except(new[] { dependentFeatureName }))
             {

@@ -66,13 +66,17 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\IDecisionTreeModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBestSplitSelector.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBestSplitSelectorForNumericOutcome.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryDataSplitter.cs" />
-    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericAttributeBestSplitPointSelector.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericAttributeSplitPointSelector.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericDataSplitter.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IBinaryNumericSplitPointSelectorCategoricalOutcome.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ICategoricalSplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IAlredyUsedAttributesInfo.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ILeafBuilder.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IMultiValueNumericDataSplitter.cs" />
+    <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\INumericalSplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
@@ -96,6 +100,8 @@
     <Compile Include="General\DataQuality\IConfusionMatrix.cs" />
     <Compile Include="General\DataQuality\IDataQualityMeasure.cs" />
     <Compile Include="General\DataQuality\IDataQualityReport.cs" />
+    <Compile Include="General\DataQuality\NumericDataQualityReport.cs" />
+    <Compile Include="General\DataQuality\RootMeanSquareErrorQualityMeasure.cs" />
     <Compile Include="General\DataUtils\ICrossValidator.cs" />
     <Compile Include="General\DataUtils\ITrainTestSplitter.cs" />
     <Compile Include="General\Exceptions\Data\InvalidColumnNamesException.cs" />
@@ -113,6 +119,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeLeaf.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\DecisionTreeParentNode.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\MultiValueTrees\MultiValueNumericRangeLink.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\RegressionAndModelLeaf.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittedData.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingParams.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\SplittingResult.cs" />
@@ -121,6 +128,7 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiSplitDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\AlreadyUsedAttributesInfo.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BaseSplitSelectorForCategoricalOutcome.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BestSplitSelectorForNumericValues.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryDiscreteDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinaryNumericDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BinarySplitSelectorForCategoricalOutcome.cs" />
@@ -131,9 +139,9 @@
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\InformationGainRatioCalculator.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueDiscreteDataSplitter.cs" />
-    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueNumericDataSplitter.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\MultiValueSplitSelectorForCategoricalOutcome.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\RegressionAndModelDecisionTreeLeafBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\VarianceBasedSplitQualityChecker.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModel.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\Knn\BackwardsElimination\IBackwardsEliminationKnnModel.cs" />

@@ -12,6 +12,8 @@
     using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
+    using MathNet.Numerics.LinearRegression;
+
     using NUnit.Framework;
 
     using TestUtils;
@@ -184,6 +186,36 @@
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
             Assert.IsTrue(averageAccuracy >= 0.99);
+        }
+
+        [Test]
+        public void Regression_NumericAttrsAndOutcomesOnly()
+        {
+            // Given
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<double>(randomizer);
+            var testData = TestDataBuilder.ReadHousingData();
+
+            var predictor = new DecisionTreePredictor<double>();
+
+            var numericTreeBuilder = new BinaryDecisionTreeModelBuilder(
+                new VarianceBasedSplitQualityChecker(),
+                new BestSplitSelectorForNumericValues(new BinaryNumericDataSplitter()), 
+                new RegressionAndModelDecisionTreeLeafBuilder());
+            // When
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: numericTreeBuilder,
+                modelBuilderParams: modelBuilderParams,
+                predictor: predictor,
+                qualityMeasure: new RootMeanSquareErrorQualityMeasure(),
+                dataFrame: testData,
+                dependentFeatureName: "MEDV",
+                percetnagOfTrainData: 0.8,
+                folds: 15);
+
+            // Then
+            var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averageAccuracy <= 20);
         }
     }
 }

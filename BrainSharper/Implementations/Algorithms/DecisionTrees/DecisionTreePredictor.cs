@@ -9,6 +9,8 @@
     using Abstract.Algorithms.Infrastructure;
     using Abstract.Data;
 
+    using MathNet.Numerics.LinearAlgebra;
+
     public class DecisionTreePredictor<TDecisionValue> : IPredictor<TDecisionValue>
     {
         public IList<TDecisionValue> Predict(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex)
@@ -23,10 +25,13 @@
                 throw new ArgumentException("Invalid model passed to Decision Tree Predictor");
             }
             var results = new ConcurrentBag<Tuple<int, TDecisionValue>>();
-            for (int rowIdx = 0; rowIdx < queryDataFrame.RowCount; rowIdx++)
+            var queryDataFrameWithoutDependentFeature =
+                queryDataFrame.GetSubsetByColumns(
+                    queryDataFrame.ColumnNames.Except(new[] { dependentFeatureName }).ToList());
+            for (int rowIdx = 0; rowIdx < queryDataFrameWithoutDependentFeature.RowCount; rowIdx++)
             {
-                IDataVector<TDecisionValue> dataVector = queryDataFrame.GetRowVector<TDecisionValue>(rowIdx);
-                Tuple<TDecisionValue, double> predictionResults = this.ProcessInstance(dataVector, (IDecisionTreeNode)model, 1.0);
+                IDataVector<TDecisionValue> dataVector = queryDataFrameWithoutDependentFeature.GetRowVector<TDecisionValue>(rowIdx);
+                Tuple<TDecisionValue, double> predictionResults = ProcessInstance(dataVector, (IDecisionTreeNode)model, 1.0);
                 results.Add(new Tuple<int, TDecisionValue>(rowIdx, predictionResults.Item1));
             }
             return results.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2).ToList();
@@ -40,8 +45,21 @@
                 {
                     // TODO: handle regression/modelling case here
                     var regressionLeaf = decisionTree as IDecisionTreeRegressionAndModelLeaf;
-                    var numericVector = vector.NumericVector;
-                    return new Tuple<TDecisionValue, double>(default(TDecisionValue), probabilitiesProductSoFar);
+                    var numericVector = vector.NumericVector.ToList();
+                    numericVector.Insert(0, 1.0);
+                    var vectorWithIntercept = Vector<double>.Build.DenseOfArray(numericVector.ToArray());
+                    double predictedVal = 0.0;
+                    if (regressionLeaf.ModelWeights != null)
+                    {
+                        predictedVal =
+                            vectorWithIntercept.DotProduct(
+                                Vector<double>.Build.DenseOfArray(regressionLeaf.ModelWeights.ToArray()));
+                    }
+                    else
+                    {
+                        predictedVal = regressionLeaf.DecisionMeanValue;
+                    }
+                    return new Tuple<TDecisionValue, double>((TDecisionValue)Convert.ChangeType(predictedVal, typeof(TDecisionValue)), probabilitiesProductSoFar);
                 }
                 var classificationLeaf = decisionTree as IDecisionTreeLeaf;
                 return new Tuple<TDecisionValue, double>((TDecisionValue)classificationLeaf.LeafValue, probabilitiesProductSoFar);

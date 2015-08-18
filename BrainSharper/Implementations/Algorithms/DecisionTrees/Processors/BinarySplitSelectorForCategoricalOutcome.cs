@@ -5,21 +5,19 @@
     using System.Linq;
 
     using Abstract.Algorithms.DecisionTrees.DataStructures;
+    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
     using Abstract.Algorithms.DecisionTrees.Processors;
-
-    using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
-    using BrainSharper.Abstract.Data;
-
-    using DataStructures.BinaryDecisionTrees;
+    using Abstract.Data;
 
     using DataStructures;
-    
+    using DataStructures.BinaryDecisionTrees;
+
     public class BinarySplitSelectorForCategoricalOutcome : BaseSplitSelectorForCategoricalOutcome, IBinaryBestSplitSelector
     {
         public BinarySplitSelectorForCategoricalOutcome(
             IBinaryDataSplitter binaryDataSplitter, 
             IBinaryNumericDataSplitter binaryNumericDataSplitter,
-            IBinaryNumericAttributeBestSplitPointSelector binaryNumericBestSplitPointSelector)
+            IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
             : base(binaryDataSplitter, binaryNumericDataSplitter, binaryNumericBestSplitPointSelector)
         {
         }

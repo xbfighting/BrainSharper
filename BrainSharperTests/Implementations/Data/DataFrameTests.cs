@@ -112,12 +112,38 @@
         {
             // Given
             var expectedMatrix =
-                Matrix<double>.Build.DenseOfArray(new double[,] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 } });
+                Matrix<double>.Build.DenseOfArray(new double[,]
+                                                      {
+                                                          { 1, 2, 3, 4 }, 
+                                                          { 5, 6, 7, 8 }, 
+                                                          { 9, 10, 11, 12 }
+                                                      });
 
             var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
 
             // When
             var actualMatrix = basicDataFrame.GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrix.Equals(actualMatrix));
+        }
+
+        [Test]
+        public void Test_GetAsMatrix_WithIntercept()
+        {
+            // Given
+            var expectedMatrix =
+                Matrix<double>.Build.DenseOfArray(new double[,]
+                                                      {
+                                                          { 1, 1, 2, 3, 4 },
+                                                          { 1, 5, 6, 7, 8 },
+                                                          { 1, 9, 10, 11, 12 }
+                                                      });
+
+            var basicDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+
+            // When
+            var actualMatrix = basicDataFrame.GetAsMatrixWithIntercept();
 
             // Then
             Assert.IsTrue(expectedMatrix.Equals(actualMatrix));

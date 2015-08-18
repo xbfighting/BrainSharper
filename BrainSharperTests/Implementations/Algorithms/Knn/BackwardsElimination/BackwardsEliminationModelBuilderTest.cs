@@ -20,7 +20,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn.BackwardsElimination
         {
             // Given
             var randomizer = new Random(55);
-            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer, rowCount: 100);
+            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrameWithRedundantAttrs(randomizer: randomizer, rowCount: 100);
 
             var weightingFunction = new GaussianFunction(0.3);
             var modelParams = new KnnAdditionalParams(4, true);

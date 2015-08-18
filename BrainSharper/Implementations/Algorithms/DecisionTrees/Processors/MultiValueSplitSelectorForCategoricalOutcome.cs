@@ -15,7 +15,7 @@
         public MultiValueSplitSelectorForCategoricalOutcome(
             IDataSplitter categoricalSplitter, 
             IBinaryNumericDataSplitter binarySplitter,
-            IBinaryNumericAttributeBestSplitPointSelector binaryNumericBestSplitPointSelector)
+            IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
             : base(categoricalSplitter, binarySplitter, binaryNumericBestSplitPointSelector)
         {
         }

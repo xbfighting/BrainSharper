@@ -9,13 +9,30 @@
     using DataStructures;
     using DataStructures.BinaryDecisionTrees;
 
-    public class ClassBreakpointsNumericSplitFinder : IBinaryNumericAttributeBestSplitPointSelector
+    public class ClassBreakpointsNumericSplitFinder : IBinaryNumericSplitPointSelectorCategoricalOutcome
     {
         public Tuple<ISplittingResult, double> FindBestSplitPoint(
             IDataFrame baseData,
             string dependentFeatureName,
             string numericFeatureToProcess,
             ISplitQualityChecker splitQualityChecker,
+            IBinaryNumericDataSplitter binaryNumericDataSplitter,
+            double initialEntropy)
+        {
+            return FindBestSplitPoint(
+                baseData,
+                dependentFeatureName,
+                numericFeatureToProcess,
+                splitQualityChecker as ICategoricalSplitQualityChecker,
+                binaryNumericDataSplitter,
+                initialEntropy);
+        }
+
+        public Tuple<ISplittingResult, double> FindBestSplitPoint(
+            IDataFrame baseData,
+            string dependentFeatureName,
+            string numericFeatureToProcess,
+            ICategoricalSplitQualityChecker splitQualityChecker,
             IBinaryNumericDataSplitter binaryNumericDataSplitter,
             double initialEntropy)
         {

@@ -11,6 +11,8 @@
     using BrainSharper.Abstract.Data;
     using BrainSharper.Implementations.Data;
 
+    using MathNet.Numerics.LinearAlgebra;
+
     public static class TestDataBuilder
     {
         public const string WeatherDataDependentFeatureName = "Play";
@@ -74,25 +76,58 @@
         /// f6 = f1 + 2f2 - 3f3
         /// </summary>
         /// <returns>Data frame with numeric outcomes</returns>
-        public static IDataFrame BuildRandomAbstractNumericDataFrame(int rowCount = 10000, Random randomizer = null, int min = 1, int max = 10)
+        public static IDataFrame BuildRandomAbstractNumericDataFrameWithRedundantAttrs(int rowCount = 10000, Random randomizer = null, int min = 1, int max = 10)
         {
             randomizer = randomizer ?? new Random();
             var dataTable = new DataTable("some table")
             {
-                Columns = {"F1", "F2", "F3", "F4", "F5", "F6"}
+                Columns = { "F1", "F2", "F3", "F4", "F5", "F6" }
             };
             for (int i = 0; i < rowCount; i++)
             {
                 var features = new double[6];
-                for (int fIdx = 0; fIdx < 5; fIdx++)
+                for (int featureIdx = 0; featureIdx < 5; featureIdx++)
                 {
-                    features[fIdx] = randomizer.Next(min, max);
+                    features[featureIdx] = randomizer.Next(min, max);
                 }
                 features[5] = CalcualteLinearlyDependentFeatureValue(features);
                 dataTable.Rows.Add(features.Select(val => val as object).ToArray());
             }
 
             return new DataFrame(dataTable);
+        }
+
+        /// <summary>
+        /// Creates data frame with values calculated using provided function
+        /// </summary>
+        /// <returns>Data frame with numeric outcomes</returns>
+        public static IDataFrame BuildRandomAbstractNumericDataFrame(
+            Func<IList<double>, double> resultFunCalc,
+            int rowCount = 10000, 
+            int featuresCount = 5, 
+            Random randomizer = null, 
+            int min = 1, 
+            int max = 10)
+        {
+            randomizer = randomizer ?? new Random();
+            var columnNames = Enumerable.Range(0, featuresCount).Select(val => "F" + (val + 1).ToString()).ToList();
+            columnNames.Add("result");
+            var rowsCollection = new List<double[]>();
+            
+            for (int i = 0; i < rowCount; i++)
+            {
+                var features = new double[featuresCount];
+                for (int featureIdx = 0; featureIdx < featuresCount; featureIdx++)
+                {
+                    features[featureIdx] = randomizer.Next(min, max);
+                }
+                var result = resultFunCalc(features);
+                var finalFeatures = features.ToList();
+                finalFeatures.Add(result);
+                rowsCollection.Add(finalFeatures.ToArray());
+            }
+            var matrix = Matrix<double>.Build.DenseOfRowArrays(rowsCollection);
+            return new DataFrame(matrix, columnNames);
         }
 
         /// <summary>
@@ -157,6 +192,11 @@
         public static IDataFrame ReadMushroomDataWithCategoricalAttributes()
         {
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Mushroom.txt", true));
+        }
+
+        public static IDataFrame ReadHousingData()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Housing.txt", true));
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)

@@ -64,12 +64,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="General\CollectionUtils\CumulativeSumTest.cs" />
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\MultiValueDecisionTreeModelBuilderTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\BestSplitSelectorsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\DataSplittersTests.cs" />
+    <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\LeafBuildersTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Processors\SplitQualityCheckersTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationModelBuilderTest.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnPredictorTests.cs" />
@@ -98,6 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataSets\CongressVoting.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DataSets\Housing.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DataSets\HousingNormalized.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="DataSets\IrisData.txt">

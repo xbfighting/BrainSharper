@@ -7,6 +7,9 @@
     using Abstract.Algorithms.Infrastructure;
     using Abstract.Data;
     using DataQuality;
+
+    using MathNet.Numerics.LinearRegression;
+
     using Utils;
 
     public interface ICrossValidator<TPredictionResult>
@@ -66,6 +69,17 @@
                 IList<TPredictionResult> expected = testData.GetColumnVector<TPredictionResult>(dependentFeatureName);
                 IDataQualityReport<TPredictionResult> qualityReport = qualityMeasure.GetReport(expected, predictions);
                 iterationAccuracies.Add(qualityReport);
+
+                /*
+                var x = trainingData.GetSubsetByColumns(trainingData.ColumnNames.Where(col => col != "MEDV").ToList()).GetAsMatrix();
+                var y = trainingData.GetNumericColumnVector("MEDV");
+                var coeff = MultipleRegression.DirectMethod(x, y);
+                var testX =
+                    testData.GetSubsetByColumns(trainingData.ColumnNames.Where(col => col != "MEDV").ToList())
+                        .GetAsMatrixWithIntercept();
+                var pureRegressionOutput = testX.Multiply(coeff);
+                double pureRegRes = new RootMeanSquareErrorQualityMeasure().GetReport(testData.GetNumericColumnVector("MEDV"), pureRegressionOutput).Accuracy;
+                */
                 currentWindowNo++;
             }
             return iterationAccuracies;

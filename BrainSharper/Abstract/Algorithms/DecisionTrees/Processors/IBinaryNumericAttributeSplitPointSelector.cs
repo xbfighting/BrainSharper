@@ -6,7 +6,7 @@
 
     using DataStructures;
 
-    public interface IBinaryNumericAttributeBestSplitPointSelector
+    public interface IBinaryNumericAttributeSplitPointSelector
     {
         Tuple<ISplittingResult, double> FindBestSplitPoint(
             IDataFrame baseData,

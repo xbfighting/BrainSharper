@@ -198,6 +198,8 @@
 
         Matrix<double> GetAsMatrix();
 
+        Matrix<double> GetAsMatrixWithIntercept();
+
         /// <summary>
         /// Compares two DataFrames using only internal table storage, ignoring the row names.
         /// </summary>

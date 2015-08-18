@@ -8,7 +8,10 @@ using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
 {
+    using System.Data;
+
     using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+    using BrainSharper.Implementations.Data;
 
     [TestFixture]
     public class BestSplitSelectorsTests
@@ -19,8 +22,8 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         private readonly IBinaryBestSplitSelector binaryBestSplitSelector;
         private readonly IBestSplitSelector multiValueBestSplitSelector;
 
-        private readonly IBinaryNumericAttributeBestSplitPointSelector binaryNumericBestSplitPointSelector;
-        private readonly IBinaryNumericAttributeBestSplitPointSelector dynamicProgrammingBestNumericSplitFinder;
+        private readonly IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector;
+        private readonly IBinaryNumericAttributeSplitPointSelector dynamicProgrammingBestNumericSplitFinder;
 
         private readonly ISplitQualityChecker categoricalBinarySplitQualityChecker;
         private readonly ISplitQualityChecker categoricalMultiValueSplitQualityChecker;
@@ -91,7 +94,7 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         }
 
         [Test]
-        public void SelectBestNumericSplitPoint()
+        public void SelectBestNumericSplitPoint_CategoricalVariable()
         {
             //Given
             var weatherDataNumeric = TestDataBuilder.ReadWeatherDataWithMixedAttributes();
@@ -117,6 +120,42 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
             Assert.AreEqual(bruteForceBestSplit.Item1.SplittingFeatureName, dynamicProgrammingBestSplit.Item1.SplittingFeatureName);
             Assert.AreEqual((bruteForceBestSplit.Item1 as IBinarySplittingResult).SplittingValue, (dynamicProgrammingBestSplit.Item1 as IBinarySplittingResult).SplittingValue);
             Assert.AreEqual(bruteForceBestSplit.Item2, dynamicProgrammingBestSplit.Item2);
+        }
+
+        [Test]
+        public void SelectBestNumericSplitPoint_NumericalFeature_DummyDataSet()
+        {
+            // Given
+            var data = new DataTable
+                           {
+                               Columns =
+                                   {
+                                       new DataColumn("Col1", typeof(double)),
+                                       new DataColumn("ValueCol", typeof(double))
+                                   },
+                               Rows =
+                                   {
+                                       { 1.0, 10 },
+                                       { 2.0, 11.0 },
+                                       { 3.0, 9.0 },
+                                       { 4.0, 20.0 },
+                                       { 5.0, 21.0 },
+                                       { 6.0, 22.0 }
+                                   }
+                           };
+            var dataFrame = new DataFrame(data);
+            var splitQualityMeasure = new VarianceBasedSplitQualityChecker();
+            var subject = new BestSplitSelectorForNumericValues(binaryNumericDataSplitter);
+
+            // When
+            var bestSplit = subject.SelectBestSplit(
+                dataFrame,
+                "ValueCol",
+                splitQualityMeasure,
+                new AlreadyUsedAttributesInfo()) as IBinarySplittingResult;
+
+            // Then
+            Assert.AreEqual(3.5, bestSplit.SplittingValue);
         }
     }
 }

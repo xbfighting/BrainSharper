@@ -15,7 +15,6 @@ namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Processors
         private static readonly IBinaryDataSplitter BinaryDiscreteDataSplitter = new BinaryDiscreteDataSplitter();
         private static readonly IBinaryDataSplitter BinaryNumericDataSplitter = new BinaryNumericDataSplitter();
         private static readonly IDataSplitter MultiValueDiscreteDataSplitter = new MultiValueDiscreteDataSplitter();
-        private static readonly IDataSplitter MultiValueNumericDataSplitter = new MultiValueNumericDataSplitter();
 
         [Test]
         public void PerformBinaryDiscreteDataSplit()

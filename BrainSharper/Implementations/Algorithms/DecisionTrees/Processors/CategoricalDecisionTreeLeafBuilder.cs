@@ -10,9 +10,10 @@
 
     public class CategoricalDecisionTreeLeafBuilder : ILeafBuilder
     {
-        public IDecisionTreeLeaf BuildLeaf(IDataVector<object> finalValues, string dependentFeatureName)
+        public IDecisionTreeLeaf BuildLeaf(IDataFrame finalData, string dependentFeatureName)
         {
             var counts = new Dictionary<object, int>();
+            var finalValues = finalData.GetColumnVector(dependentFeatureName);
             foreach (var val in finalValues)
             {
                 if (!counts.ContainsKey(val))

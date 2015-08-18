@@ -21,7 +21,7 @@ namespace BrainSharperTests.Implementations.Algorithms.Knn
         {
             // Given
             var randomizer = new Random(55);
-            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrame(randomizer: randomizer);
+            var baseDataFrame = TestDataBuilder.BuildRandomAbstractNumericDataFrameWithRedundantAttrs(randomizer: randomizer);
 
             var queryDataFrame = new DataFrame(new DataTable("some data")
             {

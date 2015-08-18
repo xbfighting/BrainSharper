@@ -18,7 +18,7 @@
         protected readonly DataTable DataTable;
         private readonly object locker = new object();
         private IList<int> rowIndices;
-        private readonly Lazy<Matrix<double>> numericMatrix; 
+        private readonly Lazy<Matrix<double>> numericMatrix, numericMatrixWithIntercept; 
 
         #endregion Fields
 
@@ -35,7 +35,8 @@
             {
                 this.rowIndices = rowIndices.Take(dataTable.Rows.Count).ToList();
             }
-            this.numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
+            numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
+            numericMatrixWithIntercept = new Lazy<Matrix<double>>(this.CreateMatrixWithInterceptFromDataTable);
         }
 
         public DataFrame(Matrix<double> matrix, IList<string> columnNames = null, IList<int> rowIndices = null)
@@ -180,6 +181,7 @@
 
         public IDataFrame GetSubsetByColumns(IList<string> columnNames)
         {
+            DataTable.DefaultView.RowFilter = string.Empty;
             return new DataFrame(DataTable.DefaultView.ToTable(false, columnNames.ToArray()), RowIndices);
         }
 
@@ -349,7 +351,12 @@
 
         public Matrix<double> GetAsMatrix()
         {
-            return this.numericMatrix.Value;
+            return numericMatrix.Value;
+        }
+
+        public Matrix<double> GetAsMatrixWithIntercept()
+        {
+            return numericMatrixWithIntercept.Value;
         }
 
         public bool ContentEquals(IDataFrame other)
@@ -406,6 +413,18 @@
             var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
             return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
         }
+
+        private Matrix<double> CreateMatrixWithInterceptFromDataTable()
+        {
+            var rowsArray = DataTable.AsEnumerable().Select(
+                row =>
+                    {
+                        var data = row.ItemArray.Select(Convert.ToDouble).ToList();
+                        data.Insert(0, 1.0);
+                        return data.ToArray();
+                    }).ToList();
+            return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
+        } 
 
 
         #endregion Private methods

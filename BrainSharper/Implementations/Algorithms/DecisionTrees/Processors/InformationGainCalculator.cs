@@ -8,7 +8,7 @@
     using Abstract.Data;
     using Abstract.MathUtils.ImpurityMeasures;
 
-    public class InformationGainCalculator<TDecisionType> : ISplitQualityChecker
+    public class InformationGainCalculator<TDecisionType> : ICategoricalSplitQualityChecker
     {
         protected readonly IImpurityMeasure<TDecisionType> ImpuryMeasure;
         protected readonly ICategoricalImpurityMeasure<TDecisionType> CategoricalImpuryMeasure;

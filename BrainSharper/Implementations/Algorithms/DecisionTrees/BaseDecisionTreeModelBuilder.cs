@@ -12,7 +12,7 @@
     using Abstract.Algorithms.Infrastructure;
     using Abstract.Data;
 
-    using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+    using Processors;
 
     using General.Utils;
 
@@ -139,7 +139,7 @@
 
         protected IDecisionTreeLeaf BuildLeaf(IDataFrame dataFrame, string dependentFeatureName)
         {
-            return LeafBuilder.BuildLeaf(dataFrame.GetColumnVector(dependentFeatureName), dependentFeatureName);
+            return LeafBuilder.BuildLeaf(dataFrame, dependentFeatureName);
         }
 
         private static bool SplitIsEmpty(ISplittingResult splitResult)
