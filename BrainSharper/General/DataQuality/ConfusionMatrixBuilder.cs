@@ -4,7 +4,7 @@
 
     public class ConfusionMatrixBuilder<TPredictionResult> : IDataQualityMeasure<TPredictionResult>
     {
-        public double MeasureAccuracy(IList<TPredictionResult> expected, IList<TPredictionResult> actual)
+        public double CalculateError(IList<TPredictionResult> expected, IList<TPredictionResult> actual)
         {
             return (new ConfusionMatrix<TPredictionResult>(expected, actual)).Accuracy;
         }

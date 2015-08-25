@@ -1,7 +1,7 @@
-﻿using BrainSharper.Abstract.Data;
-
-namespace BrainSharper.Abstract.Algorithms.Infrastructure
+﻿namespace BrainSharper.Abstract.Algorithms.Infrastructure
 {
+    using BrainSharper.Abstract.Data;
+
     /// <summary>
     /// The most generic abstraction for predication algorithm. Takes the data frame and depended variable (y). Returns very generic
     /// prediction model.

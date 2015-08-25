@@ -41,10 +41,12 @@
             var bestSplitQuality = double.NegativeInfinity;
             var initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
             Tuple<string, double> bestSplit = null;
+            /*
             if (baseData.RowCount <= baseData.ColumnsCount)
             {
                 return null;
             }
+            */
             var featureColumns = baseData.ColumnNames.Except(new[] { dependentFeatureName });
             foreach (var feature in featureColumns)
             {

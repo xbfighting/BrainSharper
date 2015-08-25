@@ -9,6 +9,7 @@
     using System.Linq;
 
     using BrainSharper.Abstract.Data;
+    using BrainSharper.General.Utils;
     using BrainSharper.Implementations.Data;
 
     using MathNet.Numerics.LinearAlgebra;
@@ -119,7 +120,7 @@
                 var features = new double[featuresCount];
                 for (int featureIdx = 0; featureIdx < featuresCount; featureIdx++)
                 {
-                    features[featureIdx] = randomizer.Next(min, max);
+                    features[featureIdx] = randomizer.NextDoubleInRange(min, max);
                 }
                 var result = resultFunCalc(features);
                 var finalFeatures = features.ToList();
@@ -197,6 +198,11 @@
         public static IDataFrame ReadHousingData()
         {
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Housing.txt", true));
+        }
+
+        public static IDataFrame ReadHousingDataNormalizedAttrs()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\HousingNormalized.txt", true));
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)

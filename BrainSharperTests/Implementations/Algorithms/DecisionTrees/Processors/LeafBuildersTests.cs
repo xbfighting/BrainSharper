@@ -10,6 +10,7 @@
 
     using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+    using BrainSharper.Implementations.Algorithms.LinearRegression;
     using BrainSharper.Implementations.Data;
 
     using BrainSharperTests.TestUtils;
@@ -29,7 +30,7 @@
             // Data generated with equation: 3 + (data["x1"] * 2) + (data["x2"] * 3) + (data["x3"] * 4)
             Func<IList<double>, double> resultCalc = list => 3 + (list[0] * 2) + (list[1] * 3) + (list[2] * 4);
             var testData = TestDataBuilder.BuildRandomAbstractNumericDataFrame(resultCalc, 100000, 3, min: 1, max: 100);
-            var leafBuilder = new RegressionAndModelDecisionTreeLeafBuilder();
+            var leafBuilder = new RegressionAndModelDecisionTreeLeafBuilder(new GradientDescentModelBuilder(-5, 5, iterCount: 3000));
 
             // When
             var result = leafBuilder.BuildLeaf(testData, "result") as IDecisionTreeRegressionAndModelLeaf;

@@ -9,6 +9,7 @@
     using BrainSharper.General.DataUtils;
     using BrainSharper.Implementations.Algorithms.DecisionTrees;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+    using BrainSharper.Implementations.Algorithms.LinearRegression;
     using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
@@ -69,7 +70,6 @@
         [Test]
         public void DiscreteClassification_NumericFeatures_MultiValuesSplits_AdultCensusData_CrossValidation()
         {
-            // TODO: add support for numeric attributes!!!
             // Given
             var splitter = new CrossValidator<object>();
             var testData = TestDataBuilder.ReadAdultCensusDataFrame();
@@ -189,25 +189,25 @@
         }
 
         [Test]
-        public void Regression_NumericAttrsAndOutcomesOnly()
+        public void Regression_NumericAttrsAndOutcomesOnly_RegularizedGradientDescent()
         {
             // Given
             var randomizer = new Random(3);
             var splitter = new CrossValidator<double>(randomizer);
-            var testData = TestDataBuilder.ReadHousingData();
+            var testData = TestDataBuilder.ReadHousingDataNormalizedAttrs();
 
             var predictor = new DecisionTreePredictor<double>();
 
             var numericTreeBuilder = new BinaryDecisionTreeModelBuilder(
                 new VarianceBasedSplitQualityChecker(),
-                new BestSplitSelectorForNumericValues(new BinaryNumericDataSplitter()), 
-                new RegressionAndModelDecisionTreeLeafBuilder());
+                new BestSplitSelectorForNumericValues(new BinaryNumericDataSplitter()),
+                new RegressionAndModelDecisionTreeLeafBuilder(new RegularizedGradientDescentModelBuilder(0, 1, iterCount: 50, regularizationVal: 0.005), 0.05));
             // When
             var accuracies = splitter.CrossValidate(
                 modelBuilder: numericTreeBuilder,
                 modelBuilderParams: modelBuilderParams,
                 predictor: predictor,
-                qualityMeasure: new RootMeanSquareErrorQualityMeasure(),
+                qualityMeasure: new GoodnessOfFitQualityMeasure(),
                 dataFrame: testData,
                 dependentFeatureName: "MEDV",
                 percetnagOfTrainData: 0.8,
@@ -215,7 +215,40 @@
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();
-            Assert.IsTrue(averageAccuracy <= 20);
+            var averageError =
+                accuracies.Select(report => Math.Abs((report as IRegressionQualityMeasure).ErrorRate)).Sum();
+            Assert.AreEqual(0.9, averageAccuracy);
+        }
+
+        [Test]
+        public void Regression_NumericAttrsAndOutcomesOnly_RegularizedRegression()
+        {
+            // Given
+            var randomizer = new Random(3);
+            var splitter = new CrossValidator<double>(randomizer);
+            var testData = TestDataBuilder.ReadHousingDataNormalizedAttrs();
+
+            var predictor = new DecisionTreePredictor<double>();
+
+            var numericTreeBuilder = new BinaryDecisionTreeModelBuilder(
+                new VarianceBasedSplitQualityChecker(),
+                new BestSplitSelectorForNumericValues(new BinaryNumericDataSplitter()),
+                new RegressionAndModelDecisionTreeLeafBuilder(new RegularizedLinearRegressionModelBuilder(0.005)));
+
+            // When
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: numericTreeBuilder,
+                modelBuilderParams: modelBuilderParams,
+                predictor: predictor,
+                qualityMeasure: new GoodnessOfFitQualityMeasure(),
+                dataFrame: testData,
+                dependentFeatureName: "MEDV",
+                percetnagOfTrainData: 0.7,
+                folds: 15);
+
+            // Then
+            var averegeRsquared = accuracies.Select(report => report.Accuracy).Average();
+            Assert.IsTrue(averegeRsquared >= 0.6);
         }
     }
 }

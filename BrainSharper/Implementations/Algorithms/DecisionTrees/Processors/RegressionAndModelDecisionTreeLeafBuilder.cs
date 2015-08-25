@@ -7,6 +7,9 @@
     using Abstract.Algorithms.DecisionTrees.Processors;
     using Abstract.Data;
 
+    using BrainSharper.Abstract.Algorithms.LinearRegression;
+    using BrainSharper.Implementations.Algorithms.LinearRegression;
+
     using DataStructures;
 
     using MathNet.Numerics.LinearAlgebra;
@@ -15,27 +18,33 @@
 
     public class RegressionAndModelDecisionTreeLeafBuilder : ILeafBuilder
     {
+        private readonly ILinearRegressionModelBuilder regressionModelBuilder;
+        private readonly ILinearRegressionParams regressionParams;
+
+        public RegressionAndModelDecisionTreeLeafBuilder(ILinearRegressionModelBuilder modelBuilder, double learningRate = 0.05)
+        {
+            regressionModelBuilder = modelBuilder;
+            regressionParams = new LinearRegressionParams(learningRate);
+        }
+
         public IDecisionTreeLeaf BuildLeaf(IDataFrame finalData, string dependentFeatureName)
         {
-            //TODO: AAA !!! 1) handle situation, when matrix cannot be inversed. 2) think about embedding split quality checker into BestSplitSelectors (more customized solutions posssible)!
-            var dependentValues = finalData.GetNumericColumnVector(dependentFeatureName);
+            var vectorY = finalData.GetNumericColumnVector(dependentFeatureName);
+            var featureNames = finalData.ColumnNames.Except(new[] { dependentFeatureName }).ToList();
+            var subset = finalData.GetSubsetByColumns(featureNames);
+            var matrixX = finalData.GetSubsetByColumns(featureNames).GetAsMatrixWithIntercept();
             Vector<double> fittedWeights = null;
+            
             try
             {
-                var featureNames = finalData.ColumnNames.Except(new[] { dependentFeatureName }).ToList();
-                var subset = finalData.GetSubsetByColumns(featureNames);
-                if (subset.RowCount != finalData.RowCount)
-                {
-                    Console.WriteLine("here!");
-                }
-                var featureMatrix = finalData.GetSubsetByColumns(featureNames).GetAsMatrixWithIntercept();
-                fittedWeights = MultipleRegression.DirectMethod(featureMatrix, dependentValues);
+                fittedWeights = MultipleRegression.DirectMethod(matrixX, vectorY);
             }   
             catch (Exception exc)
             {
-                Console.WriteLine(exc);
+                fittedWeights = regressionModelBuilder.BuildModel(matrixX, vectorY, regressionParams).Weights;
             }
-            return new RegressionAndModelLeaf(dependentFeatureName, fittedWeights, dependentValues.Mean());
+            
+            return new RegressionAndModelLeaf(dependentFeatureName, fittedWeights, vectorY.Mean());
         }
     }
 }

@@ -76,6 +76,7 @@
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationModelBuilderTest.cs" />
     <Compile Include="Implementations\Algorithms\Knn\BackwardsElimination\BackwardsEliminationKnnPredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\Knn\SimpleKnnPredictorTests.cs" />
+    <Compile Include="Implementations\Algorithms\LinearRegression\LinearRegressionTests.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
     <Compile Include="Implementations\Data\DataVectorTests.cs" />
     <Compile Include="Implementations\MathUtils\ImpurityMeasures\ImpurityMeasuresTests.cs" />
