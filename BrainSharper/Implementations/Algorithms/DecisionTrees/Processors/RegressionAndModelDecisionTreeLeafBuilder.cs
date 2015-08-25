@@ -39,7 +39,7 @@
             {
                 fittedWeights = MultipleRegression.DirectMethod(matrixX, vectorY);
             }   
-            catch (Exception exc)
+            catch (Exception)
             {
                 fittedWeights = regressionModelBuilder.BuildModel(matrixX, vectorY, regressionParams).Weights;
             }
