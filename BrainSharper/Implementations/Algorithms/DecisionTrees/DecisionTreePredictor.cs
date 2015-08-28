@@ -41,28 +41,7 @@
         {
             if (decisionTree is IDecisionTreeLeaf)
             {
-                if (decisionTree is IDecisionTreeRegressionAndModelLeaf)
-                {
-                    // TODO: handle regression/modelling case here
-                    var regressionLeaf = decisionTree as IDecisionTreeRegressionAndModelLeaf;
-                    var numericVector = vector.NumericVector.ToList();
-                    numericVector.Insert(0, 1.0);
-                    var vectorWithIntercept = Vector<double>.Build.DenseOfArray(numericVector.ToArray());
-                    double predictedVal = 0.0;
-                    if (regressionLeaf.ModelWeights != null)
-                    {
-                        predictedVal =
-                            vectorWithIntercept.DotProduct(
-                                Vector<double>.Build.DenseOfArray(regressionLeaf.ModelWeights.ToArray()));
-                    }
-                    else
-                    {
-                        predictedVal = regressionLeaf.DecisionMeanValue;
-                    }
-                    return new Tuple<TDecisionValue, double>((TDecisionValue)Convert.ChangeType(predictedVal, typeof(TDecisionValue)), probabilitiesProductSoFar);
-                }
-                var classificationLeaf = decisionTree as IDecisionTreeLeaf;
-                return new Tuple<TDecisionValue, double>((TDecisionValue)classificationLeaf.LeafValue, probabilitiesProductSoFar);
+                return HandleLeaf(vector, decisionTree, probabilitiesProductSoFar);
             }
             var parentNode = decisionTree as IDecisionTreeParentNode;
             if (parentNode is IBinaryDecisionTreeParentNode)
@@ -70,6 +49,40 @@
                 return this.ProcessBinarySplit(vector, parentNode as IBinaryDecisionTreeParentNode, probabilitiesProductSoFar);
             }
             return this.ProcessMultiValueSplit(vector, parentNode, probabilitiesProductSoFar);
+        }
+
+        private static Tuple<TDecisionValue, double> HandleLeaf(IDataVector<TDecisionValue> vector, IDecisionTreeNode decisionTree, double probabilitiesProductSoFar)
+        {
+            if (decisionTree is IDecisionTreeRegressionAndModelLeaf)
+            {
+                return HandleRegressionAndModelLeaf(vector, decisionTree, probabilitiesProductSoFar);
+            }
+            var classificationLeaf = decisionTree as IDecisionTreeLeaf;
+            return new Tuple<TDecisionValue, double>((TDecisionValue)classificationLeaf.LeafValue, probabilitiesProductSoFar);
+        }
+
+        private static Tuple<TDecisionValue, double> HandleRegressionAndModelLeaf(
+            IDataVector<TDecisionValue> vector,
+            IDecisionTreeNode decisionTree,
+            double probabilitiesProductSoFar)
+        {
+            var regressionLeaf = decisionTree as IDecisionTreeRegressionAndModelLeaf;
+            var numericVector = vector.NumericVector.ToList();
+            numericVector.Insert(0, 1.0);
+            var vectorWithIntercept = Vector<double>.Build.DenseOfArray(numericVector.ToArray());
+            double predictedVal = 0.0;
+            if (regressionLeaf.ModelWeights != null)
+            {
+                predictedVal =
+                    vectorWithIntercept.DotProduct(Vector<double>.Build.DenseOfArray(regressionLeaf.ModelWeights.ToArray()));
+            }
+            else
+            {
+                predictedVal = regressionLeaf.DecisionMeanValue;
+            }
+            return new Tuple<TDecisionValue, double>(
+                (TDecisionValue)Convert.ChangeType(predictedVal, typeof(TDecisionValue)),
+                probabilitiesProductSoFar);
         }
 
         private Tuple<TDecisionValue, double> ProcessBinarySplit(
@@ -109,14 +122,12 @@
                 throw new ArgumentException($"Invalid vector passed for prediction. Unknown feature {decisionFeature}");
             }
             TDecisionValue vectorValue = vector[decisionFeature];
-            // TODO: add support for numeric splits separately
-            // TODO: add support for missing attributes- using % of covered instances
             if (multiValueDecisionTreeNode.TestResultsContains(vectorValue))
             {
                 // TODO: optimize for a single query (maybe?) - return Tuple
                 var childToFollow = multiValueDecisionTreeNode.GetChildForTestResult(vectorValue);
                 var linkToChild = multiValueDecisionTreeNode.GetChildLinkForChild(childToFollow);
-                return this.ProcessInstance(vector, childToFollow, probabilitiesProductSoFar * linkToChild.InstancesPercentage);
+                return ProcessInstance(vector, childToFollow, probabilitiesProductSoFar * linkToChild.InstancesPercentage);
             }
 
             var results = new Dictionary<TDecisionValue, double>();
