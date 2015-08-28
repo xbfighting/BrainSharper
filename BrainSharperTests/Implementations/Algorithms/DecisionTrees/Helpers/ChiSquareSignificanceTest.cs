@@ -81,7 +81,6 @@
 
             // Then
             Assert.IsTrue(isSplitSignificant);
-
         }
     }
 }

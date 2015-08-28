@@ -4,11 +4,13 @@
 
     public class DecisionTreeModelBuilderParams : IDecisionTreeModelBuilderParams
     {
-        public DecisionTreeModelBuilderParams(bool processSubtreesCreationInParallel)
+        public DecisionTreeModelBuilderParams(bool processSubtreesCreationInParallel, bool usePrunningHeuristicInBuild = false)
         {
             this.ProcessSubtreesCreationInParallel = processSubtreesCreationInParallel;
+            UsePrunningHeuristicDuringTreeBuild = usePrunningHeuristicInBuild;
         }
 
         public bool ProcessSubtreesCreationInParallel { get; }
+        public bool UsePrunningHeuristicDuringTreeBuild { get; }
     }
 }

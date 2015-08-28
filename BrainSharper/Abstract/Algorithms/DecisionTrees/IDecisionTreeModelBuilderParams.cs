@@ -5,5 +5,6 @@
     public interface IDecisionTreeModelBuilderParams : IModelBuilderParams
     {
         bool ProcessSubtreesCreationInParallel { get; }
+        bool UsePrunningHeuristicDuringTreeBuild { get; }
     }
 }

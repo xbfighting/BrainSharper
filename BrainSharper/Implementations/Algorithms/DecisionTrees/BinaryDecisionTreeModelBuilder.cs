@@ -5,6 +5,9 @@
 
     using Abstract.Algorithms.DecisionTrees.DataStructures;
     using Abstract.Algorithms.DecisionTrees.Processors;
+
+    using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
+
     using DataStructures.BinaryDecisionTrees;
     using Processors;
 
@@ -13,8 +16,9 @@
         public BinaryDecisionTreeModelBuilder(
             ISplitQualityChecker splitQualityChecker, 
             IBinaryBestSplitSelector binaryBestSplitSelector, 
-            ILeafBuilder leafBuilder)
-            : base(splitQualityChecker, binaryBestSplitSelector, leafBuilder)
+            ILeafBuilder leafBuilder,
+            IStatisticalSignificanceChecker statisticalSignificanceChecker = null)
+            : base(splitQualityChecker, binaryBestSplitSelector, leafBuilder, statisticalSignificanceChecker)
         {
         }
 
