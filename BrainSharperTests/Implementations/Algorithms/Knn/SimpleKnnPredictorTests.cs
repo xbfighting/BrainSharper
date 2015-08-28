@@ -1,18 +1,22 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using BrainSharper.General.MathFunctions;
-using BrainSharper.Implementations.Algorithms.Knn;
-using BrainSharper.Implementations.Data;
-using BrainSharper.Implementations.MathUtils.DistanceMeasures;
-using BrainSharper.Implementations.MathUtils.ErrorMeasures;
-using BrainSharper.Implementations.MathUtils.Normalizers;
-using BrainSharperTests.TestUtils;
-using MathNet.Numerics.LinearAlgebra;
-using NUnit.Framework;
-
-namespace BrainSharperTests.Implementations.Algorithms.Knn
+﻿namespace BrainSharperTests.Implementations.Algorithms.Knn
 {
+    using System;
+    using System.Data;
+    using System.Linq;
+
+    using BrainSharper.General.MathFunctions;
+    using BrainSharper.Implementations.Algorithms.Knn;
+    using BrainSharper.Implementations.Data;
+    using BrainSharper.Implementations.MathUtils.DistanceMeasures;
+    using BrainSharper.Implementations.MathUtils.ErrorMeasures;
+    using BrainSharper.Implementations.MathUtils.Normalizers;
+
+    using MathNet.Numerics.LinearAlgebra;
+
+    using NUnit.Framework;
+
+    using TestUtils;
+
     [TestFixture]
     public class SimpleKnnPredictorTests
     {

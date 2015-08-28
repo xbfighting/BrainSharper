@@ -91,6 +91,9 @@
     <Compile Include="Abstract\Algorithms\LinearRegression\ILinearRegressionPredictor.cs" />
     <Compile Include="Abstract\Algorithms\LinearRegression\ILinearRegressionModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\LinearRegression\ILinearRegressionModel.cs" />
+    <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModel.cs" />
+    <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilderParams.cs" />
     <Compile Include="Abstract\Data\IFilteringResult.cs" />
     <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IErrorMeasure.cs" />
@@ -171,6 +174,10 @@
     <Compile Include="Implementations\Algorithms\LinearRegression\LinearRegressionModel.cs" />
     <Compile Include="Implementations\Algorithms\LinearRegression\LinearRegressionParams.cs" />
     <Compile Include="Implementations\Algorithms\LinearRegression\LinearRegressionPredictor.cs" />
+    <Compile Include="Implementations\Algorithms\RandomForests\RandomForestModel.cs" />
+    <Compile Include="Implementations\Algorithms\RandomForests\RandomForestModelBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\RandomForests\RandomForestParams.cs" />
+    <Compile Include="Implementations\Algorithms\RandomForests\RandomForestPredictor.cs" />
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />

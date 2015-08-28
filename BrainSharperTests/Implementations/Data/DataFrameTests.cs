@@ -53,6 +53,29 @@
         }
 
         [Test]
+        public void Slice_DuplicatedRows_Test()
+        {
+            // Given
+            var baseDataFrame = TestDataBuilder.BuildSmallDataFrameNumbersOnly();
+            var expectedMatrix = Matrix<double>.Build.DenseOfArray(
+                new double[,]
+                    {
+                        { 7, 6 },
+                        { 7, 6 },
+                        { 11, 10 },
+                        { 11, 10 }
+                    });
+
+
+            // When
+            var slice = baseDataFrame.Slice(new[] { 1, 1, 2, 2 }, new[] { "Col3", "Col2" });
+            var sliceMatrix = slice.GetAsMatrix();
+
+            // Then
+            Assert.IsTrue(expectedMatrix.Equals(sliceMatrix));
+        }
+
+        [Test]
         public void GetValuesForRows()
         {
             // Given
