@@ -5,7 +5,6 @@
     using System.Linq;
 
     using MathNet.Numerics;
-    using MathNet.Numerics.Statistics;
 
     public class GoodnessOfFitQualityMeasure : IDataQualityMeasure<double>
     {

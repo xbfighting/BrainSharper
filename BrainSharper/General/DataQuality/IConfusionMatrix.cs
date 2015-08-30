@@ -21,9 +21,9 @@
 
         public ConfusionMatrix(IList<TPredictionResult> expectedValues, IList<TPredictionResult> actualValues)
         {
-            this.ExpectedValues = expectedValues;
-            this.ActualValues = actualValues;
-            this.BuildConfusionMatrix();
+            ExpectedValues = expectedValues;
+            ActualValues = actualValues;
+            BuildConfusionMatrix();
         }
 
         public IList<TPredictionResult> ExpectedValues { get; }

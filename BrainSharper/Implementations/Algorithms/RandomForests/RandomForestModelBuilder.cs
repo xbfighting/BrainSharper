@@ -18,7 +18,6 @@
     public class RandomForestModelBuilder<TPredictionVal> : IRandomForestModelBuilder
     {
         private readonly IDecisionTreeModelBuilder decisionTreeModelBuilder;
-        private readonly Random randomizer;
         private readonly IDataQualityMeasure<TPredictionVal> dataQualityMeasure;
         private readonly IPredictor<TPredictionVal> decisionTreePredictor;
         private readonly Func<int, int> featuresToUseCountCalculator;
@@ -29,13 +28,11 @@
             IPredictor<TPredictionVal> treePredictor,
             IDataQualityMeasure<TPredictionVal> dataQualityMeasurer,
             Func<int, int> featuresToUseCountSelector,
-            Func<IDecisionTreeModelBuilderParams> decisionTreePramsFactory,
-            Random random = null)
+            Func<IDecisionTreeModelBuilderParams> decisionTreePramsFactory)
         {
             this.decisionTreeModelBuilder = decisionTreeModelBuilder;
             decisionTreePredictor = treePredictor;
             dataQualityMeasure = dataQualityMeasurer;
-            randomizer = random ?? new Random();
             featuresToUseCountCalculator = featuresToUseCountSelector;
             decisionTreeModelBuilderParamsFactory = decisionTreePramsFactory;
         }
@@ -54,6 +51,8 @@
 
             var columnsCountToTake = featuresToUseCountCalculator(dataFrame.ColumnsCount - 1);
             var featureColumns = dataFrame.ColumnNames.Except(new[] { dependentFeatureName }).ToList();
+            var randomizer = new Random();
+            var locker = new object();
 
             Parallel.For(
                 0,
@@ -62,11 +61,25 @@
                     {
                         var randomlySelectedIndices =
                             Enumerable.Range(0, dataFrame.RowCount)
-                                .Select(_ => randomizer.Next(0, dataFrame.RowCount))
+                                .Select(
+                                    _ =>
+                                        {
+                                            lock (locker)
+                                            {
+                                                return randomizer.Next(0, dataFrame.RowCount);
+                                            }
+                                        })
                                 .ToList();
                         var outOfBagIndices =
                             Enumerable.Range(0, dataFrame.RowCount).Except(randomlySelectedIndices).ToList();
-                        var columnsToTake = featureColumns.OrderBy(_ => randomizer.Next()).Take(columnsCountToTake).ToList();
+                        var columnsToTake = featureColumns.OrderBy(
+                            _ =>
+                                {
+                                    lock (locker)
+                                    {
+                                        return randomizer.Next();
+                                    }
+                                }).Take(columnsCountToTake).ToList();
                         columnsToTake.Add(dependentFeatureName);
 
                         var baggedTestData = dataFrame.Slice(randomlySelectedIndices, columnsToTake);
@@ -81,9 +94,9 @@
 
                         //TODO: AAA !!! Better calculate errors!!!
                         //TODO: AAA !!! Later on add support for calculating variable importance!!!
-                        var dataQuality = dataQualityMeasure.CalculateError(oobExpected, prediction);
+                        var oobError = dataQualityMeasure.CalculateError(oobExpected, prediction);
                         trees[i] = decisionTree as IDecisionTreeNode;
-                        oobErrors[i] = dataQuality;
+                        oobErrors[i] = oobError;
                     });
 
             return new RandomForestModel(trees, oobErrors);
