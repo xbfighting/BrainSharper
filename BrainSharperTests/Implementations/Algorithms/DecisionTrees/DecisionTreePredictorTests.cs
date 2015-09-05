@@ -2,8 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Runtime.CompilerServices;
-
     using BrainSharper.Abstract.Algorithms.DecisionTrees;
     using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
     using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
@@ -16,9 +14,6 @@
     using BrainSharper.Implementations.Algorithms.LinearRegression;
     using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
-
-    using MathNet.Numerics.LinearRegression;
-
     using NUnit.Framework;
 
     using TestUtils;

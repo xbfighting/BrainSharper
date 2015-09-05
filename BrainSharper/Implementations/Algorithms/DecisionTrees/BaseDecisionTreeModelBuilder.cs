@@ -54,7 +54,8 @@
             var decisionTreeParams = (IDecisionTreeModelBuilderParams)additionalParams;
             var useParallelProcessing = decisionTreeParams.ProcessSubtreesCreationInParallel;
             var alreadyUsedAttributesInfo = new AlreadyUsedAttributesInfo();
-            var node = this.BuildDecisionNode(dataFrame, dependentFeatureName, decisionTreeParams, alreadyUsedAttributesInfo, useParallelProcessing);
+            //TODO: reduce the number of parameters - maybe some nicer DTO?
+            var node = this.BuildDecisionNode(dataFrame, dependentFeatureName, decisionTreeParams, alreadyUsedAttributesInfo, 0, useParallelProcessing);
             return node;
         }
 
@@ -80,9 +81,10 @@
             string dependentFeatureName,
             IDecisionTreeModelBuilderParams additionalParams,
             IAlredyUsedAttributesInfo alreadyUsedAttributesInfo, 
+            int treeDepth,
             bool isFirstSplit = false)
         {
-            if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1)
+            if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1 || MaximalTreeDepthHasBeenReached(additionalParams, treeDepth))
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
@@ -117,14 +119,14 @@
                     splitResult.SplittedDataSets,
                     splitData =>
                     {
-                        this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo);
+                        this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo, treeDepth + 1);
                     });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo);
+                    this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo, treeDepth + 1);
                 }
             }
             return BuildConcreteDecisionTreeNode(splitResult, children);
@@ -135,13 +137,15 @@
             IDecisionTreeModelBuilderParams additionalParams, 
             ISplittedData splitData, 
             ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children, 
-            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo,
+            int treeDepth)
         {
             var decisionTreeNode = BuildDecisionNode(
                 splitData.SplittedDataFrame,
                 dependentFeatureName,
                 additionalParams,
-                alreadyUsedAttributesInfo);
+                alreadyUsedAttributesInfo,
+                treeDepth);
             var link = splitData.SplitLink;
             children.TryAdd(link, decisionTreeNode);
         }
@@ -168,6 +172,11 @@
             return splitResult == null
                    || splitResult.SplittedDataSets.Any(
                        splitSet => splitSet?.SplittedDataFrame == null || splitSet.SplittedDataFrame.RowCount == 0);
+        }
+
+        private static bool MaximalTreeDepthHasBeenReached(IDecisionTreeModelBuilderParams additionalParams, int treeDepth)
+        {
+            return additionalParams.MaximalTreeDepth.HasValue && treeDepth >= additionalParams.MaximalTreeDepth;
         }
     }
 }

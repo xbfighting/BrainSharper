@@ -6,5 +6,6 @@
     {
         bool ProcessSubtreesCreationInParallel { get; }
         bool UsePrunningHeuristicDuringTreeBuild { get; }
+        int? MaximalTreeDepth { get; }
     }
 }

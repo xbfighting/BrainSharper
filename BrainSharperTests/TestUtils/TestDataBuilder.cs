@@ -205,6 +205,16 @@
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\HousingNormalized.txt", true));
         }
 
+        public static IDataFrame ReadTitanicData()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\titanic_train_data.txt", true));
+        }
+
+        public static IDataFrame ReadTitanicQuery()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\cleaned_test.csv", true));
+        }
+
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)
         {
             string header = isFirstRowHeader ? "Yes" : "No";

@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -12,6 +14,7 @@
     using Abstract.Data;
 
     using BrainSharper.General.DataQuality;
+    using BrainSharper.General.Utils;
 
     using MathNet.Numerics.Statistics;
 
@@ -21,7 +24,7 @@
         private readonly IDataQualityMeasure<TPredictionVal> dataQualityMeasure;
         private readonly IPredictor<TPredictionVal> decisionTreePredictor;
         private readonly Func<int, int> featuresToUseCountCalculator;
-        private readonly Func<IDecisionTreeModelBuilderParams> decisionTreeModelBuilderParamsFactory; 
+        private readonly Func<IDecisionTreeModelBuilderParams> decisionTreeModelBuilderParamsFactory;
 
         public RandomForestModelBuilder(
             IDecisionTreeModelBuilder decisionTreeModelBuilder,
@@ -59,27 +62,16 @@
                 randomForestParams.TreesCount,
                 i =>
                     {
+                        var localRandomizer = new Random(i.GetHashCode());
                         var randomlySelectedIndices =
                             Enumerable.Range(0, dataFrame.RowCount)
-                                .Select(
-                                    _ =>
-                                        {
-                                            lock (locker)
-                                            {
-                                                return randomizer.Next(0, dataFrame.RowCount);
-                                            }
-                                        })
+                                .Select(_ => localRandomizer.Next(0, dataFrame.RowCount))
                                 .ToList();
                         var outOfBagIndices =
                             Enumerable.Range(0, dataFrame.RowCount).Except(randomlySelectedIndices).ToList();
-                        var columnsToTake = featureColumns.OrderBy(
-                            _ =>
-                                {
-                                    lock (locker)
-                                    {
-                                        return randomizer.Next();
-                                    }
-                                }).Take(columnsCountToTake).ToList();
+                        var columnsToTake = new List<string>();
+                        columnsToTake = featureColumns.Shuffle(localRandomizer).Take(columnsCountToTake).ToList();
+
                         columnsToTake.Add(dependentFeatureName);
 
                         var baggedTestData = dataFrame.Slice(randomlySelectedIndices, columnsToTake);
@@ -92,7 +84,6 @@
                             decisionTreeModelBuilderParamsFactory());
                         var prediction = decisionTreePredictor.Predict(oobTestData, decisionTree, dependentFeatureName);
 
-                        //TODO: AAA !!! Better calculate errors!!!
                         //TODO: AAA !!! Later on add support for calculating variable importance!!!
                         var oobError = dataQualityMeasure.CalculateError(oobExpected, prediction);
                         trees[i] = decisionTree as IDecisionTreeNode;
