@@ -94,6 +94,12 @@
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModel.cs" />
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilderParams.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IComplex.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IDisjunctiveSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IInequalitySelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\INumericSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IRangeSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\ISelector.cs" />
     <Compile Include="Abstract\Data\IFilteringResult.cs" />
     <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IErrorMeasure.cs" />
@@ -178,6 +184,12 @@
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestParams.cs" />
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestPredictor.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\Complex.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\EmptySelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\RangeSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\Selector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\UniversalSelector.cs" />
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />
@@ -195,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Abstract\Algorithms\RuleBasedSystems\Algorithms\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
