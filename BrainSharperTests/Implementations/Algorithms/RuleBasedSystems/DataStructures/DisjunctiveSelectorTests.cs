@@ -1,6 +1,7 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.RuleBasedSystems.DataStructures
 {
-    using BrainSharper.Implementations.Algorithms.RuleBasedSystems.DataStructures;
+    using BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -10,10 +11,10 @@
         public void IntersectSelectors_MoreSpecificSelectorReturned()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new DisjunctiveSelector("outlook", "sunny", "rainy");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "sunny", "rainy");
 
-            var expectedSelector = new DisjunctiveSelector("outlook", "sunny");
+            var expectedSelector = new DisjunctiveSelector<string>("outlook", "sunny");
 
             // When
             var actualSelector = selector1.Intersect(selector2);
@@ -26,10 +27,10 @@
         public void IntersectSelectors_EmptySelectorReturned()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new DisjunctiveSelector("outlook", "rainy");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "rainy");
 
-            var expectedSelector = new EmptySelector("outlook");
+            var expectedSelector = new EmptySelector<string>("outlook");
 
             // When
             var actualSelector = selector1.Intersect(selector2);
@@ -42,8 +43,8 @@
         public void IntersectSelectors_WithUniversalSelector_ReturnedTheSame()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new UniversalSelector("outlook");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new UniversalSelector<string>("outlook");
 
             var expectedSelector = selector1;
 
@@ -58,8 +59,8 @@
         public void IntersectSelectors_WithEmptySelector_ReturnedEmpty()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new EmptySelector("outlook");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new EmptySelector<string>("outlook");
 
             var expectedSelector = selector2;
 
@@ -71,36 +72,36 @@
         }
 
         [Test]
-        public void IsMoreDetailedThan_ReturnsTrue()
+        public void IsMoreGeneralThan_ReturnsTrue()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new DisjunctiveSelector("outlook", "sunny");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "sunny");
 
             // When
-            Assert.IsTrue(selector2.IsMoreDetailedThan(selector1));
+            Assert.IsFalse(selector2.IsMoreGeneralThan(selector1));
         }
 
         [Test]
-        public void IsMoreDetailedThan_ReturnsFalse()
+        public void IsMoreGeneralThan_ReturnsFalse()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new DisjunctiveSelector("outlook", "sunny");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "sunny");
 
             // When
-            Assert.IsFalse(selector1.IsMoreDetailedThan(selector2));
+            Assert.IsTrue(selector1.IsMoreGeneralThan(selector2));
         }
 
         [Test]
-        public void IsMoreDetailedThan_ReturnsFalse_IfDifferentAttributes()
+        public void IsMoreGeneralThan_ReturnsFalse_IfDifferentAttributes()
         {
             // Given
-            var selector1 = new DisjunctiveSelector("outlook", "sunny", "overcast");
-            var selector2 = new DisjunctiveSelector("temperature", "high");
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("temperature", "high");
 
             // When
-            Assert.IsFalse(selector1.IsMoreDetailedThan(selector2));
+            Assert.IsFalse(selector1.IsMoreGeneralThan(selector2));
         }
     }
 }

@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using MathNet.Numerics.Statistics;
+
     public static class CollectionUtils
     {
         public static IList<T> Shuffle<T>(this IList<T> list, Random randomizer = null)
@@ -22,6 +24,19 @@
         {
             var sum = 0.0;
             return numericSequence.Select(elem => (sum += elem)).ToList();
+        }
+
+        public static bool IsEquivalentTo<TValue>(this IEnumerable<TValue> col1, IEnumerable<TValue> col2)
+        {
+            if (col2 == null)
+            {
+                return false;
+            }
+
+            var lst1 = col1.ToList();
+            var lst2 = col2.ToList();
+
+            return lst1.Count() == lst2.Count() && !lst1.Except(lst2).Any();
         }
     }
 }

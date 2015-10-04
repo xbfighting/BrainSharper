@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
-
-namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
+﻿namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Abstract.MathUtils.ImpurityMeasures;
+    
     public abstract class BaseImpurityMeasure<T> : ICategoricalImpurityMeasure<T>
     {
         public double ImpurityValue(IList<T> values)

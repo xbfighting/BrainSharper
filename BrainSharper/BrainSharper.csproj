@@ -94,12 +94,20 @@
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModel.cs" />
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\RandomForests\IRandomForestModelBuilderParams.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IComplex.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IDisjunctiveSelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IInequalitySelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\INumericSelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\IRangeSelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleBasedSystems\DataStructures\ISelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IComplex.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IComplexCoveredExamplesInfo.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IDisjunctiveSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IInequalitySelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\INumericSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRangeSelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRule.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRulesList.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\ISelector.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\Heuristics\IComplexQualityChecker.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\Heuristics\IComplexStatisticalImportanceChecker.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\IRuleInductionParams.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\IRulesInductionModelBuilder.cs" />
+    <Compile Include="Abstract\Algorithms\RuleInduction\Processors\IComplexesIntersector.cs" />
     <Compile Include="Abstract\Data\IFilteringResult.cs" />
     <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IErrorMeasure.cs" />
@@ -184,12 +192,20 @@
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestParams.cs" />
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestPredictor.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\Complex.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelector.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\EmptySelector.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\RangeSelector.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\Selector.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\UniversalSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\Cn2Algorithm.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Complex.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\ComplexCoveredExamplesInfo.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\DisjunctiveSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\EmptySelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\RangeSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Rule.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\RulesList.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Selector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\UniversalSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\Heuristics\ImpurityBasedComplexQualityChecker.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\Heuristics\LaplacianSmoothingQualityChecker.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\Processors\ComplexIntersectorWithSingleValue.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\SequentialCovering.cs" />
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />
     <Compile Include="Implementations\Data\DataVector.cs" />
@@ -208,9 +224,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstract\Algorithms\RuleBasedSystems\Algorithms\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

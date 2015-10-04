@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
+﻿namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class ShannonEntropy<T> : BaseImpurityMeasure<T>
     {
         public override double ImpurityValue(IList<int> elementsInGroupsCount)

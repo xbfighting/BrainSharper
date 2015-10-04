@@ -1,18 +1,18 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleBasedSystems.DataStructures
+﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using Abstract.Algorithms.RuleBasedSystems.DataStructures;
-    using Abstract.Data;
+    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+    using BrainSharper.Abstract.Data;
 
-    public class DisjunctiveSelector : Selector, IDisjunctiveSelector
+    public class DisjunctiveSelector<TValue> : Selector<TValue>, IDisjunctiveSelector<TValue>
     {
         public DisjunctiveSelector(string attributeName, ISet<object> allowedValues)
             : base(attributeName)
         {
-            AllowedValues = allowedValues;
+            this.AllowedValues = allowedValues;
         }
 
         public DisjunctiveSelector(string attributeName, params object[] allowedValues)
@@ -26,16 +26,16 @@
 
         public ISet<object> AllowedValues { get; }
 
-        public override bool Covers<TValue>(IDataVector<TValue> example)
+        public override bool Covers(IDataVector<TValue> example)
         {
-            if (!example.FeatureNames.Contains(AttributeName))
+            if (!example.FeatureNames.Contains(this.AttributeName))
             {
                 return false;
             }
-            return AllowedValues.Contains(example[AttributeName]);
+            return this.AllowedValues.Contains(example[this.AttributeName]);
         }
 
-        public override ISelector Intersect(ISelector other)
+        public override ISelector<TValue> Intersect(ISelector<TValue> other)
         {
             if (other.IsUniversal)
             {
@@ -47,41 +47,41 @@
                 return other;
             }
 
-            var otherDisjunctive = other as IDisjunctiveSelector;
+            var otherDisjunctive = other as IDisjunctiveSelector<TValue>;
             if (otherDisjunctive == null)
             {
                 throw new ArgumentException($"Cannot intersect disjunctive selector and non-disjunctive selector of type {other.GetType().Name}");
             }
 
             
-            if (otherDisjunctive.AttributeName != AttributeName)
+            if (otherDisjunctive.AttributeName != this.AttributeName)
             {
-                throw new ArgumentException($"Cannot intersect selectors for attributes: {AttributeName} and {other.AttributeName}");
+                throw new ArgumentException($"Cannot intersect selectors for attributes: {this.AttributeName} and {other.AttributeName}");
             }
 
-            var intersectedAllowedValues = AllowedValues.Intersect(otherDisjunctive.AllowedValues);
+            var intersectedAllowedValues = this.AllowedValues.Intersect(otherDisjunctive.AllowedValues).ToList();
             if (!intersectedAllowedValues.Any())
             {
-                return new EmptySelector(AttributeName);
+                return new EmptySelector<TValue>(this.AttributeName);
             }
 
-            return new DisjunctiveSelector(AttributeName, new HashSet<object>(intersectedAllowedValues));
+            return new DisjunctiveSelector<TValue>(this.AttributeName, new HashSet<object>(intersectedAllowedValues));
         }
 
-        public override bool IsMoreDetailedThan(ISelector other)
+        public override bool IsMoreGeneralThan(ISelector<TValue> other)
         {
-            if (!(other is IDisjunctiveSelector))
+            if (!(other is IDisjunctiveSelector<TValue>))
             {
                 return false;
             }
 
-            if (!AttributeName.Equals(other.AttributeName))
+            if (!this.AttributeName.Equals(other.AttributeName))
             {
                 return false;
             }
 
-            var otherDisjunctive = (IDisjunctiveSelector)other;
-            return AllowedValues.IsSubsetOf(otherDisjunctive.AllowedValues);
+            var otherDisjunctive = (IDisjunctiveSelector<TValue>)other;
+            return this.AllowedValues.IsSupersetOf(otherDisjunctive.AllowedValues);
         }
 
         public override bool Equals(object obj)
@@ -98,7 +98,7 @@
             {
                 return false;
             }
-            return Equals((IDisjunctiveSelector)obj);
+            return this.Equals((IDisjunctiveSelector<TValue>)obj);
         }
 
         public override int GetHashCode()
@@ -109,13 +109,13 @@
             }
         }
 
-        protected bool Equals(IDisjunctiveSelector other)
+        protected bool Equals(IDisjunctiveSelector<TValue> other)
         {
             if (other == null)
             {
                 return false;
             }
-            return base.Equals(other) && AllowedValues.SetEquals(other.AllowedValues);
+            return base.Equals(other) && this.AllowedValues.SetEquals(other.AllowedValues);
         }
     }
 }

@@ -86,6 +86,8 @@
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\ComplexTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelectorTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\RangeSelectorTests.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\Heuristics\LaplacianSmoothingQualityCheckerTest.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\Processors\ComplexIntersectorWithSingleValueTest.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
     <Compile Include="Implementations\Data\DataVectorTests.cs" />
     <Compile Include="Implementations\MathUtils\ImpurityMeasures\ImpurityMeasuresTests.cs" />

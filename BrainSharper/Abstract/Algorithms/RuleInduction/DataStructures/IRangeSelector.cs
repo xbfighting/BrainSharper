@@ -1,6 +1,6 @@
-﻿namespace BrainSharper.Abstract.Algorithms.RuleBasedSystems.DataStructures
+﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures
 {
-    public interface IRangeSelector : INumericSelector
+    public interface IRangeSelector<TValue> : INumericSelector<TValue>
     {
         double RangeFrom { get; }
         bool FromInclusive { get; }

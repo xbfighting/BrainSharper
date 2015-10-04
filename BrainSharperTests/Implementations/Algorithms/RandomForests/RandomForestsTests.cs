@@ -1,27 +1,18 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.RandomForests
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using BrainSharper.Abstract.Algorithms.DecisionTrees;
-    using BrainSharper.Abstract.Algorithms.Infrastructure;
-    using BrainSharper.Abstract.Algorithms.RandomForests;
     using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
     using BrainSharper.General.DataQuality;
     using BrainSharper.General.DataUtils;
-    using BrainSharper.General.Utils;
     using BrainSharper.Implementations.Algorithms.DecisionTrees;
     using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
     using BrainSharper.Implementations.Algorithms.RandomForests;
-    using BrainSharper.Implementations.Data;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
-    using BrainSharperTests.TestUtils;
-
-    using MathNet.Numerics;
-    using MathNet.Numerics.Data.Text;
-    using MathNet.Numerics.LinearAlgebra.Double;
+    using TestUtils;
 
     using NUnit.Framework;
 

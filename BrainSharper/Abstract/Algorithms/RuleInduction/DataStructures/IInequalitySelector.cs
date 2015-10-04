@@ -1,4 +1,4 @@
-﻿namespace BrainSharper.Abstract.Algorithms.RuleBasedSystems.DataStructures
+﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures
 {
     public enum InequalityOperation
     {
@@ -8,7 +8,7 @@
         GreaterThanOrEqual
     }
 
-    public interface IInequalitySelector : INumericSelector
+    public interface IInequalitySelector<TValue> : INumericSelector<TValue>
     {
         InequalityOperation InequalityOperation { get; }
     }

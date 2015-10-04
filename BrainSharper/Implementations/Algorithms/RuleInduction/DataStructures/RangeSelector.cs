@@ -1,11 +1,11 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleBasedSystems.DataStructures
+﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
     using System;
 
-    using Abstract.Algorithms.RuleBasedSystems.DataStructures;
-    using Abstract.Data;
+    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+    using BrainSharper.Abstract.Data;
 
-    public class RangeSelector : IRangeSelector
+    public class RangeSelector<TValue> : IRangeSelector<TValue>
     {
         public RangeSelector(
             string attributeName, 
@@ -14,11 +14,11 @@
             bool fromInclusive = false,
             bool toInclusive = false)
         {
-            AttributeName = attributeName;
-            RangeFrom = rangeFrom;
-            FromInclusive = fromInclusive;
-            RangeTo = rangeTo;
-            ToInclusive = toInclusive;
+            this.AttributeName = attributeName;
+            this.RangeFrom = rangeFrom;
+            this.FromInclusive = fromInclusive;
+            this.RangeTo = rangeTo;
+            this.ToInclusive = toInclusive;
         }
 
         public bool IsUniversal => false;
@@ -27,22 +27,22 @@
 
         public string AttributeName { get; }
 
-        public bool Covers<TValue>(IDataVector<TValue> example)
+        public bool Covers(IDataVector<TValue> example)
         {
-            if (!example.FeatureNames.Contains(AttributeName))
+            if (!example.FeatureNames.Contains(this.AttributeName))
             {
                 return false;
             }
 
-            double featureValue = (double)Convert.ChangeType(example[AttributeName], typeof(double));
-            if (featureValue >= RangeFrom && featureValue <= RangeTo)
+            double featureValue = (double)Convert.ChangeType(example[this.AttributeName], typeof(double));
+            if (featureValue >= this.RangeFrom && featureValue <= this.RangeTo)
             {
-                if (featureValue == RangeFrom && !FromInclusive)
+                if (featureValue == this.RangeFrom && !this.FromInclusive)
                 {
                     return false;
                 }
 
-                if (featureValue == RangeTo && !ToInclusive)
+                if (featureValue == this.RangeTo && !this.ToInclusive)
                 {
                     return false;
                 }
@@ -52,7 +52,7 @@
             return false;
         }
 
-        public ISelector Intersect(ISelector other)
+        public ISelector<TValue> Intersect(ISelector<TValue> other)
         {
             if (other.IsUniversal)
             {
@@ -64,7 +64,7 @@
                 return other;
             }
 
-            if (!(other is IRangeSelector))
+            if (!(other is IRangeSelector<TValue>))
             {
                 throw new ArgumentException($"Cannot intersect range selector with {other.GetType().Name}");
             }
@@ -73,7 +73,7 @@
             throw new NotImplementedException("Implement me");
         }
 
-        public bool IsMoreDetailedThan(ISelector other)
+        public bool IsMoreGeneralThan(ISelector<TValue> other)
         {
             throw new NotImplementedException();
         }
