@@ -15,6 +15,10 @@
     {
         public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
         {
+            ValidateParameters(additionalParams);
+
+            var ruleInductionParams = (IRuleInductionParams<TValue>)additionalParams;
+
             var rulesList = new List<IRule<TValue>>();
             IDataItem<TValue> defaultValue = new DataItem<TValue>(dependentFeatureName, default(TValue));
 
@@ -27,16 +31,16 @@
                     dependentFeatureName,
                     coveredExamplesIndices,
                     remainingExamples,
-                    additionalParams);
+                    ruleInductionParams);
                 var bestAntecedentComplex = bestAntecedentData.Item1;
-                var bestAntecedentCoveredExamples = bestAntecedentData.Item2;
-                if (bestAntecedentComplex.IsUniversal)
+                if (bestAntecedentComplex == null || bestAntecedentComplex.IsUniversal)
                 {
                     defaultValue = FindConsequent(dataFrame, dependentFeatureName, remainingExamples);
                     break;
                 }
+                var bestAntecedentCoveredExamples = bestAntecedentData.Item2;
                 var ruleConsequent = FindConsequent(dataFrame, dependentFeatureName, bestAntecedentCoveredExamples);
-                var rule = new Rule<TValue>(new IComplex<TValue>[] { bestAntecedentComplex }, ruleConsequent);
+                var rule = new Rule<TValue>(new[] { bestAntecedentComplex }, ruleConsequent);
                 rulesList.Add(rule);
                 remainingExamples = remainingExamples.Except(bestAntecedentCoveredExamples).ToList();
             }
@@ -50,12 +54,12 @@
         }
 
         //TODO: refactor parameters to encapsulate in one struct
-        protected abstract Tuple<IComplex<TValue>, IList<int>>  FindBestRuleAntecedent(
+        protected abstract Tuple<IComplex<TValue>, IList<int>> FindBestRuleAntecedent(
             IDataFrame dataFrame,
             string dependentFeatureName,
             IList<int> coveredExamples,
             IList<int> remainingExamples,
-            IModelBuilderParams additionalParams);
+            IRuleInductionParams<TValue> additionalParams);
 
         protected virtual IDataItem<TValue> FindConsequent(
             IDataFrame dataFrame,
@@ -63,13 +67,21 @@
             IList<int> examplesCoveredByComplex)
         {
             var majorityVote =
-                dataFrame.GetSubsetByRows(examplesCoveredByComplex)
+                dataFrame.GetSubsetByRows(examplesCoveredByComplex, true)
                     .GetColumnVector<TValue>(dependentFeatureName)
                     .Values.GroupBy(val => val)
                     .OrderByDescending(grp => grp.Count())
                     .First()
                     .Key;
             return new DataItem<TValue>(dependentFeatureName, majorityVote);
+        }
+
+        protected void ValidateParameters(IModelBuilderParams modelBuilderParams)
+        {
+            if (!(modelBuilderParams is IRuleInductionParams<TValue>))
+            {
+                throw new ArgumentException("Invalid model builder params passed to rule induction algorithm!");
+            }
         }
     }
 }

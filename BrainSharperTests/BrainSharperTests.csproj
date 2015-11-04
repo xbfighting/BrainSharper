@@ -83,6 +83,7 @@
     <Compile Include="Implementations\Algorithms\Knn\SimpleKnnPredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\LinearRegression\LinearRegressionTests.cs" />
     <Compile Include="Implementations\Algorithms\RandomForests\RandomForestsTests.cs" />
+    <Compile Include="Implementations\Algorithms\RuleBasedSystems\Cn2AlgorithmTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\ComplexTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelectorTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\RangeSelectorTests.cs" />
@@ -103,6 +104,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="DataSets\cleaned_test.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DataSets\discretized_iris.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

@@ -1,14 +1,15 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics
 {
-    using Data;
-    using DataStructures;
+    using System.Collections.Generic;
 
-    public interface IComplexStatisticalImportanceChecker<TValue>
+    using Data;
+
+    public interface IComplexStatisticalImportanceChecker
     {
         bool IsComplexCoverageStatisticallyImportant(
             IDataFrame dataFrame,
             string dependentFeatureName,
-            IComplex<TValue> complex,
-            IComplexCoveredExamplesInfo<TValue> mnemonics);
+            IList<int> examplesCoveredByComplex);
+
     }
 }

@@ -1,14 +1,16 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics
 {
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+    using System.Collections.Generic;
+
     using BrainSharper.Abstract.Data;
 
-    public interface IComplexQualityChecker<TValue>
+    public interface IComplexQualityChecker
     {
+        //TODO: !!! AAA Add support for passing covered examples count directly. Remove unneccessary dictionary with mnemonics
+
         double CalculateComplexQuality(
             IDataFrame dataFrame, 
             string dependentFeatureName,
-            IComplex<TValue> complex, 
-            IComplexCoveredExamplesInfo<TValue> mnemonics);
+            IList<int> examplesCoveredByComplex);
     }
 }

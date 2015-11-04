@@ -17,6 +17,7 @@
     public static class TestDataBuilder
     {
         public const string WeatherDataDependentFeatureName = "Play";
+        public const string DiscretizedIrisDependentFeatureName = "iris";
 
         public static IDataFrame BuildSmallDataFrameMixedDataTypes()
         {
@@ -213,6 +214,11 @@
         public static IDataFrame ReadTitanicQuery()
         {
             return new DataFrame(ReadCsvIntoDataTable(@"DataSets\cleaned_test.csv", true));
+        }
+
+        public static IDataFrame ReadIrisDiscretizedData()
+        {
+            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\discretized_iris.csv", true));
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)

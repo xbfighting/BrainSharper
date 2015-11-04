@@ -1,11 +1,12 @@
 ﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics
 {
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics;
-    using BrainSharper.Abstract.Data;
-    using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
+    using System.Collections.Generic;
 
-    public class ImpurityBasedComplexQualityChecker<TValue> : IComplexQualityChecker<TValue>
+    using Abstract.Algorithms.RuleInduction.Heuristics;
+    using Abstract.Data;
+    using Abstract.MathUtils.ImpurityMeasures;
+
+    public class ImpurityBasedComplexQualityChecker<TValue> : IComplexQualityChecker
     {
         private readonly IImpurityMeasure<TValue> impurityMeasure;
 
@@ -17,12 +18,10 @@
         public double CalculateComplexQuality(
             IDataFrame dataFrame,
             string dependentFeatureName,
-            IComplex<TValue> complex,
-            IComplexCoveredExamplesInfo<TValue> mnemonics)
+            IList<int> examplesCoveredByComplex)
         {
-            var examplesCoveredByComplex = mnemonics.ExamplesCoveredByComplex(complex);
             var dependentValuesCoveredByComplex =
-                dataFrame.GetSubsetByRows(examplesCoveredByComplex).GetColumnVector<TValue>(dependentFeatureName).Values;
+                dataFrame.GetSubsetByRows(examplesCoveredByComplex, true).GetColumnVector<TValue>(dependentFeatureName).Values;
             return -1 * this.impurityMeasure.ImpurityValue(dependentValuesCoveredByComplex);
         }
     }

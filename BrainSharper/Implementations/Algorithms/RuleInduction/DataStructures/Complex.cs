@@ -23,8 +23,8 @@
             }
         }
 
-        public Complex(params ISelector<TValue>[] selectors)
-            : this(selectors, selectors.Any())
+        public Complex(bool isEmpty = false, params ISelector<TValue>[] selectors)
+            : this(selectors, isEmpty)
         {
             
         }

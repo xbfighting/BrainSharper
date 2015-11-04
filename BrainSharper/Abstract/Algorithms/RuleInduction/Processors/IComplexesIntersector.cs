@@ -7,7 +7,7 @@
     public interface IComplexesIntersector<TValue>
     {
         //TODO: AAA !!! think about using custom feature domain class
-        IList<IComplex<TValue>> IntersectComplexWithFeatureDomains(
+        IList<IComplex<TValue>> IntersectComplexesWithFeatureDomains(
             IList<IComplex<TValue>> complexesToIntersect,
             IDictionary<string, ISet<IComplex<TValue>>> featureDomains);
 

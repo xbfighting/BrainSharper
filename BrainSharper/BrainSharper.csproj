@@ -202,9 +202,12 @@
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\RulesList.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Selector.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\UniversalSelector.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\Heuristics\ChiSquareComplexStatisticalImportanceChecker.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\Heuristics\ImpurityBasedComplexQualityChecker.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\Heuristics\LaplacianSmoothingQualityChecker.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\Processors\ComplexIntersectorWithSingleValue.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\RuleInductionParams.cs" />
+    <Compile Include="Implementations\Algorithms\RuleInduction\RulesPredictor.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\SequentialCovering.cs" />
     <Compile Include="Implementations\Data\DataFrame.cs" />
     <Compile Include="Implementations\Data\DataItem.cs" />

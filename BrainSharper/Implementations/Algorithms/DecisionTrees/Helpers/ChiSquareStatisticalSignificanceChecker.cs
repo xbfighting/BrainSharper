@@ -9,6 +9,7 @@
 
     using MathNet.Numerics.Distributions;
 
+    //TODO: make it common with other chisquare mathods
     public class ChiSquareStatisticalSignificanceChecker : IStatisticalSignificanceChecker
     {
         private readonly double significanceLevel;

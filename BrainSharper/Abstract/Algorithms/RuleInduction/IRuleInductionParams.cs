@@ -1,8 +1,11 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction
 {
-    using BrainSharper.Abstract.Algorithms.Infrastructure;
+    using System.Collections.Generic;
+    using DataStructures;
+    using Infrastructure;
 
-    public interface IRuleInductionParams : IModelBuilderParams
+    public interface IRuleInductionParams<TValue> : IModelBuilderParams
     {
+        IDictionary<string, ISet<IComplex<TValue>>> FeatureDomainsToIntersectWith { get; }
     }
 }

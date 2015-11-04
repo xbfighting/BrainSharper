@@ -30,14 +30,17 @@
             return results;
         }
 
-        public IList<IComplex<TValue>> IntersectComplexWithFeatureDomains(
+        public IList<IComplex<TValue>> IntersectComplexesWithFeatureDomains(
             IList<IComplex<TValue>> complexesToIntersect,
             IDictionary<string, ISet<IComplex<TValue>>> featureDomains)
         {
             var results = new List<IComplex<TValue>>();
 
+            //TODO: AAA !!! optimize this maybe later, to not include redundant intersection operations - add helper dictionary to exclude values already covered
+
             foreach (var featureWithDomain in featureDomains)
             {
+                var featureName = featureWithDomain.Key;
                 var domain = featureWithDomain.Value;
                 foreach (var singleDomainValueComplex in domain)
                 {
