@@ -103,5 +103,66 @@
             // When
             Assert.IsFalse(selector1.IsMoreGeneralThan(selector2));
         }
+
+        [Test]
+        public void ValuesRangeOverlaps_RetursTrue()
+        {
+            // Given
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "sunny");
+
+            // When
+            Assert.IsTrue(selector1.ValuesRangeOverlap(selector2));
+            Assert.IsTrue(selector2.ValuesRangeOverlap(selector1));
+        }
+
+        [Test]
+        public void ValuesRangeOverlaps_RetursFalse_SameAttributes()
+        {
+            // Given
+            var selector1 = new DisjunctiveSelector<string>("outlook", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook", "rainy");
+
+            // When
+            Assert.IsFalse(selector1.ValuesRangeOverlap(selector2));
+            Assert.IsFalse(selector2.ValuesRangeOverlap(selector1));
+        }
+
+        [Test]
+        public void ValuesRangeOverlaps_RetursFalse_DifferentAttrs()
+        {
+            // Given
+            var selector1 = new DisjunctiveSelector<string>("outlook_1", "sunny", "overcast");
+            var selector2 = new DisjunctiveSelector<string>("outlook_2", "rainy");
+
+            // When
+            Assert.IsFalse(selector1.ValuesRangeOverlap(selector2));
+            Assert.IsFalse(selector2.ValuesRangeOverlap(selector1));
+        }
+
+        [Test]
+        public void ValuesRangeOverlaps_RetursFalse_EmptySelector()
+        {
+            // Given
+            var selector1 = new DisjunctiveSelector<string>("outlook_1", "sunny", "overcast");
+            var selector2 = new EmptySelector<string>("outlook_1");
+
+            // When
+            Assert.IsFalse(selector1.ValuesRangeOverlap(selector2));
+            Assert.IsFalse(selector2.ValuesRangeOverlap(selector1));
+        }
+
+        [Test]
+        public void ValuesRangeOverlaps_RetursTrue_UniversalSelector()
+        {
+            // Given
+            var selector1 = new DisjunctiveSelector<string>("outlook_1", "sunny", "overcast");
+            var selector2 = new UniversalSelector<string>("outlook_1");
+
+            // When
+            Assert.IsTrue(selector1.ValuesRangeOverlap(selector2));
+            Assert.IsTrue(selector2.ValuesRangeOverlap(selector1));
+        }
+
     }
 }

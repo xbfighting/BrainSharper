@@ -1,6 +1,6 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures
 {
-    using BrainSharper.Abstract.Data;
+    using Data;
 
     public interface ISelector<TValue>
     {
@@ -10,6 +10,7 @@
         bool IsEmpty { get; }
         string AttributeName { get; }
 
+        bool ValuesRangeOverlap(ISelector<TValue> other);
         bool Covers(IDataVector<TValue> example);
         ISelector<TValue> Intersect(ISelector<TValue> other);
         bool IsMoreGeneralThan(ISelector<TValue> other);

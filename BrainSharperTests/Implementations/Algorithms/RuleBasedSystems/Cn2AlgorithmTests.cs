@@ -1,22 +1,18 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.RuleBasedSystems
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     using BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics;
     using BrainSharper.Abstract.Algorithms.RuleInduction.Processors;
     using BrainSharper.General.DataQuality;
     using BrainSharper.General.DataUtils;
-    using BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers;
     using BrainSharper.Implementations.Algorithms.RuleInduction;
     using BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics;
     using BrainSharper.Implementations.Algorithms.RuleInduction.Processors;
     using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 
-    using BrainSharperTests.TestUtils;
+    using TestUtils;
 
     using NUnit.Framework;
 
@@ -27,6 +23,10 @@
 
         private readonly ImpurityBasedComplexQualityChecker<string> shannonEntropyQualityChecker =
             new ImpurityBasedComplexQualityChecker<string>(new ShannonEntropy<string>());
+        private readonly ImpurityBasedComplexQualityChecker<string> giniImpurityQualityChecker =
+            new ImpurityBasedComplexQualityChecker<string>(new GiniIndex<string>());
+        private readonly IComplexQualityChecker laplacianSmoothingQualityChecker =
+            new LaplacianSmoothingQualityChecker(3);
         private readonly IComplexStatisticalImportanceChecker chisquareImportanceChecker = new ChiSquareComplexStatisticalImportanceChecker<string>(0.01);
 
         [Test]
@@ -45,7 +45,7 @@
 
             var subject = new Cn2Algorithm<string>(
                 chisquareImportanceChecker,
-                shannonEntropyQualityChecker,
+                laplacianSmoothingQualityChecker,
                 complexIntersector,
                 5);
 
@@ -59,9 +59,44 @@
                TestDataBuilder.DiscretizedIrisDependentFeatureName,
                0.75,
                10);
+            var averageAccuracies = accuracies.Select(acc => acc.Accuracy).Average();
+            
+            // Then
+            Assert.GreaterOrEqual(averageAccuracies, 0.9);
+
+        }
+
+        [Test]
+        public void TestAlgorithmPerformance_CongressVotingDataSet()
+        {
+            // Given
+            var randomizer = new Random();
+            var splitter = new CrossValidator<string>();
+            var testData = TestDataBuilder.ReadCongressData();
+            var featureDomains = complexIntersector.PrepareFeatureDomains(
+                testData,
+                TestDataBuilder.CongressDataDependentFeatureName);
+
+            var subject = new Cn2Algorithm<string>(
+                chisquareImportanceChecker,
+                giniImpurityQualityChecker,
+                complexIntersector,
+                5);
+
+            // When
+            var accuracies = splitter.CrossValidate(
+               subject,
+               new RuleInductionParams<string>(featureDomains),
+               new RulesPredictor<string>(),
+               new ConfusionMatrixBuilder<string>(),
+               testData,
+               TestDataBuilder.CongressDataDependentFeatureName,
+               0.75,
+               10);
+            var averageAccuracies = accuracies.Select(acc => acc.Accuracy).Average();
 
             // Then
-            Assert.IsNotNull(accuracies);
+            Assert.GreaterOrEqual(averageAccuracies, 0.85);
         }
     }
 }

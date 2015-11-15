@@ -45,6 +45,11 @@
                 remainingExamples = remainingExamples.Except(bestAntecedentCoveredExamples).ToList();
             }
 
+            if (defaultValue.FeatureValue == null)
+            {
+                defaultValue = FindConsequent(dataFrame, dependentFeatureName, dataFrame.RowIndices);
+            }
+
             return new RulesList<TValue>(rulesList, defaultValue);
         }
 

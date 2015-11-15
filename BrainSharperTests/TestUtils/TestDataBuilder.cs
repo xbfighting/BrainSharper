@@ -18,6 +18,7 @@
     {
         public const string WeatherDataDependentFeatureName = "Play";
         public const string DiscretizedIrisDependentFeatureName = "iris";
+        public const string CongressDataDependentFeatureName = "party";
 
         public static IDataFrame BuildSmallDataFrameMixedDataTypes()
         {

@@ -49,7 +49,7 @@
             while (seeds.Any())
             {
                 var newComplexesSet = complexIntersector.IntersectComplexesWithFeatureDomains(seeds, featureDomains);
-                var values = new List<Tuple<IComplex<TValue>, double>>();
+                var values = new List<Tuple<IComplex<TValue>, ComplexQualityData>>();
                 foreach (var complex in newComplexesSet)
                 {
                     var examplesCoveredByComplex = new List<int>();
@@ -71,18 +71,30 @@
                             dataFrame,
                             dependentFeatureName,
                             examplesCoveredByComplex);
+                    if (complexQuality.IsBestPossible && examplesCoveredByComplex.Any() && complexIsStatisticallySignificant)
+                    {
+                        values.Clear();
+                        values.Add(new Tuple<IComplex<TValue>, ComplexQualityData>(complex, complexQuality));
+                        bestComplexQuality = complexQuality.QualityValue;
+                        examplesCoveredByBestComplex = examplesCoveredByComplex;
+                        bestComplex = complex;
+                        break;
+                    }
+
                     if (complexIsStatisticallySignificant)
                     {
-                        values.Add(new Tuple<IComplex<TValue>, double>(complex, complexQuality));
+                        values.Add(new Tuple<IComplex<TValue>, ComplexQualityData>(complex, complexQuality));
                     }
-                    if (complexQuality > bestComplexQuality && complexIsStatisticallySignificant)
+
+                    if (complexQuality.QualityValue > bestComplexQuality && complexIsStatisticallySignificant)
                     {
-                        bestComplexQuality = complexQuality;
+                        bestComplexQuality = complexQuality.QualityValue;
                         examplesCoveredByBestComplex = examplesCoveredByComplex;
                         bestComplex = complex;
                     }
                 }
-                seeds = values.OrderByDescending(kvp => kvp.Item2).Take(beamSize).Select(kvp => kvp.Item1).ToList();
+
+                seeds = values.OrderByDescending(kvp => kvp.Item2.QualityValue).Take(beamSize).Select(kvp => kvp.Item1).ToList();
             }
 
             return new Tuple<IComplex<TValue>, IList<int>>(bestComplex, examplesCoveredByBestComplex);

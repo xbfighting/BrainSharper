@@ -71,7 +71,7 @@
                 iterationAccuracies.Add(qualityReport);
                 currentWindowNo++;
             }
-            return iterationAccuracies;
+           return iterationAccuracies;
         }
     }
 }

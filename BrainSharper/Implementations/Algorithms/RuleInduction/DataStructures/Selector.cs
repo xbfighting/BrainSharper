@@ -1,7 +1,7 @@
 ﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
+    using Abstract.Algorithms.RuleInduction.DataStructures;
+    using Abstract.Data;
 
     public abstract class Selector<TValue> : ISelector<TValue>
     {
@@ -15,6 +15,8 @@
         public abstract bool IsEmpty { get; }
 
         public string AttributeName { get; }
+
+        public abstract bool ValuesRangeOverlap(ISelector<TValue> other);
 
         public abstract bool Covers(IDataVector<TValue> example);
 
@@ -48,6 +50,5 @@
         {
             return string.Equals(this.AttributeName, other.AttributeName);
         }
-
     }
 }

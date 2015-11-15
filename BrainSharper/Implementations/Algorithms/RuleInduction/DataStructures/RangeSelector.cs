@@ -2,8 +2,8 @@
 {
     using System;
 
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
+    using Abstract.Algorithms.RuleInduction.DataStructures;
+    using Abstract.Data;
 
     public class RangeSelector<TValue> : IRangeSelector<TValue>
     {
@@ -27,6 +27,28 @@
 
         public string AttributeName { get; }
 
+        public bool ValuesRangeOverlap(ISelector<TValue> other)
+        {
+            if (other.IsUniversal)
+            {
+                return true;
+            }
+
+            var otherRange = other as IRangeSelector<TValue>;
+            if (otherRange == null)
+            {
+                return false;
+            }
+
+            if (otherRange.AttributeName != AttributeName)
+            {
+                return false;
+            }
+
+            
+            throw new NotImplementedException();
+        }
+
         public bool Covers(IDataVector<TValue> example)
         {
             if (!example.FeatureNames.Contains(this.AttributeName))
@@ -35,14 +57,14 @@
             }
 
             double featureValue = (double)Convert.ChangeType(example[this.AttributeName], typeof(double));
-            if (featureValue >= this.RangeFrom && featureValue <= this.RangeTo)
+            if (featureValue >= RangeFrom && featureValue <= RangeTo)
             {
-                if (featureValue == this.RangeFrom && !this.FromInclusive)
+                if (featureValue == RangeFrom && !FromInclusive)
                 {
                     return false;
                 }
 
-                if (featureValue == this.RangeTo && !this.ToInclusive)
+                if (featureValue == RangeTo && !ToInclusive)
                 {
                     return false;
                 }

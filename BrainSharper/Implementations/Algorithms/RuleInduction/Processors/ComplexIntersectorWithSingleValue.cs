@@ -36,8 +36,6 @@
         {
             var results = new List<IComplex<TValue>>();
 
-            //TODO: AAA !!! optimize this maybe later, to not include redundant intersection operations - add helper dictionary to exclude values already covered
-
             foreach (var featureWithDomain in featureDomains)
             {
                 var featureName = featureWithDomain.Key;
@@ -46,12 +44,16 @@
                 {
                     foreach (var complexToIntersect in complexesToIntersect)
                     {
-                        var intersectedComplex = complexToIntersect.Intersect(singleDomainValueComplex);
-                        if (!intersectedComplex.IsEmpty && 
-                            !intersectedComplex.Equals(complexToIntersect) && 
-                            complexToIntersect.IsMoreGeneralThan(intersectedComplex))
+                        if (complexToIntersect[featureName].IsUniversal
+                            || complexToIntersect[featureName].ValuesRangeOverlap(singleDomainValueComplex[featureName]))
                         {
-                            results.Add(intersectedComplex);
+                            var intersectedComplex = complexToIntersect.Intersect(singleDomainValueComplex);
+                            if (!intersectedComplex.IsEmpty &&
+                                !intersectedComplex.Equals(complexToIntersect) &&
+                                complexToIntersect.IsMoreGeneralThan(intersectedComplex))
+                            {
+                                results.Add(intersectedComplex);
+                            }
                         }
                     }
                 }

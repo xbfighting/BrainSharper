@@ -17,6 +17,11 @@
 
         public string AttributeName { get; }
 
+        public bool ValuesRangeOverlap(ISelector<TValue> other)
+        {
+            return false;
+        }
+
         public bool Covers(IDataVector<TValue> example)
         {
             return false;

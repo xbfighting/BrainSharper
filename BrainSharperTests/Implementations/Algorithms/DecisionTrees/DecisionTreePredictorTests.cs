@@ -102,7 +102,15 @@
             var predictor = new DecisionTreePredictor<string>();
 
             // When
-            var accuracies = splitter.CrossValidate(modelBuilder: this.multiValueTreeBuilder, modelBuilderParams: modelBuilderParams, predictor: predictor, qualityMeasure: new ConfusionMatrixBuilder<string>(), dataFrame: testData, dependentFeatureName: "party", percetnagOfTrainData: 0.7, folds: 10);
+            var accuracies = splitter.CrossValidate(
+                modelBuilder: multiValueTreeBuilder, 
+                modelBuilderParams: modelBuilderParams, 
+                predictor: predictor, 
+                qualityMeasure: new ConfusionMatrixBuilder<string>(), 
+                dataFrame: testData, 
+                dependentFeatureName: "party", 
+                percetnagOfTrainData: 0.7, 
+                folds: 10);
 
             // Then
             var averageAccuracy = accuracies.Select(report => report.Accuracy).Average();

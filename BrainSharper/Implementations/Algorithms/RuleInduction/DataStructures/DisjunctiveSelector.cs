@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
+    using Abstract.Algorithms.RuleInduction.DataStructures;
+    using Abstract.Data;
 
     public class DisjunctiveSelector<TValue> : Selector<TValue>, IDisjunctiveSelector<TValue>
     {
@@ -25,6 +25,25 @@
         public override bool IsEmpty => false;
 
         public ISet<object> AllowedValues { get; }
+
+        public override bool ValuesRangeOverlap(ISelector<TValue> other)
+        {
+            if (other.IsUniversal)
+            {
+                return true;
+            }
+            var otherDisjuncitve = other as IDisjunctiveSelector<TValue>;
+            if (otherDisjuncitve == null)
+            {
+                return false;
+            }
+
+            if (otherDisjuncitve.AttributeName != AttributeName)
+            {
+                return false;
+            }
+            return AllowedValues.Intersect(otherDisjuncitve.AllowedValues).Any();
+        }
 
         public override bool Covers(IDataVector<TValue> example)
         {

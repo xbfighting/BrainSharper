@@ -15,14 +15,16 @@
             this.impurityMeasure = impurity;
         }
 
-        public double CalculateComplexQuality(
+        public ComplexQualityData CalculateComplexQuality(
             IDataFrame dataFrame,
             string dependentFeatureName,
             IList<int> examplesCoveredByComplex)
         {
             var dependentValuesCoveredByComplex =
                 dataFrame.GetSubsetByRows(examplesCoveredByComplex, true).GetColumnVector<TValue>(dependentFeatureName).Values;
-            return -1 * this.impurityMeasure.ImpurityValue(dependentValuesCoveredByComplex);
+            var impurityValue = -impurityMeasure.ImpurityValue(dependentValuesCoveredByComplex);
+            var isMaximal = impurityValue == 0.0;
+            return new ComplexQualityData(-1 * impurityValue, isMaximal);
         }
     }
 }

@@ -17,6 +17,11 @@ namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 
         public string AttributeName { get; }
 
+        public bool ValuesRangeOverlap(ISelector<TValue> other)
+        {
+            return true;
+        }
+
         public bool Covers(IDataVector<TValue> example)
         {
             return true;

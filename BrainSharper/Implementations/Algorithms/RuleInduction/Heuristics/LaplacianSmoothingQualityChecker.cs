@@ -17,26 +17,31 @@
             this.smoothingWeight = smoothingWeight;
         }
 
-        public double CalculateComplexQuality(
+        public ComplexQualityData CalculateComplexQuality(
             IDataFrame dataFrame,
             string dependentFeatureName,
             IList<int> examplesCoveredByComplex)
         {
             if (!examplesCoveredByComplex.Any())
             {
-                return double.NegativeInfinity;
+                return new ComplexQualityData(double.NegativeInfinity);
             }
 
-            var mostCommonDependentFeatureValueCount =
+            var mostCommonDependentFeatureValue =
                 dataFrame.GetColumnVector(dependentFeatureName)
                     .Values.Where((val, idx) => examplesCoveredByComplex.Contains(idx))
                     .GroupBy(val => val)
                     .OrderByDescending(grp => grp.Count())
-                    .First()
-                    .Count();
+                    .FirstOrDefault();
+            var mostCommonDependentFeatureValueCount = mostCommonDependentFeatureValue?.Count();
+            if (!mostCommonDependentFeatureValueCount.HasValue)
+            {
+                return new ComplexQualityData(0.0);
+            }
             var nominator = mostCommonDependentFeatureValueCount + (smoothingWeight * (1.0 / numberOfCategories));
             var denominator = examplesCoveredByComplex.Count + numberOfCategories;
-            return nominator / denominator;
+            var qualityValue = nominator / denominator;
+            return new ComplexQualityData(qualityValue.Value, qualityValue == 1.0);
         }
     }
 }

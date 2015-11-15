@@ -1,6 +1,5 @@
 ﻿namespace BrainSharperTests.Implementations.Algorithms.RuleBasedSystems.Heuristics
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
@@ -37,8 +36,7 @@
                 coveredExamplesIndices);
 
             // Then
-            Assert.AreEqual(expectedQuality, actualQuality, 0.009);
+            Assert.AreEqual(expectedQuality, actualQuality.QualityValue, 0.009);
         }
-
     }
 }
