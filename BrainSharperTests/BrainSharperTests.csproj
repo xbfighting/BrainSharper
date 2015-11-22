@@ -63,7 +63,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -86,7 +88,8 @@
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\Cn2AlgorithmTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\ComplexTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelectorTests.cs" />
-    <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\RangeSelectorTests.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\Discretization\SupervisedClassificationDiscretizerTests.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\RangeTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\Heuristics\LaplacianSmoothingQualityCheckerTest.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\Processors\ComplexIntersectorWithSingleValueTest.cs" />
     <Compile Include="Implementations\Data\DataFrameTests.cs" />
@@ -143,6 +146,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

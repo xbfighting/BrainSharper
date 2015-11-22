@@ -97,9 +97,7 @@
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IComplex.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IComplexCoveredExamplesInfo.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IDisjunctiveSelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IInequalitySelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\INumericSelector.cs" />
-    <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRangeSelector.cs" />
+    <Compile Include="Abstract\FeaturesEngineering\IRange.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRule.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\IRulesList.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\DataStructures\ISelector.cs" />
@@ -109,6 +107,8 @@
     <Compile Include="Abstract\Algorithms\RuleInduction\IRulesInductionModelBuilder.cs" />
     <Compile Include="Abstract\Algorithms\RuleInduction\Processors\IComplexesIntersector.cs" />
     <Compile Include="Abstract\Data\IFilteringResult.cs" />
+    <Compile Include="Abstract\FeaturesEngineering\Discretization\ISupervisedClassificationDiscretizer.cs" />
+    <Compile Include="Abstract\FeaturesEngineering\Discretization\ISupervisedDiscretizationResult.cs" />
     <Compile Include="Abstract\MathUtils\DistanceMeaseures\IDistanceMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IErrorMeasure.cs" />
     <Compile Include="Abstract\MathUtils\ErrorMeasures\IQuantitativeErrorMeasure.cs" />
@@ -197,7 +197,10 @@
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\ComplexCoveredExamplesInfo.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\DisjunctiveSelector.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\EmptySelector.cs" />
-    <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\RangeSelector.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\Discretization\SupervisedClassificationDiscretizerClassBreakpointsHeuristic.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\Discretization\SupervisedClassificationDiscretizerDecisionTreeHeuristic.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\Discretization\SupervisedClassificationResult.cs" />
+    <Compile Include="Implementations\FeaturesEngineering\Range.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Rule.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\RulesList.cs" />
     <Compile Include="Implementations\Algorithms\RuleInduction\DataStructures\Selector.cs" />

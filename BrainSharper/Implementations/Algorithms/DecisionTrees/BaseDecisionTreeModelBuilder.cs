@@ -167,6 +167,7 @@
             return LeafBuilder.BuildLeaf(dataFrame, dependentFeatureName);
         }
 
+        //TODO: AAA!!! Implement this in split objects!!!
         private static bool SplitIsEmpty(ISplittingResult splitResult)
         {
             return splitResult == null
