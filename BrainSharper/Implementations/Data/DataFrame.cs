@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Abstract.Data;
     using General.Exceptions.Data;
@@ -347,6 +348,23 @@
             return new FilteringResult(
                 rowsMeetingCriteria.OrderBy(i => i).ToList(),
                 rowsNotMeetingCriteria.OrderBy(i => i).ToList());
+        }
+
+        public int GetRowsCountWhere(Predicate<DataRow> rowsFilter)
+        {
+            int rowsCountWhere = 0;
+            Parallel.For(
+                0,
+                RowCount,
+                rowIdx =>
+                    {
+                        var row = DataTable.Rows[rowIdx];
+                        if (rowsFilter(row))
+                        {
+                            Interlocked.Add(ref rowsCountWhere, 1);
+                        }
+                    });
+            return rowsCountWhere;
         }
 
         public Matrix<double> GetAsMatrix()

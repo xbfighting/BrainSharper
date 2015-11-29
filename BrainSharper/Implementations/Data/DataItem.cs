@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Data;
-
-namespace BrainSharper.Implementations.Data
+﻿namespace BrainSharper.Implementations.Data
 {
+    using System;
+    using System.Collections.Generic;
+
+    using Abstract.Data;
+
+    using static System.String;
+
     public struct DataItem<TValue> : IDataItem<TValue>
     {
         public DataItem(string featureName, TValue value)
@@ -14,6 +18,20 @@ namespace BrainSharper.Implementations.Data
         public string FeatureName { get; }
 
         public TValue FeatureValue { get; }
+
+        public int CompareTo(IDataItem<TValue> other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+            var fieldNamesComparison = Compare(FeatureName, other.FeatureName, StringComparison.Ordinal);
+            if (fieldNamesComparison == 0)
+            {
+                return Comparer<TValue>.Default.Compare(FeatureValue, other.FeatureValue);
+            }
+            return fieldNamesComparison;
+        }
 
         public override bool Equals(object obj)
         {
@@ -32,7 +50,7 @@ namespace BrainSharper.Implementations.Data
 
         private bool Equals(DataItem<TValue> other)
         {
-            return string.Equals(FeatureName, other.FeatureName) && EqualityComparer<TValue>.Default.Equals(FeatureValue, other.FeatureValue);
+            return String.Equals(FeatureName, other.FeatureName) && EqualityComparer<TValue>.Default.Equals(FeatureValue, other.FeatureValue);
         }
 
     }

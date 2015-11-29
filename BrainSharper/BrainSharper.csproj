@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationRule.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationFrequentItemsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsFinder.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeClassificationLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
@@ -79,6 +85,8 @@
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\IMultiValueNumericDataSplitter.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\INumericalSplitQualityChecker.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\Processors\ISplitQualityChecker.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IAssociationRule.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSet.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IModelBuilderParams.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModel.cs" />
     <Compile Include="Abstract\Algorithms\Infrastructure\IPredictionModelBuilder.cs" />
@@ -133,6 +141,13 @@
     <Compile Include="General\Utils\DataTableExtensions.cs" />
     <Compile Include="General\Utils\Extensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithm.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtils.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSet.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\Transaction.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\TransactionsSet.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BaseDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilder.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeLink.cs" />

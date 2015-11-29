@@ -196,6 +196,8 @@
 
         IFilteringResult GetRowsIndicesWhere(Predicate<DataRow> rowsFilter);
 
+        int GetRowsCountWhere(Predicate<DataRow> rowsFilter);
+
         Matrix<double> GetAsMatrix();
 
         Matrix<double> GetAsMatrixWithIntercept();

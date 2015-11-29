@@ -53,6 +53,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
@@ -72,6 +73,10 @@
   <ItemGroup>
     <Compile Include="General\CollectionUtils\CumulativeSumTest.cs" />
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithmTester.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociationAnalysisTestDataBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtilsTests.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemSetsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictorTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\Helpers\ChiSquareSignificanceTest.cs" />
@@ -88,6 +93,7 @@
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\Cn2AlgorithmTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\ComplexTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\DataStructures\DisjunctiveSelectorTests.cs" />
+    <Compile Include="Implementations\Data\DataItemTests.cs" />
     <Compile Include="Implementations\FeaturesEngineering\Discretization\SupervisedClassificationDiscretizerTests.cs" />
     <Compile Include="Implementations\FeaturesEngineering\RangeTests.cs" />
     <Compile Include="Implementations\Algorithms\RuleBasedSystems\Heuristics\LaplacianSmoothingQualityCheckerTest.cs" />

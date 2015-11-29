@@ -1,9 +1,10 @@
 ﻿namespace BrainSharper.Abstract.Data
 {
-    public interface IDataItem<out TValue>
+    using System;
+
+    public interface IDataItem<TValue> : IComparable<IDataItem<TValue>>
     {
         string FeatureName { get; }
-
         TValue FeatureValue { get; }
     }
 }
