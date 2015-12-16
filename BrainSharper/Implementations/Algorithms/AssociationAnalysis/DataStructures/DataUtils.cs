@@ -1,13 +1,12 @@
 ﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-    using BrainSharper.Abstract.Data;
+    using Abstract.Algorithms.AssociationAnalysis.DataStructures;
+    using Abstract.Data;
 
     public static class DataUtils
     {

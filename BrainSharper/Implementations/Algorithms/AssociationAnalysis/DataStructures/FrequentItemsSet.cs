@@ -7,6 +7,11 @@
 
     public class FrequentItemsSet<TValue> : IFrequentItemsSet<TValue>
     {
+        public FrequentItemsSet(ISet<TValue> itemsSet)
+            : this(0, 0, new object[0], itemsSet)
+        {
+        }
+
         public FrequentItemsSet(
             double support, 
             double relativeSuppot, 
@@ -35,6 +40,20 @@
         public double Support { get; }
         public double RelativeSuppot { get; }
         public ISet<object> TransactionIds { get; }
+
+        public bool KFirstElementsEqual(IFrequentItemsSet<TValue> other, int k)
+        {
+            return ItemsSet.Take(k).SequenceEqual(other.OrderedItems.Take(k));
+        }
+
+        public bool ItemsOnlyEqual(IFrequentItemsSet<TValue> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            return OrderedItems.SequenceEqual(other.OrderedItems);
+        }
 
         protected bool Equals(FrequentItemsSet<TValue> other)
         {

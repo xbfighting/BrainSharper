@@ -71,6 +71,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="General\CollectionUtils\CombinationsTest.cs" />
     <Compile Include="General\CollectionUtils\CumulativeSumTest.cs" />
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithmTester.cs" />
