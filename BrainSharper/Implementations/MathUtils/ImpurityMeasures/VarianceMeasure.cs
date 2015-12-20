@@ -1,14 +1,14 @@
-﻿namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
-{
-    using System.Collections.Generic;
-    using Abstract.MathUtils.ImpurityMeasures;
-    using MathNet.Numerics.Statistics;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
+using MathNet.Numerics.Statistics;
 
+namespace BrainSharper.Implementations.MathUtils.ImpurityMeasures
+{
     public class VarianceMeasure : IImpurityMeasure<double>
     {
         public double ImpurityValue(IList<double> values)
         {
-            return 1 / values.Variance();
+            return 1/values.Variance();
         }
     }
 }

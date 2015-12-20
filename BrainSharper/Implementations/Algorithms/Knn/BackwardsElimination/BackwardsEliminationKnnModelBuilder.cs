@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,12 +16,12 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
     public class BackwardsEliminationKnnModelBuilder<TPredictionResult> : SimpleKnnModelBuilder<TPredictionResult>
     {
         private readonly IQuantitativeDataNormalizer _dataNormalizer;
-        private readonly IKnnPredictor<TPredictionResult> _knnPredictor;
         private readonly IErrorMeasure<TPredictionResult> _errorMeasure;
+        private readonly IKnnPredictor<TPredictionResult> _knnPredictor;
 
         public BackwardsEliminationKnnModelBuilder(
-            IQuantitativeDataNormalizer dataNormalizer, 
-            IKnnPredictor<TPredictionResult> knnPredictor, 
+            IQuantitativeDataNormalizer dataNormalizer,
+            IKnnPredictor<TPredictionResult> knnPredictor,
             IErrorMeasure<TPredictionResult> errorMeasure)
         {
             _dataNormalizer = dataNormalizer;
@@ -30,22 +29,24 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
             _errorMeasure = errorMeasure;
         }
 
-        public override IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
+        public override IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName,
+            IModelBuilderParams additionalParams)
         {
             ValidateAdditionalParams(additionalParams);
             return PerformBackwardsElimination(dataFrame, dependentFeatureName, additionalParams as IKnnAdditionalParams);
         }
 
-        protected IBackwardsEliminationKnnModel<TPredictionResult> PerformBackwardsElimination(IDataFrame dataFrame, string dependentFeatureName, IKnnAdditionalParams additionalParams)
+        protected IBackwardsEliminationKnnModel<TPredictionResult> PerformBackwardsElimination(IDataFrame dataFrame,
+            string dependentFeatureName, IKnnAdditionalParams additionalParams)
         {
-            Tuple<Matrix<double>, IList<TPredictionResult>, IList<string>> preparedData = PrepareTrainingData(dataFrame, dependentFeatureName);
+            var preparedData = PrepareTrainingData(dataFrame, dependentFeatureName);
             var dataColumnsNames = preparedData.Item3;
             var trainingData = _dataNormalizer.NormalizeColumns(preparedData.Item1);
             var expectedValues = preparedData.Item2;
 
             // TODO: refactor this - ugly!
             _knnPredictor.NormalizeNumericValues = false;
-            double baseErrorRate = ProcessDataAndQuantifyErrorRate(
+            var baseErrorRate = ProcessDataAndQuantifyErrorRate(
                 dependentFeatureName,
                 trainingData,
                 expectedValues,
@@ -67,8 +68,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
                     var trainingDataWithoutColumn = trainingData.RemoveColumn(columnIdx);
                     var newDataPredictionError = ProcessDataAndQuantifyErrorRate(
                         dependentFeatureName,
-                        trainingDataWithoutColumn, 
-                        expectedValues, 
+                        trainingDataWithoutColumn,
+                        expectedValues,
                         newFeatureNames,
                         additionalParams);
                     if (newDataPredictionError <= baseErrorRate)
@@ -83,7 +84,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
                 }
                 var bestFeatureToRemove = candidateFeaturesToEliminate.OrderBy(kvp => kvp.Value).First();
                 anyFeatureRemovedInThisIteration = true;
-                removedFeaturesInfo.Add(new BackwardsEliminationRemovedFeatureData(bestFeatureToRemove.Value, actualDataColumnNames[bestFeatureToRemove.Key]));
+                removedFeaturesInfo.Add(new BackwardsEliminationRemovedFeatureData(bestFeatureToRemove.Value,
+                    actualDataColumnNames[bestFeatureToRemove.Key]));
                 actualDataColumnNames.RemoveAt(bestFeatureToRemove.Key);
                 baseErrorRate = bestFeatureToRemove.Value;
             }
@@ -98,23 +100,24 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
         }
 
         private double ProcessDataAndQuantifyErrorRate(
-            string dependentFeatureName, 
-            Matrix<double> trainingData, 
+            string dependentFeatureName,
+            Matrix<double> trainingData,
             IList<TPredictionResult> expectedValues,
             IList<string> dataColumnsNames,
             IKnnAdditionalParams knnAdditionalParams)
         {
             var partialResults = new ConcurrentDictionary<int, TPredictionResult>();
-            ProcessData(dependentFeatureName, trainingData, expectedValues, dataColumnsNames, partialResults, knnAdditionalParams);
+            ProcessData(dependentFeatureName, trainingData, expectedValues, dataColumnsNames, partialResults,
+                knnAdditionalParams);
             var actualValues = partialResults.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
             return _errorMeasure.CalculateError(expectedValues, actualValues);
         }
 
         private void ProcessData(
-            string dependentFeatureName, 
-            Matrix<double> trainingData, 
+            string dependentFeatureName,
+            Matrix<double> trainingData,
             IList<TPredictionResult> expectedValues,
-            IList<string> dataColumnNames, 
+            IList<string> dataColumnNames,
             ConcurrentDictionary<int, TPredictionResult> partialResults,
             IKnnAdditionalParams knnAdditionalParams)
         {
@@ -127,13 +130,14 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
 
                 var queryMatrix = Matrix<double>.Build.DenseOfRowVectors(trainingData.Row(rowIdx));
                 var queryDataFrame = new DataFrame(queryMatrix);
-                var knnPredictionModel = new KnnPredictionModel<TPredictionResult>(trainingDataExceptRow, expectedValuesExceptRow,
+                var knnPredictionModel = new KnnPredictionModel<TPredictionResult>(trainingDataExceptRow,
+                    expectedValuesExceptRow,
                     dataColumnNames, knnAdditionalParams.KNeighbors, knnAdditionalParams.UseWeightedDistances);
                 var results = _knnPredictor.Predict(
-                    queryDataFrame, 
+                    queryDataFrame,
                     knnPredictionModel,
                     dependentFeatureName);
-                TPredictionResult result = results.First();
+                var result = results.First();
                 partialResults.AddOrUpdate(rowIdx, result, (i, d) => result);
             });
         }

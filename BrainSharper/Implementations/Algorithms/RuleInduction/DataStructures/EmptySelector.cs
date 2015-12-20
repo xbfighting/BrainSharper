@@ -1,20 +1,18 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
-{
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
+﻿using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
 
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
+{
     public struct EmptySelector<TValue> : ISelector<TValue>
     {
         public EmptySelector(string attributeName)
             : this()
         {
-            this.AttributeName = attributeName;
+            AttributeName = attributeName;
         }
 
         public bool IsUniversal => false;
-
         public bool IsEmpty => true;
-
         public string AttributeName { get; }
 
         public bool ValuesRangeOverlap(ISelector<TValue> other)
@@ -39,7 +37,7 @@
 
         public bool Equals(EmptySelector<TValue> other)
         {
-            return string.Equals(this.AttributeName, other.AttributeName) && other.IsEmpty;
+            return string.Equals(AttributeName, other.AttributeName) && other.IsEmpty;
         }
 
         public override bool Equals(object obj)
@@ -48,12 +46,12 @@
             {
                 return false;
             }
-            return obj is EmptySelector<TValue> && this.Equals((EmptySelector<TValue>)obj);
+            return obj is EmptySelector<TValue> && Equals((EmptySelector<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
-            return (this.AttributeName != null ? this.AttributeName.GetHashCode() : 0) + false.GetHashCode();
+            return (AttributeName != null ? AttributeName.GetHashCode() : 0) + false.GetHashCode();
         }
     }
 }

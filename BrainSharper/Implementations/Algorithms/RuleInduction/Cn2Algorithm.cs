@@ -1,29 +1,25 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.RuleInduction;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics;
+using BrainSharper.Abstract.Algorithms.RuleInduction.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.Infrastructure;
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Algorithms.RuleInduction.Heuristics;
-    using Abstract.Algorithms.RuleInduction.Processors;
-    using Abstract.Data;
-
-    using BrainSharper.Abstract.Algorithms.RuleInduction;
-
-    using DataStructures;
-
     public class Cn2Algorithm<TValue> : SequentialCovering<TValue>
     {
-        private readonly IComplexStatisticalImportanceChecker complexStatisticalImportanceChecker;
-        private readonly IComplexQualityChecker complexQualityChecker;
-        private readonly IComplexesIntersector<TValue> complexIntersector;
         private readonly int beamSize;
+        private readonly IComplexesIntersector<TValue> complexIntersector;
+        private readonly IComplexQualityChecker complexQualityChecker;
+        private readonly IComplexStatisticalImportanceChecker complexStatisticalImportanceChecker;
 
         public Cn2Algorithm(
-            IComplexStatisticalImportanceChecker complexStatisticalImportanceChecker, 
-            IComplexQualityChecker complexQualityChecker, 
+            IComplexStatisticalImportanceChecker complexStatisticalImportanceChecker,
+            IComplexQualityChecker complexQualityChecker,
             IComplexesIntersector<TValue> complexIntersector,
             int beamSize)
         {
@@ -40,9 +36,9 @@
             IList<int> remainingExamples,
             IRuleInductionParams<TValue> additionalParams)
         {
-            var seeds = new List<IComplex<TValue>> { new Complex<TValue>() };
+            var seeds = new List<IComplex<TValue>> {new Complex<TValue>()};
             IComplex<TValue> bestComplex = null;
-            double bestComplexQuality = double.NegativeInfinity;
+            var bestComplexQuality = double.NegativeInfinity;
             IList<int> examplesCoveredByBestComplex = new int[0];
 
             var featureDomains = additionalParams.FeatureDomainsToIntersectWith;
@@ -71,7 +67,8 @@
                             dataFrame,
                             dependentFeatureName,
                             examplesCoveredByComplex);
-                    if (complexQuality.IsBestPossible && examplesCoveredByComplex.Any() && complexIsStatisticallySignificant)
+                    if (complexQuality.IsBestPossible && examplesCoveredByComplex.Any() &&
+                        complexIsStatisticallySignificant)
                     {
                         values.Clear();
                         values.Add(new Tuple<IComplex<TValue>, ComplexQualityData>(complex, complexQuality));
@@ -94,7 +91,11 @@
                     }
                 }
 
-                seeds = values.OrderByDescending(kvp => kvp.Item2.QualityValue).Take(beamSize).Select(kvp => kvp.Item1).ToList();
+                seeds =
+                    values.OrderByDescending(kvp => kvp.Item2.QualityValue)
+                        .Take(beamSize)
+                        .Select(kvp => kvp.Item1)
+                        .ToList();
             }
 
             return new Tuple<IComplex<TValue>, IList<int>>(bestComplex, examplesCoveredByBestComplex);

@@ -1,9 +1,9 @@
-﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.Processors
-{
-    using System.Collections.Generic;
-    using Data;
-    using DataStructures;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
 
+namespace BrainSharper.Abstract.Algorithms.RuleInduction.Processors
+{
     public interface IComplexesIntersector<TValue>
     {
         //TODO: AAA !!! think about using custom feature domain class

@@ -11,7 +11,6 @@ namespace BrainSharper.Implementations.Algorithms.Knn
         }
 
         public int KNeighbors { get; }
-
         public bool UseWeightedDistances { get; }
     }
 }

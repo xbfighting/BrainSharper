@@ -1,20 +1,17 @@
-﻿
+﻿using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
+
 namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
-
     public struct UniversalSelector<TValue> : ISelector<TValue>
     {
         public UniversalSelector(string attributeName)
         {
-            this.AttributeName = attributeName;
+            AttributeName = attributeName;
         }
 
         public bool IsUniversal => true;
-
         public bool IsEmpty => false;
-
         public string AttributeName { get; }
 
         public bool ValuesRangeOverlap(ISelector<TValue> other)
@@ -39,7 +36,7 @@ namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 
         public bool Equals(ISelector<TValue> other)
         {
-            return string.Equals(this.AttributeName, other.AttributeName) && other.IsUniversal;
+            return string.Equals(AttributeName, other.AttributeName) && other.IsUniversal;
         }
 
         public override bool Equals(object obj)
@@ -48,12 +45,12 @@ namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
             {
                 return false;
             }
-            return obj is UniversalSelector<TValue> && this.Equals((UniversalSelector<TValue>)obj);
+            return obj is UniversalSelector<TValue> && Equals((UniversalSelector<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
-            return (this.AttributeName?.GetHashCode() ?? 0) ^ true.GetHashCode();
+            return (AttributeName?.GetHashCode() ?? 0) ^ true.GetHashCode();
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees
-{
-    using Infrastructure;
+﻿using BrainSharper.Abstract.Algorithms.Infrastructure;
 
+namespace BrainSharper.Abstract.Algorithms.DecisionTrees
+{
     public interface IDecisionTreeModelBuilderParams : IModelBuilderParams
     {
         bool ProcessSubtreesCreationInParallel { get; }

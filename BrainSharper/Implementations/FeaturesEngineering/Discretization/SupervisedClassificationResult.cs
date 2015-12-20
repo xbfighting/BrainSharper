@@ -1,16 +1,15 @@
-﻿namespace BrainSharper.Implementations.FeaturesEngineering.Discretization
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.FeaturesEngineering;
+using BrainSharper.Abstract.FeaturesEngineering.Discretization;
+
+namespace BrainSharper.Implementations.FeaturesEngineering.Discretization
 {
-    using System.Collections.Generic;
-
-    using Abstract.FeaturesEngineering;
-    using Abstract.FeaturesEngineering.Discretization;
-
     public struct SupervisedClassificationResult : ISupervisedDiscretizationResult
     {
         public SupervisedClassificationResult(string newAttributeName, IDictionary<IRange, string> newValuesMapping)
         {
-            this.NewAttributeName = newAttributeName;
-            this.NewValuesMapping = newValuesMapping;
+            NewAttributeName = newAttributeName;
+            NewValuesMapping = newValuesMapping;
         }
 
         public string NewAttributeName { get; }

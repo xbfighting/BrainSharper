@@ -1,11 +1,10 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.Processors;
-
     public class AlreadyUsedAttributesInfo : IAlredyUsedAttributesInfo
     {
         private readonly ConcurrentDictionary<string, ISet<object>> attributesInfo;
@@ -24,7 +23,6 @@
 
         public bool WasAttributeAlreadyUsedWithValue(string attributeName, object attributeValue)
         {
-
             if (WasAttributeAlreadyUsed(attributeName))
             {
                 return attributesInfo[attributeName].Contains(attributeValue);
@@ -35,7 +33,6 @@
 
         public void AddAlreadyUsedAttribute(string attributeName, object attrValue = null)
         {
-
             if (!attributesInfo.ContainsKey(attributeName))
             {
                 attributesInfo.TryAdd(attributeName, new HashSet<object>());
@@ -45,6 +42,5 @@
                 attributesInfo[attributeName].Add(attrValue);
             }
         }
-
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.MathUtils.Normalizers;
 using MathNet.Numerics.LinearAlgebra;
@@ -17,7 +16,7 @@ namespace BrainSharper.Implementations.MathUtils.Normalizers
             var normalizedColumns = new ConcurrentBag<Tuple<int, Vector<double>>>();
             var columnMins = new double[dataToNormalize.ColumnCount];
             var columnRanges = new double[dataToNormalize.ColumnCount];
-            for (int colIdx = 0; colIdx < dataToNormalize.ColumnCount; colIdx++)
+            for (var colIdx = 0; colIdx < dataToNormalize.ColumnCount; colIdx++)
             {
                 var columnMin = dataToNormalize.Column(colIdx).Minimum();
                 var columnMax = dataToNormalize.Column(colIdx).Maximum();
@@ -43,7 +42,9 @@ namespace BrainSharper.Implementations.MathUtils.Normalizers
                 normalizedColumns.Add(new Tuple<int, Vector<double>>(colIdx, vectorToAdd));
             });
 
-            return Matrix<double>.Build.DenseOfColumnVectors(normalizedColumns.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2));
+            return
+                Matrix<double>.Build.DenseOfColumnVectors(
+                    normalizedColumns.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2));
         }
     }
 }

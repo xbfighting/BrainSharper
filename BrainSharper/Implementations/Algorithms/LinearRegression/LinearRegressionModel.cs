@@ -1,8 +1,8 @@
-﻿namespace BrainSharper.Implementations.Algorithms.LinearRegression
-{
-    using Abstract.Algorithms.LinearRegression;
-    using MathNet.Numerics.LinearAlgebra;
+﻿using BrainSharper.Abstract.Algorithms.LinearRegression;
+using MathNet.Numerics.LinearAlgebra;
 
+namespace BrainSharper.Implementations.Algorithms.LinearRegression
+{
     public class LinearRegressionModel : ILinearRegressionModel
     {
         public LinearRegressionModel(Vector<double> weights)

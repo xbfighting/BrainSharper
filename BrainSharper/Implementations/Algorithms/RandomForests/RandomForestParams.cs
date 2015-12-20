@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RandomForests
-{
-    using Abstract.Algorithms.RandomForests;
+﻿using BrainSharper.Abstract.Algorithms.RandomForests;
 
+namespace BrainSharper.Implementations.Algorithms.RandomForests
+{
     public class RandomForestParams : IRandomForestModelBuilderParams
     {
         public RandomForestParams(int treesCount, int maximalTreeDepth)

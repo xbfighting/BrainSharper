@@ -9,20 +9,24 @@ namespace BrainSharper.Implementations.Data
 {
     public class DataVector<TValue> : IDataVector<TValue>
     {
-        private readonly IList<TValue> _values;
         private readonly Lazy<Vector<double>> _numericVector;
+        private readonly IList<TValue> _values;
 
         public DataVector(IList<TValue> values, IList<string> featureNames)
         {
             _values = values;
-            _numericVector = new Lazy<Vector<double>>(() => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
+            _numericVector =
+                new Lazy<Vector<double>>(
+                    () => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
             FeatureNames = featureNames;
         }
 
         public DataVector(IList<TValue> values, string featureName)
         {
             _values = values;
-            _numericVector = new Lazy<Vector<double>>(() => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
+            _numericVector =
+                new Lazy<Vector<double>>(
+                    () => Vector<double>.Build.Dense(_values.Select(val => Convert.ToDouble(val)).ToArray()));
             FeatureNames = Enumerable.Repeat(featureName, _values.Count).ToList();
         }
 
@@ -32,6 +36,7 @@ namespace BrainSharper.Implementations.Data
         public IList<string> FeatureNames { get; }
         public int Count => Values.Count;
         public bool IsReadOnly => true;
+
         public TValue this[int index]
         {
             get { return _values[index]; }
@@ -44,9 +49,9 @@ namespace BrainSharper.Implementations.Data
             {
                 var tmpThis = this;
                 return (
-                        from elem in tmpThis._values.Select((value, index) => new {Value = value, Index = index})
-                        select new DataItem<TValue>(tmpThis.FeatureNames[elem.Index], elem.Value) as IDataItem<TValue>
-                        ).ToList();
+                    from elem in tmpThis._values.Select((value, index) => new {Value = value, Index = index})
+                    select new DataItem<TValue>(tmpThis.FeatureNames[elem.Index], elem.Value) as IDataItem<TValue>
+                    ).ToList();
             }
         }
 
@@ -139,7 +144,7 @@ namespace BrainSharper.Implementations.Data
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((DataVector<TValue>) obj);
         }
 
@@ -165,11 +170,13 @@ namespace BrainSharper.Implementations.Data
         private bool Equals(DataVector<TValue> other)
         {
             return (
-                    (_values == null && other._values == null) || ((_values != null && other._values != null) && _values.SequenceEqual(other.Values))) &&
-                (
-                    (FeatureNames == null && other.FeatureNames == null) ||
-                    ((FeatureNames != null && other.FeatureNames != null) && FeatureNames.SequenceEqual(other.FeatureNames))
-               );
+                (_values == null && other._values == null) ||
+                ((_values != null && other._values != null) && _values.SequenceEqual(other.Values))) &&
+                   (
+                       (FeatureNames == null && other.FeatureNames == null) ||
+                       ((FeatureNames != null && other.FeatureNames != null) &&
+                        FeatureNames.SequenceEqual(other.FeatureNames))
+                       );
         }
 
         #endregion Equality members

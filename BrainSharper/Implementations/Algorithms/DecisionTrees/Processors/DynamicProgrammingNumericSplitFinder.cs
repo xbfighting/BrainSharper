@@ -1,25 +1,22 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-    using DataStructures;
-    using DataStructures.BinaryDecisionTrees;
-
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Double;
-
     internal struct NumericFeatureData
     {
         public NumericFeatureData(double featureVal, object dependentVal)
         {
-            this.FeatureVal = featureVal;
-            this.DependentVal = dependentVal;
+            FeatureVal = featureVal;
+            DependentVal = dependentVal;
         }
 
         public double FeatureVal { get; }
@@ -54,16 +51,18 @@
             double initialEntropy)
         {
             var uniqueDependentValues = baseData.GetColumnVector(dependentFeatureName).Values.Distinct().ToList();
-            var dependentValuesSortedByNumericFeature = OrderColumn(baseData, dependentFeatureName, numericFeatureToProcess);
+            var dependentValuesSortedByNumericFeature = OrderColumn(baseData, dependentFeatureName,
+                numericFeatureToProcess);
             var dependentValsCounts = new List<Vector<double>>();
             var breakPoints = new List<int>();
             var lastKnowDependentValue = dependentValuesSortedByNumericFeature.First().DependentVal;
-            for (int elemIdx = 0; elemIdx < dependentValuesSortedByNumericFeature.Count; elemIdx++)
+            for (var elemIdx = 0; elemIdx < dependentValuesSortedByNumericFeature.Count; elemIdx++)
             {
                 var currentElem = dependentValuesSortedByNumericFeature[elemIdx];
                 var currentDependentValue = currentElem.DependentVal;
                 var indexOfCurrentDependentValue = uniqueDependentValues.IndexOf(currentDependentValue);
-                var dependentValsCountAllocation = DenseVector.OfArray(Enumerable.Repeat(0.0, uniqueDependentValues.Count).ToArray());
+                var dependentValsCountAllocation =
+                    DenseVector.OfArray(Enumerable.Repeat(0.0, uniqueDependentValues.Count).ToArray());
                 if (elemIdx != 0)
                 {
                     dependentValsCounts[elemIdx - 1].CopyTo(dependentValsCountAllocation);
@@ -79,7 +78,7 @@
             }
 
             var bestSplitQualitySoFar = double.NegativeInfinity;
-            int bestBreakpointSoFar = -1;
+            var bestBreakpointSoFar = -1;
             foreach (var breakpointIdx in breakPoints)
             {
                 var dependentValsCountUpToBreakpoint = dependentValsCounts[breakpointIdx];
@@ -89,9 +88,10 @@
                     initialEntropy,
                     baseData.RowCount,
                     new List<IList<int>>
-                        {
-                            VectorToIntArray(dependentValsCountUpToBreakpoint), VectorToIntArray(dependentValsCountAboveBreakpoint)
-                        });
+                    {
+                        VectorToIntArray(dependentValsCountUpToBreakpoint),
+                        VectorToIntArray(dependentValsCountAboveBreakpoint)
+                    });
                 if (splitEntropy > bestSplitQualitySoFar)
                 {
                     bestSplitQualitySoFar = splitEntropy;
@@ -109,24 +109,25 @@
             return new Tuple<ISplittingResult, double>(splitResult, bestSplitQualitySoFar);
         }
 
-        private static List<NumericFeatureData> OrderColumn(IDataFrame baseData, string dependentFeatureName, string numericFeatureToProcess)
+        private static List<NumericFeatureData> OrderColumn(IDataFrame baseData, string dependentFeatureName,
+            string numericFeatureToProcess)
         {
             return baseData.GetNumericColumnVector(numericFeatureToProcess)
                 .Select(
                     (featureVal, rowIndex) =>
-                    new NumericFeatureData(featureVal, baseData[rowIndex, dependentFeatureName].FeatureValue))
+                        new NumericFeatureData(featureVal, baseData[rowIndex, dependentFeatureName].FeatureValue))
                 .OrderBy(elem => elem.FeatureVal)
                 .ToList();
         }
 
         private double CalculateSplitPoint(double hi, double lo)
         {
-            return (hi + lo) / 2;
+            return (hi + lo)/2;
         }
 
         private int[] VectorToIntArray(Vector<double> vector)
         {
-            return vector.Select(elem => (int)elem).ToArray();
+            return vector.Select(elem => (int) elem).ToArray();
         }
     }
 }

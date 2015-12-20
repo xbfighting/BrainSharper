@@ -2,7 +2,7 @@
 {
     public interface IAssociationMiningParams
     {
-        double MinimalSupport { get; }
+        double MinimalRelativeSupport { get; }
         double MinimalConfidence { get; }
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Abstract.Algorithms.LinearRegression
-{
-    using BrainSharper.Abstract.Algorithms.Infrastructure;
+﻿using BrainSharper.Abstract.Algorithms.Infrastructure;
 
+namespace BrainSharper.Abstract.Algorithms.LinearRegression
+{
     public interface ILinearRegressionPredictor : IPredictor<double>
     {
     }

@@ -12,7 +12,9 @@ namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
             Func<double, double> weightingFunc = null,
             IDistanceMeasure similarityMeasure = null,
             bool normalizeNumericValues = false)
-            : base(distanceMeasure, dataNormalizer, FindBestRegressionValue, weightingFunc, similarityMeasure, normalizeNumericValues)
+            : base(
+                distanceMeasure, dataNormalizer, FindBestRegressionValue, weightingFunc, similarityMeasure,
+                normalizeNumericValues)
         {
         }
     }

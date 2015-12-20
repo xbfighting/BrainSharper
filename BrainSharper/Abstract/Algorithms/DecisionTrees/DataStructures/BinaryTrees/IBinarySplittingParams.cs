@@ -2,6 +2,6 @@
 {
     public interface IBinarySplittingParams : ISplittingParams
     {
-        object SplitOnValue { get; } 
+        object SplitOnValue { get; }
     }
 }

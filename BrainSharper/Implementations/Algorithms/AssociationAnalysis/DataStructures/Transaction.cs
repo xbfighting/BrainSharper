@@ -1,22 +1,21 @@
-﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.AssociationAnalysis.DataStructures;
-
     public struct Transaction<TValue> : ITransaction<TValue>
     {
         public Transaction(object transactionKey, IEnumerable<TValue> transactionItems)
         {
-            this.TransactionKey = transactionKey;
-            this.TransactionItems = transactionItems;
+            TransactionKey = transactionKey;
+            TransactionItems = transactionItems;
         }
 
         public Transaction(object transactionKey, params TValue[] transactionItems)
         {
-            this.TransactionKey = transactionKey;
-            this.TransactionItems = transactionItems;
+            TransactionKey = transactionKey;
+            TransactionItems = transactionItems;
         }
 
         public object TransactionKey { get; }
@@ -24,8 +23,8 @@
 
         public bool Equals(Transaction<TValue> other)
         {
-            return 
-                Equals(this.TransactionKey, other.TransactionKey) && 
+            return
+                Equals(TransactionKey, other.TransactionKey) &&
                 TransactionItems.Union(other.TransactionItems).Count() == TransactionItems.Count();
         }
 
@@ -35,15 +34,15 @@
             {
                 return false;
             }
-            return obj is Transaction<TValue> && Equals((Transaction<TValue>)obj);
+            return obj is Transaction<TValue> && Equals((Transaction<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((TransactionKey?.GetHashCode() ?? 0) * 397) ^ 
-                    (TransactionItems?.Aggregate(397, (acc, elem) => acc ^ elem.GetHashCode()) ?? 0);
+                return ((TransactionKey?.GetHashCode() ?? 0)*397) ^
+                       (TransactionItems?.Aggregate(397, (acc, elem) => acc ^ elem.GetHashCode()) ?? 0);
             }
         }
 

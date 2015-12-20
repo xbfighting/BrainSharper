@@ -1,13 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.Infrastructure;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.Infrastructure;
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Data;
-
     public class RulesPredictor<TValue> : IPredictor<TValue>
     {
         public IList<TValue> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
@@ -21,7 +20,7 @@
             foreach (var rowIdx in queryDataFrame.RowIndices)
             {
                 var row = queryDataFrame.GetRowVector<TValue>(rowIdx, true);
-                bool wasCoveredByAnyRule = false;
+                var wasCoveredByAnyRule = false;
                 foreach (var rule in rulesListModel.Rules)
                 {
                     if (rule.AntecedentLogicOperator == LogicOperator.And)

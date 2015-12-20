@@ -1,27 +1,21 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
-{
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Data;
+﻿using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
 
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
+{
     public abstract class Selector<TValue> : ISelector<TValue>
     {
         protected Selector(string attributeName)
         {
-            this.AttributeName = attributeName;
+            AttributeName = attributeName;
         }
 
         public abstract bool IsUniversal { get; }
-
         public abstract bool IsEmpty { get; }
-
         public string AttributeName { get; }
-
         public abstract bool ValuesRangeOverlap(ISelector<TValue> other);
-
         public abstract bool Covers(IDataVector<TValue> example);
-
         public abstract ISelector<TValue> Intersect(ISelector<TValue> other);
-
         public abstract bool IsMoreGeneralThan(ISelector<TValue> other);
 
         public override bool Equals(object obj)
@@ -34,21 +28,21 @@
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
-            return this.Equals((Selector<TValue>)obj);
+            return Equals((Selector<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
-            return this.AttributeName?.GetHashCode() ?? 0;
+            return AttributeName?.GetHashCode() ?? 0;
         }
 
         protected bool Equals(Selector<TValue> other)
         {
-            return string.Equals(this.AttributeName, other.AttributeName);
+            return string.Equals(AttributeName, other.AttributeName);
         }
     }
 }

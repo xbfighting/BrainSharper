@@ -1,21 +1,22 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
 {
     #region
 
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+    
 
     #endregion
 
     public class DecisionTreeParentNode : IDecisionTreeParentNode
     {
         public DecisionTreeParentNode(
-            bool isLeaf, 
-            string decisionFeatureName, 
-            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren, 
+            bool isLeaf,
+            string decisionFeatureName,
+            IDictionary<IDecisionTreeLink, IDecisionTreeNode> linksToChildren,
             double trainingDataAccuracy = 0)
         {
             DecisionFeatureName = decisionFeatureName;
@@ -26,67 +27,59 @@
             TestResultsByChildren = new Dictionary<IDecisionTreeNode, object>();
             ChildrenWithTestResults = new List<Tuple<IDecisionTreeLink, IDecisionTreeNode>>();
 
-            foreach (var childLink in this.LinksToChildren)
+            foreach (var childLink in LinksToChildren)
             {
-                this.ChildrenWithTestResults.Add(
+                ChildrenWithTestResults.Add(
                     new Tuple<IDecisionTreeLink, IDecisionTreeNode>(childLink.Key, childLink.Value));
 
                 if (!ChildrenByTestResults.ContainsKey(childLink.Key.TestResult))
                 {
-                    this.ChildrenByTestResults.Add(childLink.Key.TestResult, childLink.Value);
+                    ChildrenByTestResults.Add(childLink.Key.TestResult, childLink.Value);
                 }
 
-                if (!this.LinksByChildren.ContainsKey(childLink.Value))
+                if (!LinksByChildren.ContainsKey(childLink.Value))
                 {
-                    this.LinksByChildren.Add(childLink.Value, childLink.Key);
-                    this.TestResultsByChildren.Add(childLink.Value, childLink.Key.TestResult);
+                    LinksByChildren.Add(childLink.Value, childLink.Key);
+                    TestResultsByChildren.Add(childLink.Value, childLink.Key.TestResult);
                 }
             }
 
-            this.TrainingDataAccuracy = trainingDataAccuracy;
+            TrainingDataAccuracy = trainingDataAccuracy;
         }
 
         protected IDictionary<IDecisionTreeLink, IDecisionTreeNode> LinksToChildren { get; }
-
         protected IDictionary<object, IDecisionTreeNode> ChildrenByTestResults { get; }
-
         protected IDictionary<IDecisionTreeNode, IDecisionTreeLink> LinksByChildren { get; }
-
         protected IDictionary<IDecisionTreeNode, object> TestResultsByChildren { get; }
-
         public double TrainingDataAccuracy { get; }
-
         public bool IsLeaf => false;
-
         public string DecisionFeatureName { get; }
-
         public IList<IDecisionTreeNode> Children { get; }
-
         public IList<Tuple<IDecisionTreeLink, IDecisionTreeNode>> ChildrenWithTestResults { get; }
 
         public IDecisionTreeNode GetChildForTestResult(object testResult)
         {
-            return this.ChildrenByTestResults[testResult];
+            return ChildrenByTestResults[testResult];
         }
 
         public IDecisionTreeNode GetChildForLink(IDecisionTreeLink link)
         {
-            return this.LinksToChildren[link];
+            return LinksToChildren[link];
         }
 
         public object GetTestResultForChild(IDecisionTreeNode child)
         {
-            return this.TestResultsByChildren[child];
+            return TestResultsByChildren[child];
         }
 
         public IDecisionTreeLink GetChildLinkForChild(IDecisionTreeNode child)
         {
-            return this.LinksByChildren[child];
+            return LinksByChildren[child];
         }
 
         public bool TestResultsContains(object testResult)
         {
-            return this.ChildrenByTestResults.ContainsKey(testResult);
+            return ChildrenByTestResults.ContainsKey(testResult);
         }
 
         public override bool Equals(object obj)
@@ -101,24 +94,24 @@
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
 
-            return Equals((DecisionTreeParentNode)obj);
+            return Equals((DecisionTreeParentNode) obj);
         }
 
         protected bool Equals(DecisionTreeParentNode other)
         {
-            var isEqual = this.TrainingDataAccuracy.Equals(other.TrainingDataAccuracy)
-                          && string.Equals(this.DecisionFeatureName, other.DecisionFeatureName);
+            var isEqual = TrainingDataAccuracy.Equals(other.TrainingDataAccuracy)
+                          && string.Equals(DecisionFeatureName, other.DecisionFeatureName);
             if (!isEqual)
             {
                 return false;
             }
 
-            if (this.Children == null && other.Children == null)
+            if (Children == null && other.Children == null)
             {
                 return true;
             }
@@ -129,7 +122,7 @@
                 return false;
             }
 
-            foreach (var kvp in this.LinksToChildren)
+            foreach (var kvp in LinksToChildren)
             {
                 if (other.LinksToChildren.ContainsKey(kvp.Key))
                 {
@@ -144,14 +137,14 @@
         {
             unchecked
             {
-                var hashCode = this.TrainingDataAccuracy.GetHashCode();
-                hashCode = (hashCode * 397) ^ (this.DecisionFeatureName?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397)
-                           ^ (this.Children?.Select(child => child.GetHashCode())
-                                  .Aggregate(1, (accum, childHash) => accum ^ childHash, val => val) ?? 0);
-                hashCode = (hashCode * 397)
-                           ^ (this.LinksToChildren?.Select(kvp => kvp.Key.GetHashCode())
-                                  .Aggregate(1, (accum, linkHsh) => accum ^ linkHsh, val => val) ?? 0);
+                var hashCode = TrainingDataAccuracy.GetHashCode();
+                hashCode = (hashCode*397) ^ (DecisionFeatureName?.GetHashCode() ?? 0);
+                hashCode = (hashCode*397)
+                           ^ (Children?.Select(child => child.GetHashCode())
+                               .Aggregate(1, (accum, childHash) => accum ^ childHash, val => val) ?? 0);
+                hashCode = (hashCode*397)
+                           ^ (LinksToChildren?.Select(kvp => kvp.Key.GetHashCode())
+                               .Aggregate(1, (accum, linkHsh) => accum ^ linkHsh, val => val) ?? 0);
                 return hashCode;
             }
         }

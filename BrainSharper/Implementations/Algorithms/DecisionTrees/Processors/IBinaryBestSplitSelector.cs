@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
-{
-    using Abstract.Algorithms.DecisionTrees.Processors;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
 
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+{
     public interface IBinaryBestSplitSelector : IBestSplitSelector
     {
     }

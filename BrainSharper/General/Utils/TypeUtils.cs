@@ -1,11 +1,11 @@
-﻿namespace BrainSharper.General.Utils
-{
-    using System;
+﻿using System;
 
+namespace BrainSharper.General.Utils
+{
     public static class TypeUtils
     {
         /// <summary>
-        /// Checks if the given object can be considered a number of some kind
+        ///     Checks if the given object can be considered a number of some kind
         /// </summary>
         /// <param name="o">Object ot be checked</param>
         /// <returns>True or false</returns>
@@ -52,10 +52,16 @@
         }
 
         // Extension method, call for any object, eg "if (x.IsNumeric())..."
-        public static bool IsNumeric(this object x) { return IsNumeric(x.GetType()); }
+        public static bool IsNumeric(this object x)
+        {
+            return IsNumeric(x.GetType());
+        }
 
         // Method where you know the type of the object
-        public static bool IsNumeric(Type type) { return IsNumeric(type, Type.GetTypeCode(type)); }
+        public static bool IsNumeric(Type type)
+        {
+            return IsNumeric(type, Type.GetTypeCode(type));
+        }
 
         // Method where you know the type and the type code of the object
         public static bool IsNumeric(Type type, TypeCode typeCode)
@@ -63,9 +69,9 @@
             return (
                 typeCode == TypeCode.Decimal ||
                 (type.IsPrimitive &&
-                typeCode != TypeCode.Object &&
-                typeCode != TypeCode.Boolean &&
-                typeCode != TypeCode.Char));
+                 typeCode != TypeCode.Object &&
+                 typeCode != TypeCode.Boolean &&
+                 typeCode != TypeCode.Char));
         }
     }
 }

@@ -1,77 +1,72 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
+using BrainSharper.General.Utils;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
-    using BrainSharper.Abstract.Data;
-    using BrainSharper.General.Utils;
-
     public class Complex<TValue> : IComplex<TValue>
     {
         private readonly IDictionary<string, ISelector<TValue>> selectorsByName;
 
         public Complex(IList<ISelector<TValue>> selectors = null, bool isEmpty = false)
         {
-            this.IsEmpty = selectors?.Any(sel => sel.IsEmpty) ?? isEmpty;
-            if (!this.IsEmpty)
+            IsEmpty = selectors?.Any(sel => sel.IsEmpty) ?? isEmpty;
+            if (!IsEmpty)
             {
-                this.Selectors = selectors ?? new List<ISelector<TValue>>();
-                this.CoveredAttributes = this.Selectors.Select(selector => selector.AttributeName).ToList();
-                this.IsUniversal = this.Selectors.All(sel => sel.IsUniversal);
-                this.selectorsByName = this.Selectors.ToDictionary(sel => sel.AttributeName, sel => sel);
+                Selectors = selectors ?? new List<ISelector<TValue>>();
+                CoveredAttributes = Selectors.Select(selector => selector.AttributeName).ToList();
+                IsUniversal = Selectors.All(sel => sel.IsUniversal);
+                selectorsByName = Selectors.ToDictionary(sel => sel.AttributeName, sel => sel);
             }
         }
 
         public Complex(bool isEmpty = false, params ISelector<TValue>[] selectors)
             : this(selectors, isEmpty)
         {
-            
         }
 
         public IList<ISelector<TValue>> Selectors { get; }
-
         public IList<string> CoveredAttributes { get; }
-
         public bool IsEmpty { get; }
-
         public bool IsUniversal { get; }
 
         public ISelector<TValue> this[string attributeName]
         {
             get
             {
-                if (this.selectorsByName.ContainsKey(attributeName))
+                if (selectorsByName.ContainsKey(attributeName))
                 {
-                    return this.selectorsByName[attributeName];
+                    return selectorsByName[attributeName];
                 }
                 return new UniversalSelector<TValue>(attributeName);
             }
-        } 
+        }
 
         public bool Covers(IDataVector<TValue> example)
         {
-            return this.Selectors.All(selector => selector.Covers(example));
+            return Selectors.All(selector => selector.Covers(example));
         }
 
         public bool HasSelectorForAttribute(string attributeName)
         {
-            return this.selectorsByName.ContainsKey(attributeName);
+            return selectorsByName.ContainsKey(attributeName);
         }
 
         public IComplex<TValue> Intersect(IComplex<TValue> other)
         {
-            if (this.IsEmpty || other.IsEmpty)
+            if (IsEmpty || other.IsEmpty)
             {
                 return new Complex<TValue>(isEmpty: true);
             }
 
-            if (this.IsUniversal && other.IsUniversal)
+            if (IsUniversal && other.IsUniversal)
             {
                 return new Complex<TValue>();
             }
 
-            if (this.IsUniversal)
+            if (IsUniversal)
             {
                 return other;
             }
@@ -86,7 +81,7 @@
                     intersectedSelectors.Add(other[notCoveredAttr]);
                 }
             }
-            foreach (var selector in this.Selectors)
+            foreach (var selector in Selectors)
             {
                 var otherSelectorForAttr = other[selector.AttributeName];
                 var intersectedSelector = selector.Intersect(otherSelectorForAttr);
@@ -98,23 +93,23 @@
 
         public bool IsMoreGeneralThan(IComplex<TValue> other)
         {
-            if (this.IsUniversal && !other.IsUniversal)
+            if (IsUniversal && !other.IsUniversal)
             {
                 return true;
             }
 
-            if (this.IsUniversal && other.IsUniversal)
+            if (IsUniversal && other.IsUniversal)
             {
                 return false;
             }
 
-            if (this.CoveredAttributes.Count != other.CoveredAttributes.Count
-                || this.CoveredAttributes.Except(other.CoveredAttributes).Any())
+            if (CoveredAttributes.Count != other.CoveredAttributes.Count
+                || CoveredAttributes.Except(other.CoveredAttributes).Any())
             {
                 return true;
             }
 
-            return this.Selectors.All(selector => selector.IsMoreGeneralThan(other[selector.AttributeName]));
+            return Selectors.All(selector => selector.IsMoreGeneralThan(other[selector.AttributeName]));
         }
 
         public IComplex<TValue> SetNewSelector(ISelector<TValue> newSelector)
@@ -141,36 +136,36 @@
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
-            return this.Equals((Complex<TValue>)obj);
+            return Equals((Complex<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Selectors?.Select(sel => sel.GetHashCode()).Sum() ?? 0;
+            return Selectors?.Select(sel => sel.GetHashCode()).Sum() ?? 0;
         }
 
         protected bool Equals(Complex<TValue> other)
         {
-            if (other.IsEmpty && this.IsEmpty)
+            if (other.IsEmpty && IsEmpty)
             {
                 return true;
             }
 
-            if (other.IsUniversal && this.IsUniversal)
+            if (other.IsUniversal && IsUniversal)
             {
                 return true;
             }
 
-            if (!this.CoveredAttributes.IsEquivalentTo(other.CoveredAttributes))
+            if (!CoveredAttributes.IsEquivalentTo(other.CoveredAttributes))
             {
                 return false;
             }
 
-            return this.Selectors.All(selector => selector.Equals(other[selector.AttributeName]));
+            return Selectors.All(selector => selector.Equals(other[selector.AttributeName]));
         }
     }
 }

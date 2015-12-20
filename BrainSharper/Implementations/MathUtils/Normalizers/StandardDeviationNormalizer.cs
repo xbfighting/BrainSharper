@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.MathUtils.Normalizers;
-using MathNet.Numerics.Integration;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Statistics;
 
@@ -18,7 +17,7 @@ namespace BrainSharper.Implementations.MathUtils.Normalizers
             var normalizedColumns = new ConcurrentBag<Tuple<int, Vector<double>>>();
             var columnStds = new double[dataToNormalize.ColumnCount];
             var columnMeans = new double[dataToNormalize.ColumnCount];
-            for (int colIdx = 0; colIdx < dataToNormalize.ColumnCount; colIdx++)
+            for (var colIdx = 0; colIdx < dataToNormalize.ColumnCount; colIdx++)
             {
                 columnStds[colIdx] = dataToNormalize.Column(colIdx).StandardDeviation();
                 columnMeans[colIdx] = dataToNormalize.Column(colIdx).Mean();
@@ -39,7 +38,9 @@ namespace BrainSharper.Implementations.MathUtils.Normalizers
                 }
                 normalizedColumns.Add(new Tuple<int, Vector<double>>(colIdx, vectorToAdd));
             });
-            return Matrix<double>.Build.DenseOfColumnVectors(normalizedColumns.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2));
+            return
+                Matrix<double>.Build.DenseOfColumnVectors(
+                    normalizedColumns.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2));
         }
     }
 }

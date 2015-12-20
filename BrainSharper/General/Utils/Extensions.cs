@@ -1,12 +1,12 @@
-﻿namespace BrainSharper.General.Utils
-{
-    using System;
+﻿using System;
 
+namespace BrainSharper.General.Utils
+{
     public static class Extensions
     {
         public static double NextDoubleInRange(this Random randomizer, double min, double max)
         {
-            return (randomizer.NextDouble() * (max - min)) + min;
+            return (randomizer.NextDouble()*(max - min)) + min;
         }
     }
 }

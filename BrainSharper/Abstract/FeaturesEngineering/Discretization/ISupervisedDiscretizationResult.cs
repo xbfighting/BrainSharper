@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Abstract.FeaturesEngineering.Discretization
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace BrainSharper.Abstract.FeaturesEngineering.Discretization
+{
     public interface ISupervisedDiscretizationResult
     {
         string NewAttributeName { get; }

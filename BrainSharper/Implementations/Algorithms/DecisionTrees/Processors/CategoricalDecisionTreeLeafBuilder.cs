@@ -1,13 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-    using DataStructures;
-
     public class CategoricalDecisionTreeLeafBuilder : ILeafBuilder
     {
         public IDecisionTreeLeaf BuildLeaf(IDataFrame finalData, string dependentFeatureName)

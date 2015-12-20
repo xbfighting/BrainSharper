@@ -1,21 +1,20 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-
-    using DataStructures;
-    using DataStructures.BinaryDecisionTrees;
-
-    public class BinarySplitSelectorForCategoricalOutcome : BaseSplitSelectorForCategoricalOutcome, IBinaryBestSplitSelector
+    public class BinarySplitSelectorForCategoricalOutcome : BaseSplitSelectorForCategoricalOutcome,
+        IBinaryBestSplitSelector
     {
         public BinarySplitSelectorForCategoricalOutcome(
-            IBinaryDataSplitter binaryDataSplitter, 
+            IBinaryDataSplitter binaryDataSplitter,
             IBinaryNumericDataSplitter binaryNumericDataSplitter,
             IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
             : base(binaryDataSplitter, binaryNumericDataSplitter, binaryNumericBestSplitPointSelector)
@@ -33,14 +32,15 @@
         {
             var totalRowsCount = dataToSplit.RowCount;
             var uniqueFeatureValues = dataToSplit.GetColumnVector(splittingFeatureName).Distinct();
-            double locallyBestSplitQuality = double.NegativeInfinity;
+            var locallyBestSplitQuality = double.NegativeInfinity;
             IBinarySplittingParams localBestSplitParams = null;
             IList<ISplittedData> locallyBestSplitData = null;
             foreach (var featureValue in uniqueFeatureValues)
             {
                 if (!alredyUsedAttributesInfo.WasAttributeAlreadyUsedWithValue(splittingFeatureName, featureValue))
                 {
-                    var binarySplitParams = new BinarySplittingParams(splittingFeatureName, featureValue, dependentFeatureName);
+                    var binarySplitParams = new BinarySplittingParams(splittingFeatureName, featureValue,
+                        dependentFeatureName);
                     var splittedData = CategoricalDataSplitter.SplitData(dataToSplit, binarySplitParams);
                     if (splittedData.Count == 1)
                     {
@@ -66,24 +66,28 @@
 
             return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
                 locallyBestSplitData,
-                localBestSplitParams, 
+                localBestSplitParams,
                 locallyBestSplitQuality);
         }
 
-        protected override ISplittingResult BuildBestSplitObject(ISplittingParams splittingParams, IList<ISplittedData> splittedData)
+        protected override ISplittingResult BuildBestSplitObject(ISplittingParams splittingParams,
+            IList<ISplittedData> splittedData)
         {
             var binarySplittingParams = splittingParams as IBinarySplittingParams;
             if (binarySplittingParams == null)
             {
                 throw new ArgumentException("Invalid type of splitting params passed to binary split selector!");
             }
-            return new BinarySplittingResult(false, binarySplittingParams.SplitOnFeature, splittedData, binarySplittingParams.SplitOnValue);
+            return new BinarySplittingResult(false, binarySplittingParams.SplitOnFeature, splittedData,
+                binarySplittingParams.SplitOnValue);
         }
 
-        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams, IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
+        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
         {
             var binarySplittingParams = splittingParams as IBinarySplittingParams;
-            alreadyUsedAttributesInfo.AddAlreadyUsedAttribute(splittingParams.SplitOnFeature, binarySplittingParams.SplitOnValue);
+            alreadyUsedAttributesInfo.AddAlreadyUsedAttribute(splittingParams.SplitOnFeature,
+                binarySplittingParams.SplitOnValue);
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction
-{
-    using System.Collections.Generic;
-    using Abstract.Algorithms.RuleInduction;
-    using Abstract.Algorithms.RuleInduction.DataStructures;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.RuleInduction;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
 
+namespace BrainSharper.Implementations.Algorithms.RuleInduction
+{
     public class RuleInductionParams<TValue> : IRuleInductionParams<TValue>
     {
         public RuleInductionParams(IDictionary<string, ISet<IComplex<TValue>>> featureDomainsToIntersectWith)

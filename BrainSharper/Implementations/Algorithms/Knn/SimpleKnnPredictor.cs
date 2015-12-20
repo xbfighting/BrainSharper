@@ -13,7 +13,7 @@ using MathNet.Numerics.LinearAlgebra;
 namespace BrainSharper.Implementations.Algorithms.Knn
 {
     public delegate TPredictionResult KnnResultHandler<TPredictionResult>(
-        IEnumerable<RowIndexDistanceDto<TPredictionResult>> distances, 
+        IEnumerable<RowIndexDistanceDto<TPredictionResult>> distances,
         Func<double, double> weightingFunction);
 
     public class SimpleKnnPredictor<TPredictionResult> : IKnnPredictor<TPredictionResult>
@@ -21,8 +21,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn
         private readonly KnnResultHandler<TPredictionResult> _resultHandler;
 
         public SimpleKnnPredictor(
-            IDistanceMeasure distanceMeasure, 
-            IQuantitativeDataNormalizer dataNormalizer, 
+            IDistanceMeasure distanceMeasure,
+            IQuantitativeDataNormalizer dataNormalizer,
             KnnResultHandler<TPredictionResult> resultHandlingFunc,
             Func<double, double> weightingFunc = null,
             IDistanceMeasure similarityMeasure = null,
@@ -36,15 +36,50 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             NormalizeNumericValues = normalizeNumericValues;
         }
 
-        public Func<double, double> WeightingFunction { get; } 
-        public IDistanceMeasure DistanceMeasure { get; }
-
-        public bool NormalizeNumericValues { get; set; }
-
+        public Func<double, double> WeightingFunction { get; }
         public IDistanceMeasure SimilarityMeasure { get; }
         public IQuantitativeDataNormalizer DataNormalizer { get; }
+        public IDistanceMeasure DistanceMeasure { get; }
+        public bool NormalizeNumericValues { get; set; }
 
-        public static double FindBestRegressionValue(IEnumerable<RowIndexDistanceDto<double>> distances, Func<double, double> weightingFunction)
+        public IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model,
+            string dependentFeatureName)
+        {
+            return Predict(queryDataFrame, model, queryDataFrame.ColumnNames.IndexOf(dependentFeatureName));
+        }
+
+        public IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model,
+            int dependentFeatureIndex)
+        {
+            ValidateModel(model);
+            var knnModel = model as IKnnPredictionModel<TPredictionResult>;
+            var results = new ConcurrentBag<RowIndexDistanceDto<TPredictionResult>>();
+            var normalizedData = NormalizeData(queryDataFrame, knnModel, dependentFeatureIndex);
+            var normalizedTrainingData = normalizedData.Item1;
+            var queryMatrix = normalizedData.Item2;
+            Parallel.For(0, queryDataFrame.RowCount, queryRowIdx =>
+            {
+                var rowVector = queryMatrix.Row(queryRowIdx);
+                var distances = new ConcurrentBag<RowIndexDistanceDto<TPredictionResult>>();
+                for (var trainingRowIdx = 0; trainingRowIdx < normalizedTrainingData.RowCount; trainingRowIdx++)
+                {
+                    var trainingRow = normalizedTrainingData.Row(trainingRowIdx);
+                    var dependentFeatureValue = knnModel.ExpectedTrainingOutcomes[trainingRowIdx];
+                    var distance = DistanceMeasure.Distance(rowVector, trainingRow);
+                    var distanceDto = new RowIndexDistanceDto<TPredictionResult>(trainingRowIdx, distance,
+                        dependentFeatureValue);
+                    distances.Add(distanceDto);
+                }
+                var sortedDistances = distances.OrderBy(distDto => distDto.Distance).Take(knnModel.KNeighbors);
+                var result = new RowIndexDistanceDto<TPredictionResult>(queryRowIdx, 0,
+                    _resultHandler(sortedDistances, WeightingFunction));
+                results.Add(result);
+            });
+            return results.OrderBy(res => res.RowIndex).Select(res => res.DependentFeatureValue).ToList();
+        }
+
+        public static double FindBestRegressionValue(IEnumerable<RowIndexDistanceDto<double>> distances,
+            Func<double, double> weightingFunction)
         {
             {
                 var resultTotal = 0.0;
@@ -52,14 +87,15 @@ namespace BrainSharper.Implementations.Algorithms.Knn
                 foreach (var dist in distances)
                 {
                     var weight = weightingFunction(dist.Distance);
-                    resultTotal += dist.DependentFeatureValue * weight;
+                    resultTotal += dist.DependentFeatureValue*weight;
                     weights += weight;
                 }
-                return resultTotal / weights;
+                return resultTotal/weights;
             }
         }
 
-        public static TPredictionResult VoteForBestCategoricalValue(IEnumerable<RowIndexDistanceDto<TPredictionResult>> distances, Func<double, double> weightingFunction)
+        public static TPredictionResult VoteForBestCategoricalValue(
+            IEnumerable<RowIndexDistanceDto<TPredictionResult>> distances, Func<double, double> weightingFunction)
         {
             var predictionsWithWeights = new Dictionary<TPredictionResult, double>();
             var weights = 0.0;
@@ -75,7 +111,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             }
 
             double highestVotesCount = 0;
-            TPredictionResult winningResult = default(TPredictionResult);
+            var winningResult = default(TPredictionResult);
             foreach (var result in predictionsWithWeights)
             {
                 if (result.Value > highestVotesCount)
@@ -88,39 +124,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             return winningResult;
         }
 
-        public IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
-        {
-            return Predict(queryDataFrame, model, queryDataFrame.ColumnNames.IndexOf(dependentFeatureName));
-        }
-
-        public IList<TPredictionResult> Predict(IDataFrame queryDataFrame, IPredictionModel model, int dependentFeatureIndex)
-        {
-            ValidateModel(model);
-            var knnModel = model as IKnnPredictionModel<TPredictionResult>;
-            var results = new ConcurrentBag<RowIndexDistanceDto<TPredictionResult>>();
-            var normalizedData =  NormalizeData(queryDataFrame, knnModel, dependentFeatureIndex);
-            var normalizedTrainingData = normalizedData.Item1;
-            var queryMatrix = normalizedData.Item2;
-            Parallel.For(0, queryDataFrame.RowCount, queryRowIdx =>
-            {
-                var rowVector = queryMatrix.Row(queryRowIdx);
-                var distances = new ConcurrentBag<RowIndexDistanceDto<TPredictionResult>>();
-                for (int trainingRowIdx = 0; trainingRowIdx < normalizedTrainingData.RowCount; trainingRowIdx++)
-                {
-                    var trainingRow = normalizedTrainingData.Row(trainingRowIdx);
-                    TPredictionResult dependentFeatureValue = knnModel.ExpectedTrainingOutcomes[trainingRowIdx];
-                    double distance = DistanceMeasure.Distance(rowVector, trainingRow);
-                    var distanceDto = new RowIndexDistanceDto<TPredictionResult>(trainingRowIdx, distance, dependentFeatureValue);
-                    distances.Add(distanceDto);
-                }
-                var sortedDistances = distances.OrderBy(distDto => distDto.Distance).Take(knnModel.KNeighbors);
-                var result = new RowIndexDistanceDto<TPredictionResult>(queryRowIdx, 0, _resultHandler(sortedDistances, WeightingFunction));
-                results.Add(result);
-            });
-            return results.OrderBy(res => res.RowIndex).Select(res => res.DependentFeatureValue).ToList();
-        }
-
-        protected virtual Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame, IKnnPredictionModel<TPredictionResult> knnModel, int dependentFeatureIdx)
+        protected virtual Tuple<Matrix<double>, Matrix<double>> NormalizeData(IDataFrame queryDataFrame,
+            IKnnPredictionModel<TPredictionResult> knnModel, int dependentFeatureIdx)
         {
             var modelMatrix = knnModel.TrainingData;
             var queryMatrix = ExtractQueryDataAsMatrix(queryDataFrame, knnModel, dependentFeatureIdx);
@@ -128,7 +133,8 @@ namespace BrainSharper.Implementations.Algorithms.Knn
             return PerformNormalization(modelMatrix, queryMatrix);
         }
 
-        protected virtual Tuple<Matrix<double>, Matrix<double>> PerformNormalization(Matrix<double> modelMatrix, Matrix<double> queryMatrix)
+        protected virtual Tuple<Matrix<double>, Matrix<double>> PerformNormalization(Matrix<double> modelMatrix,
+            Matrix<double> queryMatrix)
         {
             if (!NormalizeNumericValues)
             {
@@ -144,7 +150,7 @@ namespace BrainSharper.Implementations.Algorithms.Knn
         }
 
         protected virtual Matrix<double> ExtractQueryDataAsMatrix(
-            IDataFrame queryDataFrame, 
+            IDataFrame queryDataFrame,
             IKnnPredictionModel<TPredictionResult> knnModel,
             int dependentFeatureIdx)
         {

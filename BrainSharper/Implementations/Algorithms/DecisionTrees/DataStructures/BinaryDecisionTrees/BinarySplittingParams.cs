@@ -1,8 +1,7 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
-{
-    using System.Collections.Generic;
-    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
+{
     public class BinarySplittingParams : SplittingParams, IBinarySplittingParams
     {
         public BinarySplittingParams(string splitOnFeature, object splitOnValue, string dependentFeatureName)
@@ -17,21 +16,21 @@
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return this.Equals((BinarySplittingParams) obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((BinarySplittingParams) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((this.SplitOnFeature?.GetHashCode() ?? 0) * 397) ^ SplitOnValue.GetHashCode();
+                return ((SplitOnFeature?.GetHashCode() ?? 0)*397) ^ SplitOnValue.GetHashCode();
             }
         }
 
         protected bool Equals(BinarySplittingParams other)
         {
-            return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && Equals(SplitOnValue, other.SplitOnValue);
+            return string.Equals(SplitOnFeature, other.SplitOnFeature) && Equals(SplitOnValue, other.SplitOnValue);
         }
     }
 }

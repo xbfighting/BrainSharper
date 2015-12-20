@@ -1,8 +1,7 @@
-﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
-{
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+{
     public class AssociationRule<TValue> : IAssociationRule<TValue>
     {
         public AssociationRule(IFrequentItemsSet<TValue> antecedent, IFrequentItemsSet<TValue> consequent)
@@ -16,7 +15,7 @@
 
         protected bool Equals(AssociationRule<TValue> other)
         {
-            return Equals(this.Antecedent, other.Antecedent) && Equals(this.Consequent, other.Consequent);
+            return Equals(Antecedent, other.Antecedent) && Equals(Consequent, other.Consequent);
         }
 
         public override bool Equals(object obj)
@@ -29,18 +28,19 @@
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
-            return Equals((AssociationRule<TValue>)obj);
+            return Equals((AssociationRule<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((Antecedent != null ? Antecedent.GetHashCode() : 0) * 397) ^ (Consequent != null ? this.Consequent.GetHashCode() : 0);
+                return ((Antecedent != null ? Antecedent.GetHashCode() : 0)*397) ^
+                       (Consequent != null ? Consequent.GetHashCode() : 0);
             }
         }
 

@@ -1,16 +1,16 @@
-﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
-{
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
+﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+{
     public struct AssociationMiningParams : IAssociationMiningParams
     {
-        public AssociationMiningParams(double minimalSupport, double minimalConfidence)
+        public AssociationMiningParams(double minimalRelativeSupport, double minimalConfidence)
         {
-            this.MinimalSupport = minimalSupport;
-            this.MinimalConfidence = minimalConfidence;
+            MinimalRelativeSupport = minimalRelativeSupport;
+            MinimalConfidence = minimalConfidence;
         }
 
-        public double MinimalSupport { get; }
+        public double MinimalRelativeSupport { get; }
         public double MinimalConfidence { get; }
     }
 }

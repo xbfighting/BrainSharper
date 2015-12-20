@@ -1,12 +1,12 @@
-﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics
-{
-    using System.Collections.Generic;
-    using Data;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Data;
 
+namespace BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics
+{
     public interface IComplexQualityChecker
     {
         ComplexQualityData CalculateComplexQuality(
-            IDataFrame dataFrame, 
+            IDataFrame dataFrame,
             string dependentFeatureName,
             IList<int> examplesCoveredByComplex);
     }
@@ -33,14 +33,14 @@
             {
                 return false;
             }
-            return obj is ComplexQualityData && Equals((ComplexQualityData)obj);
+            return obj is ComplexQualityData && Equals((ComplexQualityData) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (QualityValue.GetHashCode() * 397) ^ IsBestPossible.GetHashCode();
+                return (QualityValue.GetHashCode()*397) ^ IsBestPossible.GetHashCode();
             }
         }
     }

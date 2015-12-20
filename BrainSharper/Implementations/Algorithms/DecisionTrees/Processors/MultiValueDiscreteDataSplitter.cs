@@ -1,13 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-    using DataStructures;
-
     public class MultiValueDiscreteDataSplitter : IDataSplitter
     {
         public IList<ISplittedData> SplitData(IDataFrame dataToSplit, ISplittingParams splttingParams)
@@ -38,7 +37,7 @@
 
         private double CalcInstancesPercentage(int totalRowsCount, int splitRowsCount)
         {
-            return splitRowsCount / (double)totalRowsCount;
+            return splitRowsCount/(double) totalRowsCount;
         }
     }
 }

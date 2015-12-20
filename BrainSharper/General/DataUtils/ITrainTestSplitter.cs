@@ -13,7 +13,7 @@ namespace BrainSharper.General.DataUtils
     }
 
     /// <summary>
-    /// Splits data into training and testing set, keeping specified proportions
+    ///     Splits data into training and testing set, keeping specified proportions
     /// </summary>
     public interface ITrainTestSplitter
     {
@@ -31,7 +31,7 @@ namespace BrainSharper.General.DataUtils
 
         public IDictionary<DataType, IList<int>> SplitData(IDataFrame dataFrame, double trainingProportion)
         {
-            var trainingDataCount = (int) (dataFrame.RowCount * trainingProportion);
+            var trainingDataCount = (int) (dataFrame.RowCount*trainingProportion);
             var shuffledIndices = Enumerable.Range(0, dataFrame.RowCount).ToList().Shuffle(_randomier);
             var trainingIndices = shuffledIndices.Take(trainingDataCount).ToList();
             var testingIndices = shuffledIndices.Skip(trainingDataCount).ToList();

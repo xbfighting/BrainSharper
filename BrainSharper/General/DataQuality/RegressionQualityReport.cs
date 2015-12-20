@@ -1,13 +1,13 @@
-﻿namespace BrainSharper.General.DataQuality
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace BrainSharper.General.DataQuality
+{
     public class RegressionQualityReport : IRegressionQualityMeasure
     {
         public RegressionQualityReport(
-            IList<double> expectedValues, 
-            IList<double> actualValues, 
-            int casesCount, 
+            IList<double> expectedValues,
+            IList<double> actualValues,
+            int casesCount,
             double rsquared,
             double errorRate)
         {

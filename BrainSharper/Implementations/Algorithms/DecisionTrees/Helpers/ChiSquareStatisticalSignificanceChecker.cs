@@ -1,14 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers
+﻿using System;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
+using BrainSharper.Abstract.Data;
+using MathNet.Numerics.Distributions;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers
 {
-    using System;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Helpers;
-    using Abstract.Data;
-
-    using MathNet.Numerics.Distributions;
-
     //TODO: make it common with other chisquare mathods
     public class ChiSquareStatisticalSignificanceChecker : IStatisticalSignificanceChecker
     {
@@ -28,7 +26,7 @@
                 .GetColumnVector(dependentFeatureName)
                 .Values
                 .GroupBy(elem => elem)
-                .ToDictionary(grp => grp.Key, grp => grp.Count() / (double)initialDataFrame.RowCount);
+                .ToDictionary(grp => grp.Key, grp => grp.Count()/(double) initialDataFrame.RowCount);
             var chisquareStatisticSum = 0.0;
             if (splittingResults.IsSplitNumeric)
             {
@@ -46,13 +44,13 @@
                         .ToDictionary(grp => grp.Key, grp => grp.Count());
                 foreach (var uniqueDependentValueCount in uniqueDependentValuesCounts)
                 {
-                    var expectedCount = uniqueDependentValueCount.Value * splitSize;
+                    var expectedCount = uniqueDependentValueCount.Value*splitSize;
                     var actualCount = 0;
                     if (actualDependentFeatureValues.ContainsKey(uniqueDependentValueCount.Key))
                     {
                         actualCount = actualDependentFeatureValues[uniqueDependentValueCount.Key];
                     }
-                    var actualChisquareValue = Math.Pow(actualCount - expectedCount, 2) / expectedCount;
+                    var actualChisquareValue = Math.Pow(actualCount - expectedCount, 2)/expectedCount;
                     chisquareStatisticSum += actualChisquareValue;
                 }
             }

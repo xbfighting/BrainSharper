@@ -1,10 +1,9 @@
-﻿namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
+﻿using System;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Abstract.Algorithms.DecisionTrees.Processors
 {
-    using System;
-
-    using DataStructures;
-    using Data;
-
     public interface IBinaryNumericSplitPointSelectorCategoricalOutcome : IBinaryNumericAttributeSplitPointSelector
     {
         Tuple<ISplittingResult, double> FindBestSplitPoint(

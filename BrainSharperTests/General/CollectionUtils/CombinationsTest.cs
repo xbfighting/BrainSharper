@@ -1,4 +1,6 @@
-﻿namespace BrainSharperTests.General.CollectionUtils
+﻿using System.Linq;
+
+namespace BrainSharperTests.General.CollectionUtils
 {
     using System.Collections.Generic;
 
@@ -33,10 +35,30 @@
                                       };
 
             // When
-            var combinations = collection.GetAllCombinations();
+            var combinations = collection.GenerateAllCombinations();
 
             // Then
-            Assert.AreEqual(15, combinations.Count);
+            CollectionAssert.AreEquivalent(expectedSubsets, combinations);
+        }
+
+        [Test]
+        public void TestCombinationsOfSizeKOfSimpleArray()
+        {
+            // Given
+            var collection = new[] { "A", "B", "C", "D" };
+            var expectedSubsets = new List<IList<string>>
+                                      {
+                                          new [] { "A", "B", "C" },
+                                          new [] { "A", "B", "D" },
+                                          new [] { "A", "C", "D" },
+                                          new [] { "B", "C", "D" }
+                                      };
+
+            // When
+            var combinations = collection.GenerateCombinationsOfSizeK(3);
+
+            // Then
+            CollectionAssert.AreEquivalent(expectedSubsets, combinations);
         }
     }
 }

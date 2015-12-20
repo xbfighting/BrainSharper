@@ -1,9 +1,8 @@
-﻿namespace BrainSharper.Abstract.Algorithms.LinearRegression
+﻿using BrainSharper.Abstract.Algorithms.Infrastructure;
+using MathNet.Numerics.LinearAlgebra;
+
+namespace BrainSharper.Abstract.Algorithms.LinearRegression
 {
-    using Infrastructure;
-
-    using MathNet.Numerics.LinearAlgebra;
-
     public interface ILinearRegressionModelBuilder : IPredictionModelBuilder
     {
         ILinearRegressionModel BuildModel(

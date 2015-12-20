@@ -1,17 +1,17 @@
-﻿namespace BrainSharper.Implementations.Data
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Abstract.Data;
-    using General.Exceptions.Data;
-    using General.Utils;
-    using MathNet.Numerics.LinearAlgebra;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using BrainSharper.Abstract.Data;
+using BrainSharper.General.Exceptions.Data;
+using BrainSharper.General.Utils;
+using MathNet.Numerics.LinearAlgebra;
 
+namespace BrainSharper.Implementations.Data
+{
     public class DataFrame : IDataFrame
     {
         #region Fields
@@ -19,7 +19,7 @@
         protected readonly DataTable DataTable;
         private readonly object locker = new object();
         private IList<int> rowIndices;
-        private readonly Lazy<Matrix<double>> numericMatrix, numericMatrixWithIntercept; 
+        private readonly Lazy<Matrix<double>> numericMatrix, numericMatrixWithIntercept;
 
         #endregion Fields
 
@@ -30,20 +30,19 @@
             DataTable = dataTable;
             if (rowIndices == null)
             {
-                this.rowIndices = dataTable.AsEnumerable().Select((row, rowIdx) => (int)rowIdx).ToList();
+                this.rowIndices = dataTable.AsEnumerable().Select((row, rowIdx) => rowIdx).ToList();
             }
             else
             {
                 this.rowIndices = rowIndices.Take(dataTable.Rows.Count).ToList();
             }
             numericMatrix = new Lazy<Matrix<double>>(CreateMatrixFromDataTable);
-            numericMatrixWithIntercept = new Lazy<Matrix<double>>(this.CreateMatrixWithInterceptFromDataTable);
+            numericMatrixWithIntercept = new Lazy<Matrix<double>>(CreateMatrixWithInterceptFromDataTable);
         }
 
         public DataFrame(Matrix<double> matrix, IList<string> columnNames = null, IList<int> rowIndices = null)
             : this(matrix.ToDataTable(columnNames), rowIndices)
         {
-
         }
 
         #endregion Constructors
@@ -53,14 +52,14 @@
         public DataTable InnerTable => DataTable;
 
         public IList<Type> ColumnTypes => (from DataColumn col in InnerTable.Columns
-                                           select col.DataType).ToList();
+            select col.DataType).ToList();
 
         public IList<string> ColumnNames
         {
             get
             {
                 return (from DataColumn col in DataTable.Columns
-                        select col.ColumnName).ToList();
+                    select col.ColumnName).ToList();
             }
             set
             {
@@ -77,8 +76,11 @@
 
         public IList<int> RowIndices
         {
-            get { return this.rowIndices; }
-            set { this.rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value; }
+            get { return rowIndices; }
+            set
+            {
+                rowIndices = value.Count() != DataTable.Rows.Count ? value.Take(DataTable.Rows.Count).ToList() : value;
+            }
         }
 
         public bool Any => InnerTable != null && InnerTable.Rows.Count > 0;
@@ -87,7 +89,8 @@
 
         public int ColumnsCount => DataTable.Columns.Count;
 
-        IDataItem<object> IDataFrame.this[int rowIdx, int columnIdx] => new DataItem<object>(ColumnNames[(int)columnIdx], DataTable.Rows[(int)rowIdx][columnIdx]);
+        IDataItem<object> IDataFrame.this[int rowIdx, int columnIdx]
+            => new DataItem<object>(ColumnNames[columnIdx], DataTable.Rows[rowIdx][columnIdx]);
 
         public IDataItem<object> this[int rowIdx, string columnName]
         {
@@ -97,7 +100,7 @@
                 {
                     throw new ArgumentException(string.Format("Invalid column name: {0}", columnName));
                 }
-                return new DataItem<object>(columnName, DataTable.Rows[(int)rowIdx][columnName]);
+                return new DataItem<object>(columnName, DataTable.Rows[rowIdx][columnName]);
             }
         }
 
@@ -125,7 +128,8 @@
         {
             index = useRowNames ? RowNameToIndex(index) : index;
             return new DataVector<TValue>(
-                DataTable.Rows[index].ItemArray.Select(itm => (TValue)Convert.ChangeType(itm, typeof(TValue))).ToList(),
+                DataTable.Rows[index].ItemArray.Select(itm => (TValue) Convert.ChangeType(itm, typeof (TValue)))
+                    .ToList(),
                 ColumnNames);
         }
 
@@ -145,9 +149,9 @@
         public IDataVector<TValue> GetColumnVector<TValue>(int columnIndex)
         {
             var elements = (
-                                from row in DataTable.AsEnumerable().AsParallel().AsOrdered()
-                                select (TValue)Convert.ChangeType(row[columnIndex], typeof(TValue))
-                                ).ToList();
+                from row in DataTable.AsEnumerable().AsParallel().AsOrdered()
+                select (TValue) Convert.ChangeType(row[columnIndex], typeof (TValue))
+                ).ToList();
             return new DataVector<TValue>(elements, ColumnNames[columnIndex]);
         }
 
@@ -220,9 +224,9 @@
             var indices = useRowName ? RowNamesToRowIndices(rowIndices) : rowIndices;
             Parallel.ForEach(indices, rowIdx =>
             {
-                    var row = InnerTable.Rows[rowIdx];
-                    var rowValue = (TValue)row[columnName];
-                    results.Add(new Tuple<int, TValue>(rowIdx, rowValue));
+                var row = InnerTable.Rows[rowIdx];
+                var rowValue = (TValue) row[columnName];
+                results.Add(new Tuple<int, TValue>(rowIdx, rowValue));
             });
             return results.OrderBy(tpl => tpl.Item1).Select(tpl => tpl.Item2).ToList();
         }
@@ -261,10 +265,11 @@
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                for (var colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
-                    var newVal = rowOperator(rowIdx, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (this.locker)
+                    var newVal = rowOperator(rowIdx, ColumnNames[colIdx],
+                        (TValue) Convert.ChangeType(row[colIdx], typeof (TValue)));
+                    lock (locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -279,10 +284,10 @@
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                for (int colIdx = 0; colIdx < ColumnNames.Count; colIdx++)
+                for (var colIdx = 0; colIdx < ColumnNames.Count; colIdx++)
                 {
-                    var newVal = rowOperator(rowIdx, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (this.locker)
+                    var newVal = rowOperator(rowIdx, colIdx, (TValue) Convert.ChangeType(row[colIdx], typeof (TValue)));
+                    lock (locker)
                     {
                         newData.Rows[rowIdx][colIdx] = newVal;
                     }
@@ -297,11 +302,11 @@
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                var rowName = this.rowIndices[rowIdx];
-                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                var rowName = rowIndices[rowIdx];
+                for (var colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
-                    var newVal = rowOperator(rowName, colIdx, (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (this.locker)
+                    var newVal = rowOperator(rowName, colIdx, (TValue) Convert.ChangeType(row[colIdx], typeof (TValue)));
+                    lock (locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -316,11 +321,12 @@
             Parallel.For(0, newData.Rows.Count, rowIdx =>
             {
                 var row = newData.Rows[rowIdx];
-                var rowName = this.rowIndices[rowIdx];
-                for (int colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
+                var rowName = rowIndices[rowIdx];
+                for (var colIdx = 0; colIdx < row.ItemArray.Length; colIdx++)
                 {
-                    var newVal = rowOperator(rowName, ColumnNames[colIdx], (TValue)Convert.ChangeType(row[colIdx], typeof(TValue)));
-                    lock (this.locker)
+                    var newVal = rowOperator(rowName, ColumnNames[colIdx],
+                        (TValue) Convert.ChangeType(row[colIdx], typeof (TValue)));
+                    lock (locker)
                     {
                         row[colIdx] = newVal;
                     }
@@ -352,18 +358,18 @@
 
         public int GetRowsCountWhere(Predicate<DataRow> rowsFilter)
         {
-            int rowsCountWhere = 0;
+            var rowsCountWhere = 0;
             Parallel.For(
                 0,
                 RowCount,
                 rowIdx =>
+                {
+                    var row = DataTable.Rows[rowIdx];
+                    if (rowsFilter(row))
                     {
-                        var row = DataTable.Rows[rowIdx];
-                        if (rowsFilter(row))
-                        {
-                            Interlocked.Add(ref rowsCountWhere, 1);
-                        }
-                    });
+                        Interlocked.Add(ref rowsCountWhere, 1);
+                    }
+                });
             return rowsCountWhere;
         }
 
@@ -379,7 +385,7 @@
 
         public bool ContentEquals(IDataFrame other)
         {
-            for (int i = 0; i < RowCount; i++)
+            for (var i = 0; i < RowCount; i++)
             {
                 var row = GetRowVector(i);
                 var otherRow = other.GetRowVector(i);
@@ -402,7 +408,7 @@
                 throw new InvalidColumnNamesException();
             }
             var valuesList = value.ToList();
-            for (int i = 0; i < valuesList.Count; i++)
+            for (var i = 0; i < valuesList.Count; i++)
             {
                 DataTable.Columns[i].ColumnName = valuesList[i];
             }
@@ -428,7 +434,8 @@
 
         private Matrix<double> CreateMatrixFromDataTable()
         {
-            var rowsArray = DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
+            var rowsArray =
+                DataTable.AsEnumerable().Select(row => row.ItemArray.Select(Convert.ToDouble).ToArray()).ToList();
             return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
         }
 
@@ -436,14 +443,13 @@
         {
             var rowsArray = DataTable.AsEnumerable().Select(
                 row =>
-                    {
-                        var data = row.ItemArray.Select(Convert.ToDouble).ToList();
-                        data.Insert(0, 1.0);
-                        return data.ToArray();
-                    }).ToList();
+                {
+                    var data = row.ItemArray.Select(Convert.ToDouble).ToList();
+                    data.Insert(0, 1.0);
+                    return data.ToArray();
+                }).ToList();
             return Matrix<double>.Build.DenseOfRowArrays(rowsArray);
-        } 
-
+        }
 
         #endregion Private methods
 
@@ -453,8 +459,8 @@
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((DataFrame)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DataFrame) obj);
         }
 
         public override int GetHashCode()
@@ -466,13 +472,13 @@
                 {
                     foreach (DataRow row in DataTable.Rows)
                     {
-                        hash = row.ItemArray.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
+                        hash = row.ItemArray.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode()*397);
                     }
                 }
 
-                if (this.rowIndices != null)
+                if (rowIndices != null)
                 {
-                    hash = this.rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode() * 397);
+                    hash = rowIndices.Aggregate(hash, (acc, elem) => acc ^ elem.GetHashCode()*397);
                 }
                 return hash;
             }

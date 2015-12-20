@@ -1,15 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+﻿using System.Collections.Concurrent;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
-    using System.Collections.Concurrent;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-
-    using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
-
-    using DataStructures;
-    using DataStructures.BinaryDecisionTrees;
-
     public class MultiSplitDecisionTreeModelBuilder : BaseDecisionTreeModelBuilder
     {
         public MultiSplitDecisionTreeModelBuilder(
@@ -21,11 +18,12 @@
         {
         }
 
-        protected override IDecisionTreeNode BuildConcreteDecisionTreeNode(ISplittingResult splittingResult, ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
+        protected override IDecisionTreeNode BuildConcreteDecisionTreeNode(ISplittingResult splittingResult,
+            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
         {
             if (splittingResult is IBinarySplittingResult)
             {
-                var binarySplitResult = (IBinarySplittingResult)splittingResult;
+                var binarySplitResult = (IBinarySplittingResult) splittingResult;
                 return new BinaryDecisionTreeParentNode(
                     false,
                     splittingResult.SplittingFeatureName,

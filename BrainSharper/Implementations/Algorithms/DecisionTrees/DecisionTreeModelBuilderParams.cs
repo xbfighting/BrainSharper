@@ -1,12 +1,13 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees
-{
-    using BrainSharper.Abstract.Algorithms.DecisionTrees;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees;
 
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+{
     public class DecisionTreeModelBuilderParams : IDecisionTreeModelBuilderParams
     {
-        public DecisionTreeModelBuilderParams(bool processSubtreesCreationInParallel, bool usePrunningHeuristicInBuild = false, int? maximalTreeDepth = null)
+        public DecisionTreeModelBuilderParams(bool processSubtreesCreationInParallel,
+            bool usePrunningHeuristicInBuild = false, int? maximalTreeDepth = null)
         {
-            this.ProcessSubtreesCreationInParallel = processSubtreesCreationInParallel;
+            ProcessSubtreesCreationInParallel = processSubtreesCreationInParallel;
             UsePrunningHeuristicDuringTreeBuild = usePrunningHeuristicInBuild;
             MaximalTreeDepth = maximalTreeDepth;
         }

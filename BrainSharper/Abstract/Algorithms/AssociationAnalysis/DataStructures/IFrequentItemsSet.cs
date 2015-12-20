@@ -1,7 +1,7 @@
-﻿namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
+{
     public interface IFrequentItemsSet<TValue>
     {
         ISet<TValue> ItemsSet { get; }

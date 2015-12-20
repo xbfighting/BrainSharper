@@ -1,19 +1,16 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System;
+using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-
-    using Abstract.Data;
-
-    using DataStructures;
-
     public class MultiValueSplitSelectorForCategoricalOutcome : BaseSplitSelectorForCategoricalOutcome
     {
         public MultiValueSplitSelectorForCategoricalOutcome(
-            IDataSplitter categoricalSplitter, 
+            IDataSplitter categoricalSplitter,
             IBinaryNumericDataSplitter binarySplitter,
             IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
             : base(categoricalSplitter, binarySplitter, binaryNumericBestSplitPointSelector)
@@ -32,8 +29,8 @@
             if (alreadyUsedAttributesInfo.WasAttributeAlreadyUsed(splittingFeatureName))
             {
                 return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
-                    new List<ISplittedData>(), 
-                    new SplittingParams(splittingFeatureName, dependentFeatureName), 
+                    new List<ISplittedData>(),
+                    new SplittingParams(splittingFeatureName, dependentFeatureName),
                     double.NegativeInfinity);
             }
             var totalRowsCount = dataToSplit.RowCount;
@@ -42,16 +39,18 @@
             if (splitData.Count == 1)
             {
                 return new Tuple<IList<ISplittedData>, ISplittingParams, double>(
-                    new List<ISplittedData>(), 
-                    splitParams, 
+                    new List<ISplittedData>(),
+                    splitParams,
                     double.NegativeInfinity);
             }
 
-            var splitQuality = splitQualityChecker.CalculateSplitQuality(initialEntropy, totalRowsCount, splitData, dependentFeatureName);
+            var splitQuality = splitQualityChecker.CalculateSplitQuality(initialEntropy, totalRowsCount, splitData,
+                dependentFeatureName);
             return new Tuple<IList<ISplittedData>, ISplittingParams, double>(splitData, splitParams, splitQuality);
         }
 
-        protected override ISplittingResult BuildBestSplitObject(ISplittingParams splittingParams, IList<ISplittedData> splittedData)
+        protected override ISplittingResult BuildBestSplitObject(ISplittingParams splittingParams,
+            IList<ISplittedData> splittedData)
         {
             return new SplittingResult(
                 false,
@@ -59,7 +58,8 @@
                 splittedData);
         }
 
-        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams, IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
+        protected override void UpdateAlreadyUsedAttributes(ISplittingParams splittingParams,
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo)
         {
             alreadyUsedAttributesInfo.AddAlreadyUsedAttribute(splittingParams.SplitOnFeature);
         }

@@ -1,11 +1,10 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.RuleInduction.Heuristics;
-    using Abstract.Data;
-
     public class LaplacianSmoothingQualityChecker : IComplexQualityChecker
     {
         private readonly int numberOfCategories;
@@ -38,9 +37,9 @@
             {
                 return new ComplexQualityData(0.0);
             }
-            var nominator = mostCommonDependentFeatureValueCount + (smoothingWeight * (1.0 / numberOfCategories));
+            var nominator = mostCommonDependentFeatureValueCount + (smoothingWeight*(1.0/numberOfCategories));
             var denominator = examplesCoveredByComplex.Count + numberOfCategories;
-            var qualityValue = nominator / denominator;
+            var qualityValue = nominator/denominator;
             return new ComplexQualityData(qualityValue.Value, qualityValue == 1.0);
         }
     }

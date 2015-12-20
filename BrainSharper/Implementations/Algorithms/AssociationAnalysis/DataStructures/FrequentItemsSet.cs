@@ -1,10 +1,9 @@
-﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.AssociationAnalysis.DataStructures;
-
     public class FrequentItemsSet<TValue> : IFrequentItemsSet<TValue>
     {
         public FrequentItemsSet(ISet<TValue> itemsSet)
@@ -12,10 +11,15 @@
         {
         }
 
+        public FrequentItemsSet(params TValue[] elements)
+            : this(new HashSet<TValue>(elements))
+        {
+        }
+
         public FrequentItemsSet(
-            double support, 
-            double relativeSuppot, 
-            IEnumerable<object> transactionIds, 
+            double support,
+            double relativeSuppot,
+            IEnumerable<object> transactionIds,
             IEnumerable<TValue> items)
         {
             ItemsSet = new SortedSet<TValue>(items);
@@ -32,7 +36,6 @@
             params TValue[] items)
             : this(support, relativeSuppot, transactionIds, items.AsEnumerable())
         {
-            
         }
 
         public ISet<TValue> ItemsSet { get; }
@@ -57,7 +60,8 @@
 
         protected bool Equals(FrequentItemsSet<TValue> other)
         {
-            return this.ItemsSet.SetEquals(other.ItemsSet) && Support.Equals(other.Support) && RelativeSuppot.Equals(other.RelativeSuppot) && TransactionIds.SetEquals(other.TransactionIds);
+            return ItemsSet.SetEquals(other.ItemsSet) && Support.Equals(other.Support) &&
+                   RelativeSuppot.Equals(other.RelativeSuppot) && TransactionIds.SetEquals(other.TransactionIds);
         }
 
         public override bool Equals(object obj)
@@ -70,21 +74,21 @@
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
-            return Equals((FrequentItemsSet<TValue>)obj);
+            return Equals((FrequentItemsSet<TValue>) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = this.ItemsSet.Aggregate(397, (acc, itm) => acc + itm.GetHashCode());
-                hashCode = (hashCode * 397) ^ this.Support.GetHashCode();
-                hashCode = (hashCode * 397) ^ this.RelativeSuppot.GetHashCode();
-                hashCode = (hashCode * 397) ^ TransactionIds.Aggregate(397, (acc, itm) => acc + itm.GetHashCode());
+                var hashCode = ItemsSet.Aggregate(397, (acc, itm) => acc + itm.GetHashCode());
+                hashCode = (hashCode*397) ^ Support.GetHashCode();
+                hashCode = (hashCode*397) ^ RelativeSuppot.GetHashCode();
+                hashCode = (hashCode*397) ^ TransactionIds.Aggregate(397, (acc, itm) => acc + itm.GetHashCode());
                 return hashCode;
             }
         }

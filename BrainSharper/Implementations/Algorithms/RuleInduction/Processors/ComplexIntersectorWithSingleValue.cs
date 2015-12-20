@@ -1,14 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.Processors
+﻿using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Algorithms.RuleInduction.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.Processors
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Algorithms.RuleInduction.Processors;
-
-    using Abstract.Data;
-    using DataStructures;
-
     public class ComplexIntersectorWithSingleValue<TValue> : IComplexesIntersector<TValue>
     {
         public IDictionary<string, ISet<IComplex<TValue>>> PrepareFeatureDomains(
@@ -16,16 +14,17 @@
             string dependentFeatureName)
         {
             var results = (from columnName in dataFrame.ColumnNames.Where(col => !col.Equals(dependentFeatureName))
-                           let columnVector =
-                               dataFrame.GetColumnVector<TValue>(columnName).Values.Distinct()
-                           let singleValSelectors =
-                                columnVector.Select(
-                                    val =>
-                                    new Complex<TValue>(
-                                        selectors: new DisjunctiveSelector<TValue>(columnName, val)))
-                           group singleValSelectors by columnName
-                           into grp
-                           select grp).ToDictionary(grp => grp.Key, grp => new HashSet<IComplex<TValue>>(grp.SelectMany(e => e)) as ISet<IComplex<TValue>>);
+                let columnVector =
+                    dataFrame.GetColumnVector<TValue>(columnName).Values.Distinct()
+                let singleValSelectors =
+                    columnVector.Select(
+                        val =>
+                            new Complex<TValue>(
+                                selectors: new DisjunctiveSelector<TValue>(columnName, val)))
+                group singleValSelectors by columnName
+                into grp
+                select grp).ToDictionary(grp => grp.Key,
+                    grp => new HashSet<IComplex<TValue>>(grp.SelectMany(e => e)) as ISet<IComplex<TValue>>);
 
             return results;
         }

@@ -1,10 +1,9 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
-    using System.Collections.Generic;
-
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Data;
-
     public class RulesList<TValue> : IRulesList<TValue>
     {
         public RulesList(IList<IRule<TValue>> rules, IDataItem<TValue> defaultVal)

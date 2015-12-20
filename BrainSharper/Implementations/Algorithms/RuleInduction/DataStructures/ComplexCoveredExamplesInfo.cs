@@ -1,9 +1,8 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures
 {
-    using System.Collections.Generic;
-
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-
     public class ComplexCoveredExamplesInfo<TValue> : IComplexCoveredExamplesInfo<TValue>
     {
         private readonly IDictionary<IComplex<TValue>, IList<int>> coverage;

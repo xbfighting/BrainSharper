@@ -1,13 +1,13 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
-{
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures
+{
     public class SplittingParams : ISplittingParams
     {
         public SplittingParams(string splitOnFeature, string dependentFeatureName)
         {
-            this.SplitOnFeature = splitOnFeature;
-            this.DependentFeatureName = dependentFeatureName;
+            SplitOnFeature = splitOnFeature;
+            DependentFeatureName = dependentFeatureName;
         }
 
         public string SplitOnFeature { get; }
@@ -23,7 +23,7 @@
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
@@ -34,13 +34,14 @@
         {
             unchecked
             {
-                return ((this.SplitOnFeature?.GetHashCode() ?? 0) * 397) ^ (this.DependentFeatureName?.GetHashCode() ?? 0);
+                return ((SplitOnFeature?.GetHashCode() ?? 0)*397) ^ (DependentFeatureName?.GetHashCode() ?? 0);
             }
         }
 
         protected bool Equals(SplittingParams other)
         {
-            return string.Equals(this.SplitOnFeature, other.SplitOnFeature) && string.Equals(this.DependentFeatureName, other.DependentFeatureName);
+            return string.Equals(SplitOnFeature, other.SplitOnFeature) &&
+                   string.Equals(DependentFeatureName, other.DependentFeatureName);
         }
     }
 }

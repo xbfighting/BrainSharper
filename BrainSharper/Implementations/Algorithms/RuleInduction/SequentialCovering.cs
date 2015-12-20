@@ -1,23 +1,23 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.Infrastructure;
+using BrainSharper.Abstract.Algorithms.RuleInduction;
+using BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.RuleInduction.DataStructures;
+using BrainSharper.Implementations.Data;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.Infrastructure;
-    using Abstract.Algorithms.RuleInduction;
-    using Abstract.Algorithms.RuleInduction.DataStructures;
-    using Abstract.Data;
-    using Data;
-    using DataStructures;
-
     public abstract class SequentialCovering<TValue> : IRulesInductionModelBuilder
     {
-        public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
+        public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName,
+            IModelBuilderParams additionalParams)
         {
             ValidateParameters(additionalParams);
 
-            var ruleInductionParams = (IRuleInductionParams<TValue>)additionalParams;
+            var ruleInductionParams = (IRuleInductionParams<TValue>) additionalParams;
 
             var rulesList = new List<IRule<TValue>>();
             IDataItem<TValue> defaultValue = new DataItem<TValue>(dependentFeatureName, default(TValue));
@@ -40,7 +40,7 @@
                 }
                 var bestAntecedentCoveredExamples = bestAntecedentData.Item2;
                 var ruleConsequent = FindConsequent(dataFrame, dependentFeatureName, bestAntecedentCoveredExamples);
-                var rule = new Rule<TValue>(new[] { bestAntecedentComplex }, ruleConsequent);
+                var rule = new Rule<TValue>(new[] {bestAntecedentComplex}, ruleConsequent);
                 rulesList.Add(rule);
                 remainingExamples = remainingExamples.Except(bestAntecedentCoveredExamples).ToList();
             }
@@ -53,7 +53,8 @@
             return new RulesList<TValue>(rulesList, defaultValue);
         }
 
-        public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex, IModelBuilderParams additionalParams)
+        public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex,
+            IModelBuilderParams additionalParams)
         {
             return BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
         }

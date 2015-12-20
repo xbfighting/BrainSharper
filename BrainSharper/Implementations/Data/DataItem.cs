@@ -1,12 +1,13 @@
-﻿namespace BrainSharper.Implementations.Data
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Implementations.Data
 {
-    using System;
-    using System.Collections.Generic;
+    using static String;
 
-    using Abstract.Data;
-
-    using static System.String;
-
+    [DebuggerDisplay("Feature: {FeatureName} Value: {FeatureValue}")]
     public struct DataItem<TValue> : IDataItem<TValue>
     {
         public DataItem(string featureName, TValue value)
@@ -16,7 +17,6 @@
         }
 
         public string FeatureName { get; }
-
         public TValue FeatureValue { get; }
 
         public int CompareTo(IDataItem<TValue> other)
@@ -36,7 +36,7 @@
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((DataItem<TValue>) obj);
         }
 
@@ -44,14 +44,15 @@
         {
             unchecked
             {
-                return ((FeatureName?.GetHashCode() ?? 0)*397) ^ EqualityComparer<TValue>.Default.GetHashCode(FeatureValue);
+                return ((FeatureName?.GetHashCode() ?? 0)*397) ^
+                       EqualityComparer<TValue>.Default.GetHashCode(FeatureValue);
             }
         }
 
         private bool Equals(DataItem<TValue> other)
         {
-            return String.Equals(FeatureName, other.FeatureName) && EqualityComparer<TValue>.Default.Equals(FeatureValue, other.FeatureValue);
+            return string.Equals(FeatureName, other.FeatureName) &&
+                   EqualityComparer<TValue>.Default.Equals(FeatureValue, other.FeatureValue);
         }
-
     }
 }

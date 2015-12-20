@@ -1,14 +1,13 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-    using DataStructures;
-    using DataStructures.BinaryDecisionTrees;
-
     public class ClassBreakpointsNumericSplitFinder : IBinaryNumericSplitPointSelectorCategoricalOutcome
     {
         public Tuple<ISplittingResult, double> FindBestSplitPoint(
@@ -37,20 +36,20 @@
             double initialEntropy)
         {
             ISplittingResult bestSplit = null;
-            double bestSplitQuality = double.NegativeInfinity;
+            var bestSplitQuality = double.NegativeInfinity;
             var totalRowsCount = baseData.RowCount;
             var sortedRowData =
-                        baseData.GetNumericColumnVector(numericFeatureToProcess)
-                            .AsParallel()
-                            .Select((val, rowIdx) =>
-                            new
-                            {
-                                RowIdx = rowIdx,
-                                FeatureValue = val,
-                                DependentFeatureValue = baseData[rowIdx, dependentFeatureName].FeatureValue
-                            })
-                            .OrderBy(elem => elem.FeatureValue).ThenBy(elem => elem.RowIdx)
-                            .ToList();
+                baseData.GetNumericColumnVector(numericFeatureToProcess)
+                    .AsParallel()
+                    .Select((val, rowIdx) =>
+                        new
+                        {
+                            RowIdx = rowIdx,
+                            FeatureValue = val,
+                            DependentFeatureValue = baseData[rowIdx, dependentFeatureName].FeatureValue
+                        })
+                    .OrderBy(elem => elem.FeatureValue).ThenBy(elem => elem.RowIdx)
+                    .ToList();
             var previousClass = sortedRowData[0].DependentFeatureValue;
             var previousFeatureVal = sortedRowData[0].FeatureValue;
             foreach (var rowData in sortedRowData)
@@ -59,7 +58,7 @@
                 var currentFeatureVal = rowData.FeatureValue;
                 if (!currentClass.Equals(previousClass) && !currentFeatureVal.Equals(previousFeatureVal))
                 {
-                    var halfWay = (previousFeatureVal + currentFeatureVal) / 2.0;
+                    var halfWay = (previousFeatureVal + currentFeatureVal)/2.0;
                     var splitParams = new BinarySplittingParams(numericFeatureToProcess, halfWay, dependentFeatureName);
                     var splitResult = binaryNumericDataSplitter.SplitData(baseData, splitParams);
                     var quality = splitQualityChecker.CalculateSplitQuality(

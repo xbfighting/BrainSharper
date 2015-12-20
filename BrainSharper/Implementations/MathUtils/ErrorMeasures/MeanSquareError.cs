@@ -20,7 +20,8 @@ namespace BrainSharper.Implementations.MathUtils.ErrorMeasures
 
         public double CalculateError(IList<double> vec1, IList<double> vec2)
         {
-            return CalculateError(Vector<double>.Build.DenseOfEnumerable(vec1), Vector<double>.Build.DenseOfEnumerable(vec2));
+            return CalculateError(Vector<double>.Build.DenseOfEnumerable(vec1),
+                Vector<double>.Build.DenseOfEnumerable(vec2));
         }
     }
 }

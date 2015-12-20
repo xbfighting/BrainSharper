@@ -1,24 +1,22 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Data;
+using BrainSharper.General.Utils;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Processors
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Data;
-
-    using General.Utils;
-
     public abstract class BaseSplitSelectorForCategoricalOutcome : IBestSplitSelector
     {
-        protected readonly IDataSplitter CategoricalDataSplitter;
-        protected readonly IBinaryNumericDataSplitter BinaryNumericDataSplitter;
         protected readonly IBinaryNumericAttributeSplitPointSelector BinaryNumericBestSplitingPointSelector;
+        protected readonly IBinaryNumericDataSplitter BinaryNumericDataSplitter;
+        protected readonly IDataSplitter CategoricalDataSplitter;
 
         protected BaseSplitSelectorForCategoricalOutcome(
-            IDataSplitter binarySplitter, 
-            IBinaryNumericDataSplitter binaryNumericSplitter, 
+            IDataSplitter binarySplitter,
+            IBinaryNumericDataSplitter binaryNumericSplitter,
             IBinaryNumericAttributeSplitPointSelector binaryNumericBestSplitPointSelector)
         {
             CategoricalDataSplitter = binarySplitter;
@@ -34,9 +32,9 @@
         {
             ISplittingResult bestSplit = null;
             double bestSplitQuality = float.NegativeInfinity;
-            double initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
+            var initialEntropy = splitQualityChecker.GetInitialEntropy(baseData, dependentFeatureName);
 
-            foreach (var attributeToSplit in baseData.ColumnNames.Except(new[] { dependentFeatureName }))
+            foreach (var attributeToSplit in baseData.ColumnNames.Except(new[] {dependentFeatureName}))
             {
                 if (baseData.GetColumnType(attributeToSplit).TypeIsNumeric())
                 {
@@ -77,9 +75,9 @@
 
         //TODO: AAA make it nicer - maybe encapsulate Tuple in some dto
         protected abstract Tuple<IList<ISplittedData>, ISplittingParams, double> EvaluateCategoricalSplit(
-            IDataFrame dataToSplit, 
-            string dependentFeatureName, 
-            string splittingFeatureName, 
+            IDataFrame dataToSplit,
+            string dependentFeatureName,
+            string splittingFeatureName,
             double bestSplitQualitySoFar,
             double initialEntropy,
             ISplitQualityChecker splitQualityChecker,

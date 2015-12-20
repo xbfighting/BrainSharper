@@ -1,13 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-
-    using Abstract.Algorithms.AssociationAnalysis.DataStructures;
-    using Abstract.Data;
-
     public static class DataUtils
     {
         public static ITransactionsSet<IDataItem<TValue>> ToAssociativeTransactionsSet<TValue>(
@@ -32,24 +31,23 @@
             Parallel.ForEach(
                 dataFrame.RowIndices,
                 rowIdx =>
-                    {
-                        var transactionId = dataFrame[rowIdx, keyColumn].FeatureValue;
-                        var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx).DataItems.Where(
-                            (itm, idx) => columnIndicesToChange.Contains(idx) && itm.FeatureName != keyColName).ToList();
-                        transactionsDictionary.AddOrUpdate(
-                            transactionId,
-                            addValue: itemsToTake,
-                            updateValueFactory: (o, existingList) => existingList.Union(itemsToTake).ToList());
-                    });
+                {
+                    var transactionId = dataFrame[rowIdx, keyColumn].FeatureValue;
+                    var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx).DataItems.Where(
+                        (itm, idx) => columnIndicesToChange.Contains(idx) && itm.FeatureName != keyColName).ToList();
+                    transactionsDictionary.AddOrUpdate(
+                        transactionId, itemsToTake, (o, existingList) => existingList.Union(itemsToTake).ToList());
+                });
             return new TransactionsSet<IDataItem<TValue>>(
-                transactionsDictionary.Select(kvp => new Transaction<IDataItem<TValue>>(kvp.Key, kvp.Value) as ITransaction<IDataItem<TValue>>)
+                transactionsDictionary.Select(
+                    kvp => new Transaction<IDataItem<TValue>>(kvp.Key, kvp.Value) as ITransaction<IDataItem<TValue>>)
                 );
         }
 
         public static ITransactionsSet<IDataItem<object>> ToAssociativeTransactionsSet(
-           this IDataFrame dataFrame,
-           string keyColumn,
-           IEnumerable<string> columnsToExchange = null)
+            this IDataFrame dataFrame,
+            string keyColumn,
+            IEnumerable<string> columnsToExchange = null)
         {
             return dataFrame.ToAssociativeTransactionsSet<object>(
                 keyColumn,

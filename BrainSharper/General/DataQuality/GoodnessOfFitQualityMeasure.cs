@@ -1,11 +1,10 @@
-﻿namespace BrainSharper.General.DataQuality
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MathNet.Numerics;
+
+namespace BrainSharper.General.DataQuality
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using MathNet.Numerics;
-
     public class GoodnessOfFitQualityMeasure : IDataQualityMeasure<double>
     {
         public double CalculateError(IList<double> expected, IList<double> actual)
@@ -16,8 +15,8 @@
         public IDataQualityReport<double> GetReport(IList<double> expected, IList<double> actual)
         {
             return new RegressionQualityReport(
-                expected, 
-                actual, 
+                expected,
+                actual,
                 expected.Count,
                 GoodnessOfFit.RSquared(expected, actual),
                 CalculateError(expected, actual));

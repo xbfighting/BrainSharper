@@ -1,40 +1,35 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees
+﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
+using BrainSharper.Abstract.Algorithms.DecisionTrees;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Abstract.Algorithms.Infrastructure;
+using BrainSharper.Abstract.Data;
+using BrainSharper.General.Utils;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-
-    using Abstract.Algorithms.DecisionTrees;
-    using Abstract.Algorithms.DecisionTrees.DataStructures;
-    using Abstract.Algorithms.DecisionTrees.Processors;
-    using Abstract.Algorithms.Infrastructure;
-    using Abstract.Data;
-
-    using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
-
-    using Processors;
-
-    using General.Utils;
-
     public abstract class BaseDecisionTreeModelBuilder : IDecisionTreeModelBuilder
     {
-        protected readonly ISplitQualityChecker SplitQualityChecker;
         protected readonly IBestSplitSelector BestSplitSelector;
         protected readonly ILeafBuilder LeafBuilder;
+        protected readonly ISplitQualityChecker SplitQualityChecker;
         private readonly IStatisticalSignificanceChecker StatisticalSignificanceChecker;
 
         protected BaseDecisionTreeModelBuilder(
-            ISplitQualityChecker splitQualityChecker, 
-            IBestSplitSelector bestSplitSelector, 
-            ILeafBuilder leafBuilder, 
+            ISplitQualityChecker splitQualityChecker,
+            IBestSplitSelector bestSplitSelector,
+            ILeafBuilder leafBuilder,
             IStatisticalSignificanceChecker statisticalSignificanceChecker = null)
         {
             SplitQualityChecker = splitQualityChecker;
             BestSplitSelector = bestSplitSelector;
             LeafBuilder = leafBuilder;
-            this.StatisticalSignificanceChecker = statisticalSignificanceChecker;
+            StatisticalSignificanceChecker = statisticalSignificanceChecker;
         }
 
         public IPredictionModel BuildModel(
@@ -51,11 +46,12 @@
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
 
-            var decisionTreeParams = (IDecisionTreeModelBuilderParams)additionalParams;
+            var decisionTreeParams = (IDecisionTreeModelBuilderParams) additionalParams;
             var useParallelProcessing = decisionTreeParams.ProcessSubtreesCreationInParallel;
             var alreadyUsedAttributesInfo = new AlreadyUsedAttributesInfo();
             //TODO: reduce the number of parameters - maybe some nicer DTO?
-            var node = this.BuildDecisionNode(dataFrame, dependentFeatureName, decisionTreeParams, alreadyUsedAttributesInfo, 0, useParallelProcessing);
+            var node = BuildDecisionNode(dataFrame, dependentFeatureName, decisionTreeParams, alreadyUsedAttributesInfo,
+                0, useParallelProcessing);
             return node;
         }
 
@@ -69,28 +65,30 @@
 
         protected static bool ShouldStopRecusrsiveBuilding(IDataFrame dataFrame, string dependentFeatureName)
         {
-            return !dataFrame.GetColumnType(dependentFeatureName).IsNumericType() && dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1;
+            return !dataFrame.GetColumnType(dependentFeatureName).IsNumericType() &&
+                   dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1;
         }
 
         protected abstract IDecisionTreeNode BuildConcreteDecisionTreeNode(
-            ISplittingResult splittingResult, 
+            ISplittingResult splittingResult,
             ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children);
 
         protected virtual IDecisionTreeNode BuildDecisionNode(
-            IDataFrame dataFrame, 
+            IDataFrame dataFrame,
             string dependentFeatureName,
             IDecisionTreeModelBuilderParams additionalParams,
-            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo, 
+            IAlredyUsedAttributesInfo alreadyUsedAttributesInfo,
             int treeDepth,
             bool isFirstSplit = false)
         {
-            if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1 || MaximalTreeDepthHasBeenReached(additionalParams, treeDepth))
+            if (dataFrame.GetColumnVector<object>(dependentFeatureName).DataItems.Distinct().Count() == 1 ||
+                MaximalTreeDepthHasBeenReached(additionalParams, treeDepth))
             {
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
 
             // TODO: later on add additional params indicating which features were already used
-            ISplittingResult splitResult = BestSplitSelector.SelectBestSplit(
+            var splitResult = BestSplitSelector.SelectBestSplit(
                 dataFrame,
                 dependentFeatureName,
                 SplitQualityChecker,
@@ -100,7 +98,7 @@
                 return BuildLeaf(dataFrame, dependentFeatureName);
             }
 
-            if (additionalParams.UsePrunningHeuristicDuringTreeBuild && this.StatisticalSignificanceChecker != null)
+            if (additionalParams.UsePrunningHeuristicDuringTreeBuild && StatisticalSignificanceChecker != null)
             {
                 var isSplitSignificant = StatisticalSignificanceChecker.IsSplitStatisticallySignificant(
                     dataFrame,
@@ -119,24 +117,26 @@
                     splitResult.SplittedDataSets,
                     splitData =>
                     {
-                        this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo, treeDepth + 1);
+                        AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children,
+                            alreadyUsedAttributesInfo, treeDepth + 1);
                     });
             }
             else
             {
                 foreach (var splitData in splitResult.SplittedDataSets)
                 {
-                    this.AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children, alreadyUsedAttributesInfo, treeDepth + 1);
+                    AddChildFromSplit(dependentFeatureName, additionalParams, splitData, children,
+                        alreadyUsedAttributesInfo, treeDepth + 1);
                 }
             }
             return BuildConcreteDecisionTreeNode(splitResult, children);
         }
 
         protected virtual void AddChildFromSplit(
-            string dependentFeatureName, 
-            IDecisionTreeModelBuilderParams additionalParams, 
-            ISplittedData splitData, 
-            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children, 
+            string dependentFeatureName,
+            IDecisionTreeModelBuilderParams additionalParams,
+            ISplittedData splitData,
+            ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children,
             IAlredyUsedAttributesInfo alreadyUsedAttributesInfo,
             int treeDepth)
         {
@@ -151,10 +151,10 @@
         }
 
         protected virtual void AddLeafFromSplit(
-            string dependentFeatureName, 
-            IDecisionTreeModelBuilderParams additionalParams, 
-            ISplittedData splitData, 
-            IDataFrame baseData, 
+            string dependentFeatureName,
+            IDecisionTreeModelBuilderParams additionalParams,
+            ISplittedData splitData,
+            IDataFrame baseData,
             ConcurrentDictionary<IDecisionTreeLink, IDecisionTreeNode> children)
         {
             var leafNode = BuildLeaf(baseData, dependentFeatureName);
@@ -175,7 +175,8 @@
                        splitSet => splitSet?.SplittedDataFrame == null || splitSet.SplittedDataFrame.RowCount == 0);
         }
 
-        private static bool MaximalTreeDepthHasBeenReached(IDecisionTreeModelBuilderParams additionalParams, int treeDepth)
+        private static bool MaximalTreeDepthHasBeenReached(IDecisionTreeModelBuilderParams additionalParams,
+            int treeDepth)
         {
             return additionalParams.MaximalTreeDepth.HasValue && treeDepth >= additionalParams.MaximalTreeDepth;
         }

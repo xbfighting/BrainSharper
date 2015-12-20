@@ -1,9 +1,11 @@
-﻿namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis
-{
-    using DataStructures;
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
+namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis
+{
     public interface IFrequentItemsFinder<TValue>
     {
-        IFrequentItemsSet<IFrequentItemsSet<TValue>> FindFrequentItems(ITransactionsSet<TValue> transactions, IAssociationMiningParams associationMiningParams);
+        IList<IFrequentItemsSet<TValue>> FindFrequentItems(ITransactionsSet<TValue> transactions,
+            IAssociationMiningParams associationMiningParams);
     }
 }

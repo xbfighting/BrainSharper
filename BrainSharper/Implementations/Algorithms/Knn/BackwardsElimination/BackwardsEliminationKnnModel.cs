@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Algorithms.Knn;
 using BrainSharper.Abstract.Algorithms.Knn.BackwardsElimination;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace BrainSharper.Implementations.Algorithms.Knn.BackwardsElimination
 {
-    public class BackwardsEliminationKnnModel<TPredictionResult> : KnnPredictionModel<TPredictionResult>, IBackwardsEliminationKnnModel<TPredictionResult>
+    public class BackwardsEliminationKnnModel<TPredictionResult> : KnnPredictionModel<TPredictionResult>,
+        IBackwardsEliminationKnnModel<TPredictionResult>
     {
         public BackwardsEliminationKnnModel(
             Matrix<double> trainingData,
             IList<TPredictionResult> expectedTrainingOutcomes,
-            IList<string> dataColumnsNames, 
+            IList<string> dataColumnsNames,
             int kNeighbors,
             bool useWeightedDistance,
             IList<IBackwardsEliminationRemovedFeatureData> removedFeaturesData,

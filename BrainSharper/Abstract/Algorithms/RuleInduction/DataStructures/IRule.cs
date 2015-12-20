@@ -1,9 +1,8 @@
-﻿namespace BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Data;
+
+namespace BrainSharper.Abstract.Algorithms.RuleInduction.DataStructures
 {
-    using System.Collections.Generic;
-
-    using BrainSharper.Abstract.Data;
-
     public enum LogicOperator
     {
         And,
@@ -14,6 +13,6 @@
     {
         LogicOperator AntecedentLogicOperator { get; }
         IList<IComplex<TValue>> Antecedents { get; }
-        IDataItem<TValue> Consequent { get; } 
+        IDataItem<TValue> Consequent { get; }
     }
 }

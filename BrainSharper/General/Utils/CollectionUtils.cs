@@ -1,18 +1,16 @@
-﻿namespace BrainSharper.General.Utils
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BrainSharper.General.Utils
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using MathNet.Numerics.Statistics;
-
     public static class CollectionUtils
     {
         public static IList<T> Shuffle<T>(this IList<T> list, Random randomizer = null)
         {
             randomizer = randomizer ?? new Random();
             var shuffledData = new Dictionary<int, double>();
-            for (int elemIdx = 0; elemIdx < list.Count; elemIdx++)
+            for (var elemIdx = 0; elemIdx < list.Count; elemIdx++)
             {
                 var randomVal = randomizer.NextDouble();
                 shuffledData.Add(elemIdx, randomVal);
@@ -39,24 +37,39 @@
             return lst1.Count() == lst2.Count() && !lst1.Except(lst2).Any();
         }
 
-        public static IList<IList<T>> GetAllCombinations<T>(this IList<T> originalCollection)
+        public static IEnumerable<IEnumerable<T>> GenerateAllCombinations<T>(this IEnumerable<T> originalCollection)
         {
-            List<IList<T>> subsets = new List<IList<T>>();
-
-            for (int i = 0; i < originalCollection.Count(); i++)
+            var source = originalCollection.ToList();
+            var subsets = new List<IList<T>>();
+            for (var i = 0; i < source.Count; i++)
             {
-                int subsetCount = subsets.Count;
-                subsets.Add(new T[] { originalCollection[i] });
-
-                for (int j = 0; j < subsetCount; j++)
+                var element = source[i];
+                if (subsets.Any())
                 {
-                    T[] newSubset = new T[subsets[j].Count + 1];
-                    subsets[j].CopyTo(newSubset, 0);
-                    newSubset[newSubset.Length - 1] = originalCollection[i];
-                    subsets.Add(newSubset);
+                    var initialSubsetsCount = subsets.Count;
+                    for (var subsetIdx = 0; subsetIdx < initialSubsetsCount; subsetIdx++)
+                    {
+                        var existingSubset = subsets[subsetIdx];
+                        var newSubset = new List<T>(existingSubset) {element};
+                        subsets.Add(newSubset);
+                    }
                 }
+                subsets.Add(new[] {element});
             }
             return subsets;
+        }
+
+        public static IEnumerable<IEnumerable<T>> GenerateCombinationsOfSizeK<T>(
+            this IEnumerable<T> originalCollection,
+            int combinationSize)
+        {
+            var elements = originalCollection.ToList();
+            return combinationSize == 0
+                ? new[] {new T[0]}
+                : elements.SelectMany((e, i) =>
+                    elements.Skip(i + 1)
+                        .GenerateCombinationsOfSizeK(combinationSize - 1)
+                        .Select(c => (new[] {e}).Concat(c)));
         }
     }
 }

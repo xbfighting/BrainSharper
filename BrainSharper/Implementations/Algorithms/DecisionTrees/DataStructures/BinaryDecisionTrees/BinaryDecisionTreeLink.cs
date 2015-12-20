@@ -1,16 +1,16 @@
-﻿namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
-{
-    using Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
+﻿using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
+namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
+{
     public class BinaryDecisionTreeLink : DecisionLink, IBinaryDecisionTreeLink
     {
         public BinaryDecisionTreeLink(
-            double instancesPercentage, 
-            long instancesCount, 
-            bool testValue) 
+            double instancesPercentage,
+            long instancesCount,
+            bool testValue)
             : base(instancesPercentage, instancesCount, testValue)
         {
-            this.LogicalTestResult = testValue;
+            LogicalTestResult = testValue;
         }
 
         public bool LogicalTestResult { get; }
@@ -19,7 +19,7 @@
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((BinaryDecisionTreeLink) obj);
         }
 
@@ -27,13 +27,13 @@
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ this.TestResult.GetHashCode();
+                return (base.GetHashCode()*397) ^ TestResult.GetHashCode();
             }
         }
 
         protected bool Equals(BinaryDecisionTreeLink other)
         {
-            return base.Equals(other) && this.TestResult.Equals(other.TestResult);
+            return base.Equals(other) && TestResult.Equals(other.TestResult);
         }
     }
 }

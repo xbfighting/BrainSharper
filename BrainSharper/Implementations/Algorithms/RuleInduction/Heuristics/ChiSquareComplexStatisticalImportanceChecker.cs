@@ -1,12 +1,12 @@
-﻿namespace BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BrainSharper.Abstract.Algorithms.RuleInduction.Heuristics;
+using BrainSharper.Abstract.Data;
+using MathNet.Numerics.Distributions;
+
+namespace BrainSharper.Implementations.Algorithms.RuleInduction.Heuristics
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Abstract.Algorithms.RuleInduction.Heuristics;
-    using Abstract.Data;
-
     public class ChiSquareComplexStatisticalImportanceChecker<TValue> : IComplexStatisticalImportanceChecker
     {
         private readonly double significanceLevel;
@@ -24,19 +24,20 @@
             var expectedDependentFeatureValues =
                 dataFrame.GetColumnVector<TValue>(dependentFeatureName)
                     .Values.GroupBy(val => val)
-                    .ToDictionary(grp => grp.Key, grp => examplesCoveredByComplex.Count * (grp.Count() / (float)dataFrame.RowCount));
+                    .ToDictionary(grp => grp.Key,
+                        grp => examplesCoveredByComplex.Count*(grp.Count()/(float) dataFrame.RowCount));
             var actualDependentFeatureValues =
                 dataFrame.GetSubsetByRows(examplesCoveredByComplex, true)
-                .GetColumnVector<TValue>(dependentFeatureName).Values
-                .GroupBy(val => val)
-                .ToDictionary(grp => grp.Key, grp => grp.Count());
+                    .GetColumnVector<TValue>(dependentFeatureName).Values
+                    .GroupBy(val => val)
+                    .ToDictionary(grp => grp.Key, grp => grp.Count());
             var chiSquareSum =
                 expectedDependentFeatureValues.Sum(
-                    kvp => CalculateChiSquareValue(kvp.Value, this.GetActualCount(kvp.Key, actualDependentFeatureValues)));
+                    kvp => CalculateChiSquareValue(kvp.Value, GetActualCount(kvp.Key, actualDependentFeatureValues)));
             var degreesOfFreedom = expectedDependentFeatureValues.Keys.Count - 1;
-            if (MathNet.Numerics.Distributions.ChiSquared.IsValidParameterSet(degreesOfFreedom))
+            if (ChiSquared.IsValidParameterSet(degreesOfFreedom))
             {
-                var pValue = 1 - MathNet.Numerics.Distributions.ChiSquared.CDF(degreesOfFreedom, chiSquareSum);
+                var pValue = 1 - ChiSquared.CDF(degreesOfFreedom, chiSquareSum);
                 return pValue < significanceLevel;
             }
 
@@ -45,7 +46,7 @@
 
         protected double CalculateChiSquareValue(double expected, double actual)
         {
-            return Math.Pow((actual - expected), 2) / expected;
+            return Math.Pow((actual - expected), 2)/expected;
         }
 
         protected double GetActualCount(TValue value, IDictionary<TValue, int> valuesCounts)
