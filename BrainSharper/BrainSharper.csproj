@@ -48,8 +48,10 @@
   <ItemGroup>
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationFrequentItemsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSearchResult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationRulesFinder.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsFinder.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeClassificationLink.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtils.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSearchResult.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSet.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\Transaction.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\TransactionsSet.cs" />

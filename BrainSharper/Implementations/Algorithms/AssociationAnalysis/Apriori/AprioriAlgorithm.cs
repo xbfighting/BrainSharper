@@ -11,12 +11,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>
     {
-        public IList<IFrequentItemsSet<TValue>> FindFrequentItems(
+        public IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactionsSet,
             IAssociationMiningParams associationMiningParams)
         {
             var initialFrequentItems = GenerateInitialItemsSet(transactionsSet, associationMiningParams);
-            var frequentItemsBySize = new Dictionary<int, IList<IFrequentItemsSet<TValue>>>
+            var frequentItemsBySize = new Dictionary <int, IList<IFrequentItemsSet<TValue>>>
             {
                 [1] = initialFrequentItems
             };
@@ -35,7 +35,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 }
 
             }
-            return frequentItemsBySize.Values.SelectMany(itm => itm).ToList();
+            return new FrequentItemsSearchResult<TValue>(frequentItemsBySize);
         }
 
         public IList<IFrequentItemsSet<TValue>> GenerateNextItems(

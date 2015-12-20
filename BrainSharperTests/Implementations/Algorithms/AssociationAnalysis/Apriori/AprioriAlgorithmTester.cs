@@ -1,16 +1,14 @@
-﻿namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Apriori
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Data;
+using NUnit.Framework;
+
+namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-    using System.Collections.Generic;
-
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-    using BrainSharper.Abstract.Data;
-    using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
-    using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
-    using BrainSharper.Implementations.Data;
-    using System.Linq;
-
     using static AssociationAnalysisTestDataBuilder;
-    using NUnit.Framework;
 
     [TestFixture]
     public class AprioriAlgorithmTester
@@ -137,7 +135,7 @@
             var frequentItems = Subject.FindFrequentItems(MarketBasketTransactions, miningParams);
 
             // Then
-            CollectionAssert.AreEquivalent(expectedFrequentItems, frequentItems);
+            CollectionAssert.AreEquivalent(expectedFrequentItems, frequentItems.FrequentItems);
         }
     }
 }
