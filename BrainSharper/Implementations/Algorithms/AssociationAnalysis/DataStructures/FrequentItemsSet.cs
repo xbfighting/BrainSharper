@@ -102,5 +102,10 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         {
             return !Equals(left, right);
         }
+
+        public override string ToString()
+        {
+            return $"Items: {string.Join(",", OrderedItems.Select(itm => $"({itm.ToString()})" ))} Support: { RelativeSuppot} ";
+        }
     }
 }

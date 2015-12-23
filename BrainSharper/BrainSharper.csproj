@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationFrequentItemsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IAssociationMiningItem.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSearchResult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />

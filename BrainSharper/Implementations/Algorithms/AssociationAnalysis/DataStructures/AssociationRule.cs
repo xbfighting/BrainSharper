@@ -4,18 +4,29 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
 {
     public class AssociationRule<TValue> : IAssociationRule<TValue>
     {
-        public AssociationRule(IFrequentItemsSet<TValue> antecedent, IFrequentItemsSet<TValue> consequent)
+        public AssociationRule(
+            IFrequentItemsSet<TValue> antecedent, 
+            IFrequentItemsSet<TValue> consequent,
+            double support,
+            double relativeSupport,
+            double confidence)
         {
             Antecedent = antecedent;
             Consequent = consequent;
+            Support = support;
+            Confidence = confidence;
+            RelativeSuppot = relativeSupport;
         }
 
         public IFrequentItemsSet<TValue> Antecedent { get; }
         public IFrequentItemsSet<TValue> Consequent { get; }
+        public double Support { get; }
+        public double RelativeSuppot { get; }
+        public double Confidence { get; }
 
         protected bool Equals(AssociationRule<TValue> other)
         {
-            return Equals(Antecedent, other.Antecedent) && Equals(Consequent, other.Consequent);
+            return Equals(Antecedent, other.Antecedent) && Equals(Consequent, other.Consequent) && Equals(Support, other.Support) && Equals(RelativeSuppot, other.RelativeSuppot) && Equals(Confidence, other.Confidence);
         }
 
         public override bool Equals(object obj)
@@ -40,7 +51,10 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             unchecked
             {
                 return ((Antecedent != null ? Antecedent.GetHashCode() : 0)*397) ^
-                       (Consequent != null ? Consequent.GetHashCode() : 0);
+                       (Consequent != null ? Consequent.GetHashCode() : 0) ^
+                       (Support.GetHashCode()) ^
+                       (RelativeSuppot.GetHashCode()) ^
+                       (Confidence.GetHashCode());
             }
         }
 
@@ -52,6 +66,11 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         public static bool operator !=(AssociationRule<TValue> left, AssociationRule<TValue> right)
         {
             return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            return $"[{Antecedent}] => [{Consequent}] Support: {RelativeSuppot}, Confidence: {Confidence}";
         }
     }
 }

@@ -9,7 +9,7 @@ using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-    public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>
+    public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
         public IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactionsSet,
@@ -97,6 +97,55 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                             kvp.Key) as IFrequentItemsSet<TValue>)
                     .Where(itm => itm.Support >= associationMiningParams.MinimalRelativeSupport)
                     .ToList();
+        }
+
+        public IList<IAssociationRule<TValue>> FindAssociationRules(
+            ITransactionsSet<TValue> transactionSet, 
+            IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
+            IAssociationMiningParams associationMiningParams)
+        {
+            var maxFrequentItemsSize = frequentItemsSearchResult.FrequentItemsSizes.Max();
+            if (maxFrequentItemsSize == 1)
+            {
+                return new List<IAssociationRule<TValue>>();
+            }
+
+            var associationRules = new List<IAssociationRule<TValue>>();
+            foreach(var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
+            {
+                var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
+                foreach (var itemsSet in itemsOfGivenSize)
+                {
+                    associationRules
+                        .AddRange(ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
+                        .Where(candidateRule => candidateRule.RelativeSuppot >= associationMiningParams.MinimalRelativeSupport && candidateRule.Confidence >= associationMiningParams.MinimalConfidence));
+                }
+            }
+            return associationRules;
+        }
+
+        protected IEnumerable<IAssociationRule<TValue>> ProduceAssociationRules(
+            IFrequentItemsSet<TValue> currentItemSet,
+            IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
+            IAssociationMiningParams associationMiningParams
+            )
+        {
+            foreach (var possibleConsequent in currentItemSet.ItemsSet)
+            {
+                var consequentFrequentItem = frequentItemsSearchResult[1].First(itm => itm.ItemsSet.First().Equals(possibleConsequent));
+                var antecedentItemsSet = currentItemSet.ItemsSet.Except(new[] { possibleConsequent }).ToList();
+
+                var antecedentFrequentItemsSet = frequentItemsSearchResult[antecedentItemsSet.Count].First(itm => itm.ItemsSet.SetEquals(antecedentItemsSet));
+
+                var confidence = currentItemSet.RelativeSuppot / antecedentFrequentItemsSet.RelativeSuppot;
+                var newAssociationRule = new AssociationRule<TValue>(
+                    antecedentFrequentItemsSet,
+                    consequentFrequentItem,
+                    currentItemSet.Support,
+                    currentItemSet.RelativeSuppot,
+                    confidence);
+                yield return newAssociationRule;
+            }
         }
     }
 }

@@ -137,5 +137,20 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             // Then
             CollectionAssert.AreEquivalent(expectedFrequentItems, frequentItems.FrequentItems);
         }
+
+        [Test]
+        public void TestBuildingAssociationRules()
+        {
+            // Given
+            var itemsMiningParams = new AssociationMiningParams(0.3, 0.7);
+            var rulesMiningParams = new AssociationMiningParams(0.3, 0.6);
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(MarketBasketTransactions, itemsMiningParams);
+            var assocRules = Subject.FindAssociationRules(MarketBasketTransactions, frequentItems, rulesMiningParams);
+
+            // Then
+            Assert.AreEqual(10, assocRules.Count);
+        }
     }
 }

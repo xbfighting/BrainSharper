@@ -54,5 +54,10 @@ namespace BrainSharper.Implementations.Data
             return string.Equals(FeatureName, other.FeatureName) &&
                    EqualityComparer<TValue>.Default.Equals(FeatureValue, other.FeatureValue);
         }
+
+        public override string ToString()
+        {
+            return $"Feature: {FeatureName} Value: {FeatureValue}";
+        }
     }
 }

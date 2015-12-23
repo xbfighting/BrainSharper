@@ -6,7 +6,7 @@ namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis
     public interface IAssociationRulesFinder<TValue>
     {
         IList<IAssociationRule<TValue>> FindAssociationRules(
-            ITransactionsSet<TValue> trainsactionSet,
+            ITransactionsSet<TValue> transactionSet,
             IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
             IAssociationMiningParams associationMiningParams
             );

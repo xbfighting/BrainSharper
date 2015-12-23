@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
 {
@@ -6,6 +7,6 @@ namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
     {
         IList<IFrequentItemsSet<TValue>> FrequentItems { get; }
         IList<int> FrequentItemsSizes { get; }
-        IList<IFrequentItemsSet<TValue>> this[int size] { get; }  
+        IList<IFrequentItemsSet<TValue>> this[int size] { get; }
     }
 }
