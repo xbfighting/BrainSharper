@@ -7,6 +7,6 @@ namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis
     {
         IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactions,
-            IAssociationMiningParams associationMiningParams);
+            IFrequentItemsMiningParams frequentItemsMiningParams);
     }
 }

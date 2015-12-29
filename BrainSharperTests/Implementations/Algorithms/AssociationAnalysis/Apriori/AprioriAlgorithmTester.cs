@@ -22,7 +22,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         public void GenerateInitialFrequentItems()
         {
             // Given
-            var miningParams = new AssociationMiningParams(0.3, 0.7);
+            var miningParams = new FrequentItemsMiningParams(0.3, 0.7);
             var expectedInitialItems = new List<IFrequentItemsSet<IDataItem<string>>>
                                            {
                                                new FrequentItemsSet<IDataItem<string>>(
@@ -71,7 +71,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         public void TestGenerateNextItemsSetOfSize2()
         {
             // Given
-            var miningParams = new AssociationMiningParams(0.3, 0.7);
+            var miningParams = new FrequentItemsMiningParams(0.3, 0.7);
             var frequentItemsetsOfSize2 = new List<IFrequentItemsSet<IDataItem<string>>>
             {
                 new FrequentItemsSet<IDataItem<string>>(2, 0.4, new object[] { "2", "5" }, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Diapers)),
@@ -94,7 +94,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         public void SelectOnlyFrequentItemsSetsHeuristic()
         {
             // Given
-            var miningParams = new AssociationMiningParams(0.3, 0.7);
+            var miningParams = new FrequentItemsMiningParams(0.3, 0.7);
             var frequentItemsetsOfSize2 = new List<IFrequentItemsSet<IDataItem<string>>>
             {
                 new FrequentItemsSet<IDataItem<string>>(2, 0.4, new object[] { 2, 5 }, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Diapers)),
@@ -116,7 +116,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         public void TestFindFrequentItems()
         {
             // Given
-            var miningParams = new AssociationMiningParams(0.3, 0.7);
+            var miningParams = new FrequentItemsMiningParams(0.3, 0.7);
             var expectedFrequentItems = new List<IFrequentItemsSet<IDataItem<string>>>
                                            {
                                                new FrequentItemsSet<IDataItem<string>>(3, 0.6, new object[] { "2", "4", "5" }, new DataItem<string>(Product, Beer)),
@@ -139,10 +139,10 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         }
 
         [Test]
-        public void TestBuildingAssociationRules()
+        public void TestBuildingAssociationRules_SingleElementConsequent()
         {
             // Given
-            var itemsMiningParams = new AssociationMiningParams(0.3, 0.7);
+            var itemsMiningParams = new FrequentItemsMiningParams(0.3, 0.7);
             var rulesMiningParams = new AssociationMiningParams(0.3, 0.6);
 
             // When
@@ -150,7 +150,22 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             var assocRules = Subject.FindAssociationRules(MarketBasketTransactions, frequentItems, rulesMiningParams);
 
             // Then
-            Assert.AreEqual(10, assocRules.Count);
+            Assert.AreEqual(9, assocRules.Count);
+        }
+
+        [Test]
+        public void TestBuildingAssociationRules_MultiElementConsequent()
+        {
+            // Given
+            var itemsMiningParams = new FrequentItemsMiningParams(0.3, 0.7);
+            var rulesMiningParams = new AssociationMiningParams(0.3, 0.6, allowMultiSelectorConsequent: true);
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(MarketBasketTransactions, itemsMiningParams);
+            var assocRules = Subject.FindAssociationRules(MarketBasketTransactions, frequentItems, rulesMiningParams);
+
+            // Then
+            Assert.AreEqual(11, assocRules.Count);
         }
     }
 }

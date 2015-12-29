@@ -52,9 +52,10 @@
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSearchResult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationRulesFinder.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsFinder.cs" />
-    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeClassificationLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeLink.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeParentNode.cs" />
@@ -145,7 +146,9 @@
     <Compile Include="General\Utils\Extensions.cs" />
     <Compile Include="General\Utils\TypeUtils.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithm.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AssociationMiningParamsInterpreter.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtils.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSearchResult.cs" />

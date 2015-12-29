@@ -9,13 +9,27 @@ using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
+    using BrainSharper.General.Utils;
+
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
+        private MiningMinimumRequirementsChecker<TValue> _minimumMiningRequirementsChecker;
+
+        public AprioriAlgorithm(MiningMinimumRequirementsChecker<TValue> minimumMiningRequirementsChecker)
+        {
+            this._minimumMiningRequirementsChecker = minimumMiningRequirementsChecker;
+        }
+
+        public AprioriAlgorithm()
+            : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
+        {
+        }
+
         public IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactionsSet,
-            IAssociationMiningParams associationMiningParams)
+            IFrequentItemsMiningParams frequentItemsMiningParams)
         {
-            var initialFrequentItems = GenerateInitialItemsSet(transactionsSet, associationMiningParams);
+            var initialFrequentItems = GenerateInitialItemsSet(transactionsSet, frequentItemsMiningParams);
             var frequentItemsBySize = new Dictionary <int, IList<IFrequentItemsSet<TValue>>>
             {
                 [1] = initialFrequentItems
@@ -27,7 +41,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 itemsSetSize += 1;
                 anyItemsGenerated = false;
                 var previousItems = frequentItemsBySize[itemsSetSize - 1];
-                var nextItems = GenerateNextItems(transactionsSet, associationMiningParams, previousItems, itemsSetSize);
+                var nextItems = GenerateNextItems(transactionsSet, frequentItemsMiningParams, previousItems, itemsSetSize);
                 if (nextItems.Any())
                 {
                     anyItemsGenerated = true;
@@ -40,7 +54,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 
         public IList<IFrequentItemsSet<TValue>> GenerateNextItems(
             ITransactionsSet<TValue> transactionsSet,
-            IAssociationMiningParams associationMiningParams,
+            IFrequentItemsMiningParams frequentItemsMiningParams,
             IList<IFrequentItemsSet<TValue>> previousItems,
             int desiredSize)
         {
@@ -63,14 +77,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                         relativeSupport, 
                         candidateItemsTidSet, 
                         new SortedSet<TValue>(itm1.OrderedItems.Union(itm2.OrderedItems))) as IFrequentItemsSet<TValue>
-                where relativeSupport >= associationMiningParams.MinimalRelativeSupport
+                where relativeSupport >= frequentItemsMiningParams.MinimalRelativeSupport
                 select newItem
                 ).ToList();
         }
 
         public IList<IFrequentItemsSet<TValue>> GenerateInitialItemsSet(
             ITransactionsSet<TValue> transactionsSet,
-            IAssociationMiningParams associationMiningParams)
+            IFrequentItemsMiningParams frequentItemsMiningParams)
         {
             var elementsWithSupport = new ConcurrentDictionary<TValue, IList<object>>();
             var totalElemsCount = (double) transactionsSet.TransactionsCount;
@@ -95,7 +109,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     kvp =>
                         new FrequentItemsSet<TValue>(kvp.Value.Count, kvp.Value.Count/totalElemsCount, kvp.Value,
                             kvp.Key) as IFrequentItemsSet<TValue>)
-                    .Where(itm => itm.Support >= associationMiningParams.MinimalRelativeSupport)
+                    .Where(itm => itm.Support >= frequentItemsMiningParams.MinimalRelativeSupport)
                     .ToList();
         }
 
@@ -118,7 +132,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 {
                     associationRules
                         .AddRange(ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
-                        .Where(candidateRule => candidateRule.RelativeSuppot >= associationMiningParams.MinimalRelativeSupport && candidateRule.Confidence >= associationMiningParams.MinimalConfidence));
+                        .Where(candidateRule => _minimumMiningRequirementsChecker(candidateRule, associationMiningParams)));
                 }
             }
             return associationRules;
@@ -127,13 +141,23 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
         protected IEnumerable<IAssociationRule<TValue>> ProduceAssociationRules(
             IFrequentItemsSet<TValue> currentItemSet,
             IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
-            IAssociationMiningParams associationMiningParams
+            IAssociationMiningParams frequentItemsMiningParams
             )
         {
-            foreach (var possibleConsequent in currentItemSet.ItemsSet)
+            ;
+            var combinations = frequentItemsMiningParams.AllowMultiSelectorConsequent
+                                   ? currentItemSet.ItemsSet.GenerateAllCombinations()
+                                   : currentItemSet.ItemsSet.GenerateCombinationsOfSizeK(1);
+
+            foreach (var possibleConsequent in combinations)
             {
-                var consequentFrequentItem = frequentItemsSearchResult[1].First(itm => itm.ItemsSet.First().Equals(possibleConsequent));
-                var antecedentItemsSet = currentItemSet.ItemsSet.Except(new[] { possibleConsequent }).ToList();
+                if (possibleConsequent.Count() == currentItemSet.OrderedItems.Count)
+                {
+                    continue;
+                }
+                var consequentSize = possibleConsequent.Count();
+                var consequentFrequentItem = frequentItemsSearchResult[consequentSize].First(itm => itm.ItemsSet.SetEquals(possibleConsequent));
+                var antecedentItemsSet = currentItemSet.ItemsSet.Except(possibleConsequent).ToList();
 
                 var antecedentFrequentItemsSet = frequentItemsSearchResult[antecedentItemsSet.Count].First(itm => itm.ItemsSet.SetEquals(antecedentItemsSet));
 

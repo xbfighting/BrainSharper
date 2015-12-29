@@ -1,8 +1,9 @@
 ﻿namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis
 {
-    public interface IAssociationMiningParams
+    public interface IAssociationMiningParams : IFrequentItemsMiningParams
     {
-        double MinimalRelativeSupport { get; }
-        double MinimalConfidence { get; }
+        double? MinimalConfidence { get; }
+        double? MinimalLift { get; }
+        bool AllowMultiSelectorConsequent { get; }
     }
 }
