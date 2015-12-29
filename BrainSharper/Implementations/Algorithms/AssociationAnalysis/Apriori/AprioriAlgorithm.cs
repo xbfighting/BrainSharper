@@ -151,13 +151,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 
             foreach (var possibleConsequent in combinations)
             {
-                if (possibleConsequent.Count() == currentItemSet.OrderedItems.Count)
+                var possibleConsequentList = possibleConsequent.ToList();
+                if (possibleConsequentList.Count == currentItemSet.OrderedItems.Count)
                 {
                     continue;
                 }
-                var consequentSize = possibleConsequent.Count();
-                var consequentFrequentItem = frequentItemsSearchResult[consequentSize].First(itm => itm.ItemsSet.SetEquals(possibleConsequent));
-                var antecedentItemsSet = currentItemSet.ItemsSet.Except(possibleConsequent).ToList();
+                var consequentSize = possibleConsequentList.Count();
+                var consequentFrequentItem = frequentItemsSearchResult[consequentSize].First(itm => itm.ItemsSet.SetEquals(possibleConsequentList));
+                var antecedentItemsSet = currentItemSet.ItemsSet.Except(possibleConsequentList).ToList();
 
                 var antecedentFrequentItemsSet = frequentItemsSearchResult[antecedentItemsSet.Count].First(itm => itm.ItemsSet.SetEquals(antecedentItemsSet));
 

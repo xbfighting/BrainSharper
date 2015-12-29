@@ -21,13 +21,13 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
         {
             if (associationMiningParams.MinimalConfidence.HasValue)
             {
-                if(assocRule.Confidence >= associationMiningParams.MinimalConfidence)
+                if(assocRule.Confidence < associationMiningParams.MinimalConfidence)
                 {
                     return false;
                 }
             } else if (associationMiningParams.MinimalLift.HasValue)
             {
-                if(assocRule.Confidence >= associationMiningParams.MinimalLift)
+                if(assocRule.Confidence < associationMiningParams.MinimalLift)
                 {
                     return false;
                 }
