@@ -15,7 +15,7 @@
     public class DataUtilsTests
     {
         [Test]
-        public void TransformDataFrameToTransactions_GenericMethod()
+        public void TransformDataFrameToTransactions_GenericMethod_TransactionIdSpecified()
         {
             // Given
             var dataFrame = MarketBasketDataSet1;
@@ -39,7 +39,31 @@
         }
 
         [Test]
-        public void TransformDataFrameToTransactions_NoneGenericMethod()
+        public void TransformDataFrameToTransactions_GenericMethod_NoTransactionIdSpecified()
+        {
+            // Given
+            var dataFrame = MarketBasketDataSet1;
+
+            var expectedTransactionsSet = new TransactionsSet<IDataItem<string>>(
+                new List<ITransaction<IDataItem<string>>>
+                    {
+                        new Transaction<IDataItem<string>>(0, new DataItem<string>(Product, CocaCola), new DataItem<string>(Product, Nuts)),
+                        new Transaction<IDataItem<string>>(1, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Nuts), new DataItem<string>(Product, Diapers)),
+                        new Transaction<IDataItem<string>>(2, new DataItem<string>(Product, CocaCola)),
+                        new Transaction<IDataItem<string>>(3, new DataItem<string>(Product, CocaCola), new DataItem<string>(Product, Beer), new DataItem<string>(Product, Nuts)),
+                        new Transaction<IDataItem<string>>(4, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Nuts), new DataItem<string>(Product, Diapers))
+                    }
+                );
+
+            // When
+            var actualDataSet = dataFrame.ToAssociativeTransactionsSet<string>();
+
+            // Then
+            CollectionAssert.AreEquivalent(expectedTransactionsSet.TransactionsList, actualDataSet.TransactionsList);
+        }
+
+        [Test]
+        public void TransformDataFrameToTransactions_NoneGenericMethod_TransactionIdSpecified()
         {
             // Given
             var dataFrame = MarketBasketDataSet1;

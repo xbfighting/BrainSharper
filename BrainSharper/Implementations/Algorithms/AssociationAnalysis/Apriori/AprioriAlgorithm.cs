@@ -13,11 +13,11 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
-        private MiningMinimumRequirementsChecker<TValue> _minimumMiningRequirementsChecker;
+        protected readonly AssocRuleMiningMinimumRequirementsChecker<TValue> AssocRuleMiningRequirementsChecker;
 
-        public AprioriAlgorithm(MiningMinimumRequirementsChecker<TValue> minimumMiningRequirementsChecker)
+        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker)
         {
-            this._minimumMiningRequirementsChecker = minimumMiningRequirementsChecker;
+            this.AssocRuleMiningRequirementsChecker = assocRuleMiningRequirementsChecker;
         }
 
         public AprioriAlgorithm()
@@ -77,7 +77,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                         relativeSupport, 
                         candidateItemsTidSet, 
                         new SortedSet<TValue>(itm1.OrderedItems.Union(itm2.OrderedItems))) as IFrequentItemsSet<TValue>
-                where relativeSupport >= frequentItemsMiningParams.MinimalRelativeSupport
+                where CandidateItemMeetsCriteria(newItem, frequentItemsMiningParams)
                 select newItem
                 ).ToList();
         }
@@ -109,7 +109,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     kvp =>
                         new FrequentItemsSet<TValue>(kvp.Value.Count, kvp.Value.Count/totalElemsCount, kvp.Value,
                             kvp.Key) as IFrequentItemsSet<TValue>)
-                    .Where(itm => itm.Support >= frequentItemsMiningParams.MinimalRelativeSupport)
+                    .Where(itm => CandidateItemMeetsCriteria(itm, frequentItemsMiningParams))
                     .ToList();
         }
 
@@ -132,20 +132,19 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 {
                     associationRules
                         .AddRange(ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
-                        .Where(candidateRule => _minimumMiningRequirementsChecker(candidateRule, associationMiningParams)));
+                        .Where(candidateRule => AssocRuleMeetsCriteria(candidateRule, associationMiningParams)));
                 }
             }
             return associationRules;
         }
 
-        protected IEnumerable<IAssociationRule<TValue>> ProduceAssociationRules(
+        protected virtual IEnumerable<IAssociationRule<TValue>> ProduceAssociationRules(
             IFrequentItemsSet<TValue> currentItemSet,
             IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
-            IAssociationMiningParams frequentItemsMiningParams
-            )
+            IAssociationMiningParams assocMiningParams)
         {
             ;
-            var combinations = frequentItemsMiningParams.AllowMultiSelectorConsequent
+            var combinations = assocMiningParams.AllowMultiSelectorConsequent
                                    ? currentItemSet.ItemsSet.GenerateAllCombinations()
                                    : currentItemSet.ItemsSet.GenerateCombinationsOfSizeK(1);
 
@@ -163,14 +162,41 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 var antecedentFrequentItemsSet = frequentItemsSearchResult[antecedentItemsSet.Count].First(itm => itm.ItemsSet.SetEquals(antecedentItemsSet));
 
                 var confidence = currentItemSet.RelativeSuppot / antecedentFrequentItemsSet.RelativeSuppot;
-                var newAssociationRule = new AssociationRule<TValue>(
-                    antecedentFrequentItemsSet,
-                    consequentFrequentItem,
-                    currentItemSet.Support,
-                    currentItemSet.RelativeSuppot,
+                var newAssociationRule = ConstructAssocRule(
+                    currentItemSet,
+                    antecedentFrequentItemsSet, 
+                    consequentFrequentItem, 
+                    assocMiningParams,
                     confidence);
                 yield return newAssociationRule;
             }
+        }
+
+        protected virtual bool CandidateItemMeetsCriteria(IFrequentItemsSet<TValue> itm, IFrequentItemsMiningParams miningParams)
+        {
+            return itm.RelativeSuppot >= miningParams.MinimalRelativeSupport;
+        }
+
+        protected virtual bool AssocRuleMeetsCriteria(IAssociationRule<TValue> assocRule,
+            IAssociationMiningParams miningParams)
+        {
+            return AssocRuleMiningRequirementsChecker(assocRule, miningParams);
+        }
+
+        protected virtual AssociationRule<TValue> ConstructAssocRule(
+            IFrequentItemsSet<TValue> currentItemSet,
+            IFrequentItemsSet<TValue> antecedentFrequentItemsSet, 
+            IFrequentItemsSet<TValue> consequentFrequentItem, 
+            IAssociationMiningParams assocMiningParams,
+            double confidence)
+        {
+            var newAssociationRule = new AssociationRule<TValue>(
+                antecedentFrequentItemsSet,
+                consequentFrequentItem,
+                currentItemSet.Support,
+                currentItemSet.RelativeSuppot,
+                confidence);
+            return newAssociationRule;
         }
     }
 }

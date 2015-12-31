@@ -1,11 +1,10 @@
 ﻿using System;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-
-    public delegate bool MiningMinimumRequirementsChecker<TValue>(
+    public delegate bool AssocRuleMiningMinimumRequirementsChecker<TValue>(
         IAssociationRule<TValue> assocRule,
         IAssociationMiningParams associationMiningParams);
 

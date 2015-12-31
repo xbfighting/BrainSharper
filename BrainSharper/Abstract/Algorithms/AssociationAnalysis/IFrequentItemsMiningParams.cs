@@ -3,6 +3,5 @@
     public interface IFrequentItemsMiningParams
     {
         double MinimalRelativeSupport { get; }
-       
     }
 }

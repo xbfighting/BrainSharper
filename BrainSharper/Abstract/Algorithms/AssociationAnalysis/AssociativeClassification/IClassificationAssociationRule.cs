@@ -6,5 +6,6 @@ namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassi
     public interface IClassificationAssociationRule<TValue> : IAssociationRule<IDataItem<TValue>>
     {
         IDataItem<TValue> ClassificationConsequent { get; }
+        bool Covers(IDataVector<TValue> row);
     }
 }

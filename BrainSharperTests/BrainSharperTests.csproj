@@ -76,6 +76,8 @@
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithmTester.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociationAnalysisTestDataBuilder.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAprioriTest.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRuleTest.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtilsTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemSetsTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />

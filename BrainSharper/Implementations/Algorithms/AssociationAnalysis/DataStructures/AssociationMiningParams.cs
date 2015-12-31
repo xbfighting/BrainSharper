@@ -2,14 +2,13 @@
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    public struct AssociationMiningParams : IAssociationMiningParams
+    public class AssociationMiningParams : IAssociationMiningParams
     {
         public AssociationMiningParams(
             double minimalRelativeSupport,
             double? minimalConfidence, 
             double? minimalLift = null,
             bool allowMultiSelectorConsequent = false)
-            : this()
         {
             MinimalConfidence = minimalConfidence;
             MinimalRelativeSupport = minimalRelativeSupport;
