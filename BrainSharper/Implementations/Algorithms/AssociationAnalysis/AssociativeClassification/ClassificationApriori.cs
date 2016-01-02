@@ -14,10 +14,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
     public class ClassificationApriori<TValue> : AprioriAlgorithm<IDataItem<TValue>>, IPredictionModelBuilder
     {
         private static readonly string ClassificationAprioriAlgorithmRequiresAssociationminingparams = "Classification apriori algorithm requires ClassifcationAssociationMiningParams!";
+        private readonly ClassificationAprioriRulesSelector<TValue> _rulesSelectionHeuristic; 
 
-        public ClassificationApriori(AssocRuleMiningMinimumRequirementsChecker<IDataItem<TValue>> assocRuleMiningRequirementsChecker) 
+        public ClassificationApriori(
+            AssocRuleMiningMinimumRequirementsChecker<IDataItem<TValue>> assocRuleMiningRequirementsChecker,
+            ClassificationAprioriRulesSelector<TValue> rulesSelectionHeuristic) 
             : base(assocRuleMiningRequirementsChecker)
         {
+            _rulesSelectionHeuristic = rulesSelectionHeuristic;
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, string dependentFeatureName, IModelBuilderParams additionalParams)
@@ -31,7 +35,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             var transactionSet = dataFrame.ToAssociativeTransactionsSet<TValue>(assocMiningParams.TransactionIdFeatureName);
             var frequentItems = base.FindFrequentItems(transactionSet, assocMiningParams);
             var associationRules = base.FindAssociationRules(transactionSet, frequentItems, assocMiningParams);
-            return BuildPredictiveRulesSet(dataFrame, transactionSet, dependentFeatureName, associationRules);
+            return _rulesSelectionHeuristic.BuildPredictiveRulesSet(dataFrame, transactionSet, dependentFeatureName, associationRules);
         }
 
         public IPredictionModel BuildModel(IDataFrame dataFrame, int dependentFeatureIndex, IModelBuilderParams additionalParams)
@@ -47,81 +51,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 throw new ArgumentException(ClassificationAprioriAlgorithmRequiresAssociationminingparams, nameof(miningParams));
             }
             return base.CandidateItemMeetsCriteria(itm, miningParams);
-        }
-
-        protected IAssociativeClassificationModel<TValue> BuildPredictiveRulesSet(
-            IDataFrame dataFrame,
-            ITransactionsSet<IDataItem<TValue>> transactionsSet,
-            string dependentFeatureName,
-            IList<IAssociationRule<IDataItem<TValue>>> associationRules
-            )
-        {
-            var sortedRules =
-                associationRules
-                    .Cast<IClassificationAssociationRule<TValue>>()
-                    .OrderByDescending(rule => rule.Confidence)
-                    .ThenByDescending(rule => rule.RelativeSuppot)
-                    .ThenBy(rule => rule.Antecedent.ItemsSet.Count)
-                    .ToList();
-
-            var rulesCoverage = new List<RuleCoverageDataDto>();
-            var remainingExamples = Enumerable.Range(0, dataFrame.RowCount).ToList();
-
-            for (int ruleIdx = 0; ruleIdx < sortedRules.Count; ruleIdx++)
-            {
-                if (remainingExamples.Any())
-                {
-                    var currentRule = sortedRules[ruleIdx];
-                    var ruleCoverageData = new RuleCoverageDataDto(currentRule);
-                    foreach(var rowIdx in Enumerable.Range(0, dataFrame.RowCount))
-                    {
-                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx);
-                        if (currentRule.Covers(currentRow))
-                        {
-                            ruleCoverageData.CoveredExamples.Add(rowIdx);
-
-                            var expectedVal = currentRow[dependentFeatureName];
-                            var predictedVal = currentRule.ClassificationConsequent.FeatureValue;
-
-                            if (expectedVal.Equals(predictedVal))
-                            {
-                                ruleCoverageData.IncrementCorrectClassif();
-                            }
-                            else
-                            {
-                                ruleCoverageData.IncrementIncorrectClassif();
-                            }
-                        }
-                    }
-                    if (ruleCoverageData.CoversAnyExample)
-                    {
-                        remainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
-                        var defaultClass =
-                            dataFrame
-                            .GetSubsetByRows(remainingExamples)
-                            .GetColumnVector<TValue>(dependentFeatureName)
-                            .GroupBy(val => val)
-                            .OrderByDescending(grp => grp.Count())
-                            .First()
-                            .Key;
-                        ruleCoverageData.DefaultValueForRemainingData = defaultClass;
-                        if (ruleIdx > 0)
-                        {
-                            var previousRuleCoverageData = rulesCoverage[ruleIdx - 1];
-                            if (ruleCoverageData.Accuracy < previousRuleCoverageData.Accuracy)
-                            {
-                                break;
-                            }
-                        }
-                        rulesCoverage.Add(ruleCoverageData);
-                    }
-                }
-            }
-
-            return new AssociativeClassificationModel<TValue>
-                (rulesCoverage.Select(r => r.Rule).ToList(), 
-                rulesCoverage.Last().DefaultValueForRemainingData,
-                dependentFeatureName);
         }
 
         protected override bool AssocRuleMeetsCriteria(IAssociationRule<IDataItem<TValue>> assocRule, IAssociationMiningParams miningParams)
@@ -160,41 +89,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 currentItemSet.Support,
                 currentItemSet.RelativeSuppot,
                 confidence);
-        }
-
-        private class RuleCoverageDataDto
-        {
-            private int _correctClassifications { get; set; }
-            private int _incorrectClassifications { get; set; }
-
-            public RuleCoverageDataDto(IClassificationAssociationRule<TValue> rule)
-            {
-                Rule = rule;
-                CoveredExamples = new HashSet<int>();
-                this._correctClassifications = 0;
-                this._incorrectClassifications = 0;
-                DefaultValueForRemainingData = default(TValue);
-            }
-
-            public IClassificationAssociationRule<TValue> Rule { get; } 
-            public ISet<int> CoveredExamples { get; private set; }
-
-            public TValue DefaultValueForRemainingData { get; set; }
-
-            public double Accuracy
-                => this._correctClassifications/(double) (_correctClassifications + _incorrectClassifications);
-
-            public bool CoversAnyExample => CoveredExamples.Any();
-
-            public void IncrementCorrectClassif()
-            {
-                this._correctClassifications++;
-            }
-
-            public void IncrementIncorrectClassif()
-            {
-                this._incorrectClassifications++;
-            }
         }
     }
 }

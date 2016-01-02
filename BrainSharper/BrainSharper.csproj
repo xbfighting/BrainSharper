@@ -152,8 +152,11 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationModel.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationPredictor.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationApriori.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\BasicCARRulesSelector.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\ClassificationAprioriRulesSelector.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRule.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\RuleCoverageDataDto.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
