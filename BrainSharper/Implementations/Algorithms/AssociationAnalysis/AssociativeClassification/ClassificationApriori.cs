@@ -47,12 +47,11 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 throw new ArgumentException(ClassificationAprioriAlgorithmRequiresAssociationminingparams, nameof(miningParams));
             }
 
-            /*
-            if (itm.ItemsSet.Any(elem => elem.FeatureName.Equals(classificationMiningParams.DependentFeatureName)))
+            if (!itm.ItemsSet.Any(elem => elem.FeatureName.Equals(classificationMiningParams.DependentFeatureName)))
             {
-                return true;
+                return false;
             }
-            */
+
             return base.CandidateItemMeetsCriteria(itm, miningParams);
         }
 
@@ -71,18 +70,55 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                     .ThenBy(rule => rule.Antecedent.ItemsSet.Count)
                     .ToList();
 
-            var rulesNotCoveringAnyRow = new List<int>();
-            FindRulesToDelete(dataFrame, sortedRules, rulesNotCoveringAnyRow);
-            var rulesCoveringAtLeastOneExample = sortedRules
-                .Where((rule, idx) => !rulesNotCoveringAnyRow.Contains(idx))
-                .ToList();
-            var defaultValue = dataFrame.GetColumnVector<TValue>(dependentFeatureName).Values
-                .GroupBy(val => val)
-                .OrderByDescending(grp => grp.Count())
-                .First()
-                .Key;
+            var rulesCoverage = new List<RuleCoverageDataDto>();
+            var remainingExamples = new List<int>(dataFrame.RowIndices);
 
-            return new AssociativeClassificationModel<TValue>(rulesCoveringAtLeastOneExample, defaultValue, dependentFeatureName);
+            for (int ruleIdx = 0; ruleIdx < sortedRules.Count; ruleIdx++)
+            {
+                if (remainingExamples.Any())
+                {
+                    var currentRule = sortedRules[ruleIdx];
+                    var ruleCoverageData = new RuleCoverageDataDto(currentRule);
+                    for (int rowIdx = 0; rowIdx < dataFrame.RowCount; rowIdx++)
+                    {
+                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx);
+                        if (currentRule.Covers(currentRow))
+                        {
+                            ruleCoverageData.CoveredExamples.Add(rowIdx);
+
+                            var expectedVal = currentRow[dependentFeatureName];
+                            var predictedVal = currentRule.ClassificationConsequent.FeatureValue;
+
+                            if (expectedVal.Equals(predictedVal))
+                            {
+                                ruleCoverageData.IncrementCorrectClassif();
+                            }
+                            else
+                            {
+                                ruleCoverageData.IncrementIncorrectClassif();
+                            }
+                        }
+                    }
+                    if (ruleCoverageData.CoversAnyExample)
+                    {
+                        remainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
+                        var defaultClass =
+                            dataFrame
+                            .GetSubsetByRows(remainingExamples)
+                            .GetColumnVector<TValue>(dependentFeatureName)
+                            .GroupBy(val => val)
+                            .OrderByDescending(grp => grp.Count())
+                            .First()
+                            .Key;
+                        ruleCoverageData.DefaultValueForRemainingData = defaultClass;
+                        rulesCoverage.Add(ruleCoverageData);
+                    }
+                }
+            }
+
+
+            return null;
+            // return new AssociativeClassificationModel<TValue>(rulesCoveringAtLeastOneExample, defaultValue, dependentFeatureName);
         }
 
         private static void FindRulesToDelete(IDataFrame dataFrame, List<IClassificationAssociationRule<TValue>> sortedRules, List<int> rulesNotCoveringAnyRow)
@@ -135,6 +171,39 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 currentItemSet.Support,
                 currentItemSet.RelativeSuppot,
                 confidence);
+        }
+
+        private class RuleCoverageDataDto
+        {
+            public RuleCoverageDataDto(IClassificationAssociationRule<TValue> rule)
+            {
+                Rule = rule;
+                CoveredExamples = new HashSet<int>();
+                CorrectClassifications = 0;
+                IncorrectClassifications = 0;
+                DefaultValueForRemainingData = default(TValue);
+            }
+
+            public IClassificationAssociationRule<TValue> Rule { get; } 
+            public ISet<int> CoveredExamples { get; set; }
+            public int CorrectClassifications { get; set; }
+            public int IncorrectClassifications { get; set; }
+            public TValue DefaultValueForRemainingData { get; set; }
+
+            public double Accuracy
+                => CorrectClassifications/(double) (CorrectClassifications + IncorrectClassifications);
+
+            public bool CoversAnyExample => CoveredExamples.Any();
+
+            public void IncrementCorrectClassif()
+            {
+                CorrectClassifications++;
+            }
+
+            public void IncrementIncorrectClassif()
+            {
+                IncorrectClassifications++;
+            }
         }
     }
 }
