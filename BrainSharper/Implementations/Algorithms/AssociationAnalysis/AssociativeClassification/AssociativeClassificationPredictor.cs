@@ -7,6 +7,8 @@ using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
 {
+    using System.Linq;
+
     public class AssociativeClassificationPredictor<TValue> : IAssociativeClassifier<TValue>
     {
         public IList<TValue> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
@@ -24,7 +26,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
         public IList<TValue> Predict(IDataFrame queryDataFrame, IAssociativeClassificationModel<TValue> model, string dependentFeatureName)
         {
             var predictions = new TValue[queryDataFrame.RowCount];
-            Parallel.ForEach(queryDataFrame.RowIndices, rowIdx =>
+            Parallel.ForEach(Enumerable.Range(0, queryDataFrame.RowCount), rowIdx =>
             {
                 var currentRow = queryDataFrame.GetRowVector<TValue>(rowIdx);
                 var anySolutionFound = false;

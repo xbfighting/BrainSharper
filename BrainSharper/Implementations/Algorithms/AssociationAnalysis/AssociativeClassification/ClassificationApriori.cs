@@ -46,12 +46,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             {
                 throw new ArgumentException(ClassificationAprioriAlgorithmRequiresAssociationminingparams, nameof(miningParams));
             }
-
+            /*
             if (!itm.ItemsSet.Any(elem => elem.FeatureName.Equals(classificationMiningParams.DependentFeatureName)))
             {
                 return false;
             }
-
+            */
             return base.CandidateItemMeetsCriteria(itm, miningParams);
         }
 
@@ -79,9 +79,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 {
                     var currentRule = sortedRules[ruleIdx];
                     var ruleCoverageData = new RuleCoverageDataDto(currentRule);
-                    for (int rowIdx = 0; rowIdx < dataFrame.RowCount; rowIdx++)
+                    foreach(var rowIdx in dataFrame.RowIndices)
                     {
-                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx);
+                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx, true);
                         if (currentRule.Covers(currentRow))
                         {
                             ruleCoverageData.CoveredExamples.Add(rowIdx);
@@ -104,33 +104,30 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                         remainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
                         var defaultClass =
                             dataFrame
-                            .GetSubsetByRows(remainingExamples)
+                            .GetSubsetByRows(remainingExamples, true)
                             .GetColumnVector<TValue>(dependentFeatureName)
                             .GroupBy(val => val)
                             .OrderByDescending(grp => grp.Count())
                             .First()
                             .Key;
                         ruleCoverageData.DefaultValueForRemainingData = defaultClass;
+                        if (ruleIdx > 0)
+                        {
+                            var previousRuleCoverageData = rulesCoverage[ruleIdx - 1];
+                            if (ruleCoverageData.Accuracy < previousRuleCoverageData.Accuracy)
+                            {
+                                break;
+                            }
+                        }
                         rulesCoverage.Add(ruleCoverageData);
                     }
                 }
             }
 
-
-            return null;
-            // return new AssociativeClassificationModel<TValue>(rulesCoveringAtLeastOneExample, defaultValue, dependentFeatureName);
-        }
-
-        private static void FindRulesToDelete(IDataFrame dataFrame, List<IClassificationAssociationRule<TValue>> sortedRules, List<int> rulesNotCoveringAnyRow)
-        {
-            for (int ruleIdx = 0; ruleIdx < sortedRules.Count; ruleIdx++)
-            {
-                var currentRule = sortedRules[ruleIdx];
-                if (!dataFrame.RowIndices.Any(rowIdx => currentRule.Covers(dataFrame.GetRowVector<TValue>(rowIdx))))
-                {
-                    rulesNotCoveringAnyRow.Add(ruleIdx);
-                }
-            }
+            return new AssociativeClassificationModel<TValue>
+                (rulesCoverage.Select(r => r.Rule).ToList(), 
+                rulesCoverage.Last().DefaultValueForRemainingData,
+                dependentFeatureName);
         }
 
         protected override bool AssocRuleMeetsCriteria(IAssociationRule<IDataItem<TValue>> assocRule, IAssociationMiningParams miningParams)
@@ -146,10 +143,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             {
                 throw new ArgumentException("Classification apriori algorithm can work only with classification assoc rules!", nameof(assocRule));
             }
-            return base.AssocRuleMeetsCriteria(assocRule, miningParams);
-            /*
+
             return base.AssocRuleMeetsCriteria(assocRule, miningParams) && classificationAssocRule.ClassificationConsequent.FeatureName.Equals(classifAssocParams.DependentFeatureName);
-            */
         }
 
         protected override AssociationRule<IDataItem<TValue>> ConstructAssocRule(
@@ -175,34 +170,36 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
 
         private class RuleCoverageDataDto
         {
+            private int _correctClassifications { get; set; }
+            private int _incorrectClassifications { get; set; }
+
             public RuleCoverageDataDto(IClassificationAssociationRule<TValue> rule)
             {
                 Rule = rule;
                 CoveredExamples = new HashSet<int>();
-                CorrectClassifications = 0;
-                IncorrectClassifications = 0;
+                this._correctClassifications = 0;
+                this._incorrectClassifications = 0;
                 DefaultValueForRemainingData = default(TValue);
             }
 
             public IClassificationAssociationRule<TValue> Rule { get; } 
-            public ISet<int> CoveredExamples { get; set; }
-            public int CorrectClassifications { get; set; }
-            public int IncorrectClassifications { get; set; }
+            public ISet<int> CoveredExamples { get; private set; }
+
             public TValue DefaultValueForRemainingData { get; set; }
 
             public double Accuracy
-                => CorrectClassifications/(double) (CorrectClassifications + IncorrectClassifications);
+                => this._correctClassifications/(double) (_correctClassifications + _incorrectClassifications);
 
             public bool CoversAnyExample => CoveredExamples.Any();
 
             public void IncrementCorrectClassif()
             {
-                CorrectClassifications++;
+                this._correctClassifications++;
             }
 
             public void IncrementIncorrectClassif()
             {
-                IncorrectClassifications++;
+                this._incorrectClassifications++;
             }
         }
     }

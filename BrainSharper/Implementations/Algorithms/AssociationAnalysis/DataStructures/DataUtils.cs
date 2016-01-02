@@ -33,7 +33,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
                 rowIdx =>
                 {
                     var transactionId = keyColumn.HasValue ? dataFrame[rowIdx, keyColumn.Value].FeatureValue : rowIdx;
-                    var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx).DataItems.Where(
+                    var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx, true).DataItems.Where(
                         (itm, idx) => columnIndicesToChange.Contains(idx) && itm.FeatureName != keyColName).ToList();
                     transactionsDictionary.AddOrUpdate(
                         transactionId, itemsToTake, (o, existingList) => existingList.Union(itemsToTake).ToList());
