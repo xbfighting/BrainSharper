@@ -14,20 +14,21 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
     using BrainSharper.Abstract.Algorithms.Infrastructure;
     using BrainSharper.General.DataQuality;
     using BrainSharper.General.DataUtils;
+    using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics;
 
     [TestFixture]
     public class ClassificationAprioriTest
     {
         private readonly IPredictor<string> _classifier = new AssociativeClassificationPredictor<string>();
         private readonly ICrossValidator<string> _splitter = new CrossValidator<string>();
-        private readonly IPredictionModelBuilder _modelBuilder = new ClassificationApriori<string>(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet);
 
-
+        private readonly ClassificationAprioriRulesSelector<string> _basicHeuristic = new BasicCARRulesSelector<string>();
 
         [Test]
-        public void BuildAssociativeModelTest()
+        public void BuildAssociativeModelTest_BasicCARHeuristic()
         {
             // Given
+            var modelBuilder = new ClassificationApriori<string>(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, _basicHeuristic);
             var testData = TestDataBuilder.ReadIrisDiscretizedData();
             var miningParams = new ClassificationAssociationMiningParams(
                 TestDataBuilder.DiscretizedIrisDependentFeatureName,
@@ -37,14 +38,14 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
 
             // When
             var accuracies = _splitter.CrossValidate(
-                _modelBuilder,
+                modelBuilder,
                 miningParams,
                 _classifier,
                 new ConfusionMatrixBuilder<string>(),
                 testData,
                 "iris",
                 0.7,
-                5);
+                10);
 
             // Then
             var avgAccuracy = accuracies.Select(report => report.Accuracy).First();

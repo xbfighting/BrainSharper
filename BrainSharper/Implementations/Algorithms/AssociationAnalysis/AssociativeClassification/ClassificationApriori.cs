@@ -11,6 +11,8 @@ using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
 {
+    using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics;
+
     public class ClassificationApriori<TValue> : AprioriAlgorithm<IDataItem<TValue>>, IPredictionModelBuilder
     {
         private static readonly string ClassificationAprioriAlgorithmRequiresAssociationminingparams = "Classification apriori algorithm requires ClassifcationAssociationMiningParams!";

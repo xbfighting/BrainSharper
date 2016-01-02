@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
-using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-using BrainSharper.Abstract.Data;
-
-
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
+﻿namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics
 {
+    using System.Collections.Generic;
+
+    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
+    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+    using BrainSharper.Abstract.Data;
+
     public abstract class ClassificationAprioriRulesSelector<TValue>
     {
         public abstract IAssociativeClassificationModel<TValue> BuildPredictiveRulesSet(
