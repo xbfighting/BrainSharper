@@ -29,11 +29,11 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             columnIndicesToChange = columnIndicesToChange ?? dataFrame.ColumnNames.Select((_, idx) => idx).ToList();
             var transactionsDictionary = new ConcurrentDictionary<object, List<IDataItem<TValue>>>();
             Parallel.ForEach(
-                dataFrame.RowIndices,
+                Enumerable.Range(0, dataFrame.RowCount),
                 rowIdx =>
                 {
                     var transactionId = keyColumn.HasValue ? dataFrame[rowIdx, keyColumn.Value].FeatureValue : rowIdx;
-                    var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx, true).DataItems.Where(
+                    var itemsToTake = dataFrame.GetRowVector<TValue>(rowIdx).DataItems.Where(
                         (itm, idx) => columnIndicesToChange.Contains(idx) && itm.FeatureName != keyColName).ToList();
                     transactionsDictionary.AddOrUpdate(
                         transactionId, itemsToTake, (o, existingList) => existingList.Union(itemsToTake).ToList());

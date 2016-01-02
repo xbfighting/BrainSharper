@@ -46,12 +46,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             {
                 throw new ArgumentException(ClassificationAprioriAlgorithmRequiresAssociationminingparams, nameof(miningParams));
             }
-            /*
-            if (!itm.ItemsSet.Any(elem => elem.FeatureName.Equals(classificationMiningParams.DependentFeatureName)))
-            {
-                return false;
-            }
-            */
             return base.CandidateItemMeetsCriteria(itm, miningParams);
         }
 
@@ -71,7 +65,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                     .ToList();
 
             var rulesCoverage = new List<RuleCoverageDataDto>();
-            var remainingExamples = new List<int>(dataFrame.RowIndices);
+            var remainingExamples = Enumerable.Range(0, dataFrame.RowCount).ToList();
 
             for (int ruleIdx = 0; ruleIdx < sortedRules.Count; ruleIdx++)
             {
@@ -79,9 +73,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 {
                     var currentRule = sortedRules[ruleIdx];
                     var ruleCoverageData = new RuleCoverageDataDto(currentRule);
-                    foreach(var rowIdx in dataFrame.RowIndices)
+                    foreach(var rowIdx in Enumerable.Range(0, dataFrame.RowCount))
                     {
-                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx, true);
+                        var currentRow = dataFrame.GetRowVector<TValue>(rowIdx);
                         if (currentRule.Covers(currentRow))
                         {
                             ruleCoverageData.CoveredExamples.Add(rowIdx);
@@ -104,7 +98,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                         remainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
                         var defaultClass =
                             dataFrame
-                            .GetSubsetByRows(remainingExamples, true)
+                            .GetSubsetByRows(remainingExamples)
                             .GetColumnVector<TValue>(dependentFeatureName)
                             .GroupBy(val => val)
                             .OrderByDescending(grp => grp.Count())
