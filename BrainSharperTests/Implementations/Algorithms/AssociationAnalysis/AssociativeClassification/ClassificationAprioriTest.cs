@@ -68,7 +68,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
                 testData,
                 "iris",
                 0.7,
-                10);
+                20);
 
             // Then
             var avgAccuracy = accuracies.Select(report => report.Accuracy).First();
@@ -96,7 +96,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
                 testData,
                 "iris",
                 0.7,
-                10);
+                20);
 
             // Then
             var avgAccuracy = accuracies.Select(report => report.Accuracy).First();

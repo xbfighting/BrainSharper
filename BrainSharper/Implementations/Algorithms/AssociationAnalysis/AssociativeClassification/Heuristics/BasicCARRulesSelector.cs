@@ -54,22 +54,29 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                     }
                     if (ruleCoverageData.CoversAnyExample)
                     {
-                        remainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
-                        var defaultClass =
-                            dataFrame
-                            .GetSubsetByRows(remainingExamples)
-                            .GetColumnVector<TValue>(dependentFeatureName)
-                            .GroupBy(val => val)
-                            .OrderByDescending(grp => grp.Count())
-                            .First()
-                            .Key;
-                        ruleCoverageData.DefaultValueForRemainingData = defaultClass;
                         if (ruleIdx > 0)
                         {
                             var previousRuleCoverageData = rulesCoverage[ruleIdx - 1];
                             if (ruleCoverageData.Accuracy < previousRuleCoverageData.Accuracy)
                             {
                                 break;
+                            }
+                            else
+                            {
+                                var newRemainingExamples = remainingExamples.Except(ruleCoverageData.CoveredExamples).ToList();
+                                var collectionToSelectDefaultClass = newRemainingExamples.Any()
+                                    ? newRemainingExamples
+                                    : Enumerable.Range(0, dataFrame.RowCount).ToList();
+                                var defaultClass =
+                                    dataFrame
+                                    .GetSubsetByRows(collectionToSelectDefaultClass)
+                                    .GetColumnVector<TValue>(dependentFeatureName)
+                                    .GroupBy(val => val)
+                                    .OrderByDescending(grp => grp.Count())
+                                    .First()
+                                    .Key;
+                                ruleCoverageData.DefaultValueForRemainingData = defaultClass;
+                                remainingExamples = newRemainingExamples;
                             }
                         }
                         rulesCoverage.Add(ruleCoverageData);

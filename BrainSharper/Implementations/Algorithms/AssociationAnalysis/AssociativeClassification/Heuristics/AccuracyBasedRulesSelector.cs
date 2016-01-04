@@ -28,6 +28,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
 
             var rulesCoveringData = new Dictionary<int, Dictionary<int, int>>();
             var accuracies = new Dictionary<int, double>();
+            var remainingExamples = Enumerable.Range(0, dataFrame.RowCount).ToList();
 
             for (var ruleIdx = 0; ruleIdx < sortedRules.Count; ruleIdx++)
             {
@@ -63,6 +64,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
 
                 bestRules.Add(maxAccRule);
                 accuracies.Remove(maxAccRule);
+                remainingExamples = remainingExamples.Except(bestRuleCoveredCases.Keys).ToList();
                 var emptyRules = new List<int>();
                 foreach (var kvp in rulesCoveringData.Where(el => el.Key != maxAccRule))
                 {
@@ -96,8 +98,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 }
             }
 
+            var collectionToSelectDefaultClass = remainingExamples.Any()
+                                    ? remainingExamples
+                                    : Enumerable.Range(0, dataFrame.RowCount).ToList();
             var defaultClass =
                             dataFrame
+                            .GetSubsetByRows(collectionToSelectDefaultClass)
                             .GetColumnVector<TValue>(dependentFeatureName)
                             .GroupBy(val => val)
                             .OrderByDescending(grp => grp.Count())
