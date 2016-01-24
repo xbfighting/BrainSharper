@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Data;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics
 {
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
-    using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-    using BrainSharper.Abstract.Data;
-
     public class AccuracyBasedRulesSelector<TValue> : ClassificationAprioriRulesSelector<TValue>
     {
         public override IAssociativeClassificationModel<TValue> BuildPredictiveRulesSet(
@@ -58,8 +58,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             while (rulesCoveringData.Any())
             {
                 var maxAccRule = (from ruleIdxAndAcc in accuracies
-                                 where ruleIdxAndAcc.Value == accuracies.Values.Max()
-                                 select ruleIdxAndAcc.Key).First();
+                                  where ruleIdxAndAcc.Value == accuracies.Values.Max()
+                                  select ruleIdxAndAcc.Key).First();
                 var bestRuleCoveredCases = rulesCoveringData[maxAccRule];
 
                 bestRules.Add(maxAccRule);

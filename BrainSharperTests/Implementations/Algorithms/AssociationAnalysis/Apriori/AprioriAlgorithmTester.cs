@@ -4,6 +4,7 @@ using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Data;
+using BrainSharperTests.TestUtils;
 using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Apriori
@@ -167,5 +168,23 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             // Then
             Assert.AreEqual(11, assocRules.Count);
         }
+
+        /*
+        [Test]
+        public void TestBuildingAssociationRules_BigDataSet()
+        {
+            // Given
+            var dataSet = TestDataBuilder.ReadCongressData()
+                .ToAssociativeTransactionsSet<string>();
+            var rulesMiningParams = new AssociationMiningParams(0.2, 0.8);
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
+            var assocrules = Subject.FindAssociationRules(dataSet, frequentItems, rulesMiningParams);
+
+            // Then
+            Assert.IsNotNull(assocrules);
+        }
+        */
     }
 }

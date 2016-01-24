@@ -154,6 +154,7 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationApriori.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\AccuracyBasedRulesSelector.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\BasicCARRulesSelector.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\StatisticalSignificanceRulesSelector.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\ClassificationAprioriRuleSelectior.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRule.cs" />

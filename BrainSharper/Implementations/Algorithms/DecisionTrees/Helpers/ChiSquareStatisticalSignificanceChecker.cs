@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.Helpers;
@@ -7,7 +8,6 @@ using MathNet.Numerics.Distributions;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers
 {
-    //TODO: make it common with other chisquare mathods
     public class ChiSquareStatisticalSignificanceChecker : IStatisticalSignificanceChecker
     {
         private readonly double significanceLevel;
@@ -57,13 +57,51 @@ namespace BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers
 
             if (ChiSquared.IsValidParameterSet(degreesOfFreedom))
             {
-                var statisticValue = 1 - ChiSquared.CDF(degreesOfFreedom, chisquareStatisticSum);
-                if (statisticValue < significanceLevel)
+                var pValue = 1 - ChiSquared.CDF(degreesOfFreedom, chisquareStatisticSum);
+                if (pValue < significanceLevel)
                 {
                     return true;
                 }
             }
 
+            return false;
+        }
+
+        public bool IsSplitStatisticallySignificant<TValue>(IList<TValue> initialValuesList, IList<IList<TValue>> splittingResults)
+        {
+            if (initialValuesList.Count == 0 || splittingResults.Count == 0)
+            {
+                return false;
+            }
+            var degreesOfFreedom = (initialValuesList.Distinct().Count() - 1) + (splittingResults.Count - 1);
+            if (!ChiSquared.IsValidParameterSet(degreesOfFreedom))
+            {
+                throw new ArgumentException($"Invalid number of degrees of freedom for ChiSquare distribution: {degreesOfFreedom}!");
+            }
+            var percentagesOfExpected = initialValuesList
+                .GroupBy(val => val)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Count()/(double) initialValuesList.Count);
+            var chiSquareSum = 0.0;
+            foreach (var splittingResult in splittingResults)
+            {
+                var splittingResultCount = splittingResult.Count;
+                var actualCounts = splittingResult.GroupBy(val => val).ToDictionary(kvp => kvp.Key, kvp => kvp.Count());
+                var expectedActualCounts = actualCounts.Aggregate(0.0, (actualExpectedCount, valueAndCount) =>
+                {
+                    double expectedPercentage;
+                    percentagesOfExpected.TryGetValue(valueAndCount.Key, out expectedPercentage);
+                    var expectedValue = expectedPercentage * splittingResultCount;
+                    var actualExpectedDiff = Math.Pow(valueAndCount.Value - expectedValue, 2)/expectedValue;
+                    return actualExpectedCount + actualExpectedDiff;
+                });
+                chiSquareSum += expectedActualCounts;
+            }
+            var statitsicValue = ChiSquared.CDF(degreesOfFreedom, chiSquareSum);
+            var pValue = 1 - statitsicValue;
+            if (pValue < significanceLevel)
+            {
+                return true;
+            }
             return false;
         }
     }

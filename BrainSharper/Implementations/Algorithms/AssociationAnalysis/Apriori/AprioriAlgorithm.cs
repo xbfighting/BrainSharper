@@ -61,7 +61,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
             var kMinusOne = desiredSize - 2;
             var elementsComparator = Comparer<TValue>.Default;
             return (
-                from itm1 in previousItems
+                from itm1 in previousItems.AsParallel()
                 from itm2 in previousItems
                 where
                     !itm2.Equals(itm1) &&
@@ -124,8 +124,25 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 return new List<IAssociationRule<TValue>>();
             }
 
-            var associationRules = new List<IAssociationRule<TValue>>();
-            foreach(var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
+            //var associationRules = new List<IAssociationRule<TValue>>();
+            var associationRules = new ConcurrentBag<IAssociationRule<TValue>>();
+            var allSizes = Enumerable.Range(2, maxFrequentItemsSize).ToList();
+            /*
+            allSizes.AsParallel().ForAll(itemsSetSize =>
+            {
+                var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
+                foreach (var itemsSet in itemsOfGivenSize)
+                {
+
+                    associationRules.Add(
+                        ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
+                        .Where(candidateRule => AssocRuleMeetsCriteria(candidateRule, associationMiningParams)).ToList()
+                        );
+                }
+            });
+            */
+            /*
+            foreach (var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
             {
                 var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
                 foreach (var itemsSet in itemsOfGivenSize)
@@ -134,8 +151,23 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                         .AddRange(ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
                         .Where(candidateRule => AssocRuleMeetsCriteria(candidateRule, associationMiningParams)));
                 }
+            }*/
+            foreach (var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
+            {
+                var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
+                itemsOfGivenSize.AsParallel().ForAll(itemsSet =>
+                {
+                    var assocRules = ProduceAssociationRules(itemsSet, frequentItemsSearchResult,
+                        associationMiningParams)
+                        .Where(candidateRule => AssocRuleMeetsCriteria(candidateRule, associationMiningParams));
+
+                    foreach (var assocRule in assocRules)
+                    {
+                        associationRules.Add(assocRule);
+                    }
+                });
             }
-            return associationRules;
+            return associationRules.ToList();
         }
 
         protected virtual IEnumerable<IAssociationRule<TValue>> ProduceAssociationRules(

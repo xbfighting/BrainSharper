@@ -1,4 +1,6 @@
-﻿namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Helpers
+﻿using System.Collections.Generic;
+
+namespace BrainSharperTests.Implementations.Algorithms.DecisionTrees.Helpers
 {
     using System.Data;
 
@@ -15,8 +17,13 @@
     [TestFixture]
     public class ChiSquareSignificanceTest
     {
+        private static readonly string DependentFeatureName = "Play";
+        private static readonly string SplittingFeatureName = "Gender";
+        private static readonly string FemaleField = "F";
+        private static readonly string MaleField = "M";
+
         [Test]
-        public void TestSignificanceOfSplit()
+        public void TestSignificanceOfSplitUsingDataFrames()
         {
             // Given
             var subject = new ChiSquareStatisticalSignificanceChecker(0.1);
@@ -24,60 +31,121 @@
                                     {
                                         Columns =
                                             {
-                                                new DataColumn("Gender", typeof(string)),
-                                                new DataColumn("Play", typeof(bool))
+                                                new DataColumn(SplittingFeatureName, typeof(string)),
+                                                new DataColumn(DependentFeatureName, typeof(bool))
                                             },
                                         Rows =
                                             {
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", false },
-                                                { "F", true },
-                                                { "F", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", true },
-                                                { "M", false },
-                                                { "M", false },
-                                                { "M", false },
-                                                { "M", false },
-                                                { "M", false },
-                                                { "M", false },
-                                                { "M", false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, true },
+                                                { FemaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
                                             }
                                     };
             var dataFrame = new DataFrame(testTable);
 
-            var males = dataFrame.GetSubsetByQuery("Gender = 'M'");
-            var females = dataFrame.GetSubsetByQuery("Gender = 'F'");
+            var males = dataFrame.GetSubsetByQuery($"{SplittingFeatureName} = '{MaleField}'");
+            var females = dataFrame.GetSubsetByQuery($"{SplittingFeatureName} = '{FemaleField}'");
 
             var splittedData = new BinarySplittingResult(
                 false,
-                "Gender",
+                SplittingFeatureName,
                 new[]
                     {
                         new SplittedData(new BinaryDecisionTreeLink(0.333, 10, true), females) as ISplittedData, 
                         new SplittedData(new BinaryDecisionTreeLink(0.666, 10, false), males) as ISplittedData,
                     },
-                "F");
+                FemaleField);
 
             // When
-            var isSplitSignificant = subject.IsSplitStatisticallySignificant(dataFrame, splittedData, "Play");
+            var isSplitSignificant = subject.IsSplitStatisticallySignificant(dataFrame, splittedData, DependentFeatureName);
+
+            // Then
+            Assert.IsTrue(isSplitSignificant);
+        }
+
+        [Test]
+        public void TestSignificanceOfSplitUsingExpectedActualValues()
+        {
+            // Given
+            var subject = new ChiSquareStatisticalSignificanceChecker(0.1);
+            var testTable = new DataTable()
+            {
+                Columns =
+                                            {
+                                                new DataColumn(SplittingFeatureName, typeof(string)),
+                                                new DataColumn(DependentFeatureName, typeof(bool))
+                                            },
+                Rows =
+                                            {
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, false },
+                                                { FemaleField, true },
+                                                { FemaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, true },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                                { MaleField, false },
+                                            }
+            };
+            var dataFrame = new DataFrame(testTable);
+
+            var males = dataFrame.GetSubsetByQuery($"{SplittingFeatureName} = '{MaleField}'");
+            var females = dataFrame.GetSubsetByQuery($"{SplittingFeatureName} = '{FemaleField}'");
+
+            // When
+            var isSplitSignificant = subject.IsSplitStatisticallySignificant(
+                dataFrame.GetColumnVector<bool>(DependentFeatureName),
+                new List<IList<bool>> { males.GetColumnVector<bool>(DependentFeatureName), females.GetColumnVector<bool>(DependentFeatureName) }
+                );
 
             // Then
             Assert.IsTrue(isSplitSignificant);

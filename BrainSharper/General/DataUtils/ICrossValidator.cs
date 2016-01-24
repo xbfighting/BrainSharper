@@ -54,7 +54,7 @@ namespace BrainSharper.General.DataUtils
                     currentWindowNo = 0;
                     shuffledAllIndices = shuffledAllIndices.Shuffle();
                 }
-                var offset = currentWindowNo*testDataCount;
+                var offset = currentWindowNo * testDataCount;
                 var trainingIndices = shuffledAllIndices.Skip(offset).Take(trainingDataCount).ToList();
                 var trainingData = dataFrame.GetSubsetByRows(trainingIndices);
 
