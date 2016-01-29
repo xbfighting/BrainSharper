@@ -6,22 +6,26 @@ using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.General.Utils;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-    using BrainSharper.General.Utils;
+
 
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
+        private readonly bool _saveNegativeBoundary;
+
         protected readonly AssocRuleMiningMinimumRequirementsChecker<TValue> AssocRuleMiningRequirementsChecker;
 
-        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker)
+        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker, bool saveNegativeBoundary = false)
         {
-            this.AssocRuleMiningRequirementsChecker = assocRuleMiningRequirementsChecker;
+            AssocRuleMiningRequirementsChecker = assocRuleMiningRequirementsChecker;
+            _saveNegativeBoundary = saveNegativeBoundary;
         }
 
-        public AprioriAlgorithm()
-            : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
+        public AprioriAlgorithm(bool saveNegativeBoundary = false)
+            : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, saveNegativeBoundary)
         {
         }
 
@@ -64,19 +68,19 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 from itm1 in previousItems.AsParallel()
                 from itm2 in previousItems
                 where
-                    !itm2.Equals(itm1) &&
                     elementsComparator.Compare(itm1.OrderedItems[kMinusOne], itm2.OrderedItems[kMinusOne]) < 0 &&
                     (desiredSize == 2 || itm1.KFirstElementsEqual(itm2, kMinusOne))
 
                 // optimization: use TIDsets to calculate all at once, without a need to reiterate dataset later
                 let candidateItemsTidSet = itm1.TransactionIds.Intersect(itm2.TransactionIds).ToList()
                 let relativeSupport = candidateItemsTidSet.Count/ (double)transactionsSet.TransactionsCount
-                let newItem  =
+                let newItem  = 
                     new FrequentItemsSet<TValue>(
+                        candidateItemsTidSet,
+                        new SortedSet<TValue>(itm1.OrderedItems.Union(itm2.OrderedItems)),
                         candidateItemsTidSet.Count, 
-                        relativeSupport, 
-                        candidateItemsTidSet, 
-                        new SortedSet<TValue>(itm1.OrderedItems.Union(itm2.OrderedItems))) as IFrequentItemsSet<TValue>
+                        relativeSupport
+                        ) as IFrequentItemsSet<TValue>
                 where CandidateItemMeetsCriteria(newItem, frequentItemsMiningParams)
                 select newItem
                 ).ToList();
@@ -126,7 +130,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 
             //var associationRules = new List<IAssociationRule<TValue>>();
             var associationRules = new ConcurrentBag<IAssociationRule<TValue>>();
-            var allSizes = Enumerable.Range(2, maxFrequentItemsSize).ToList();
             /*
             allSizes.AsParallel().ForAll(itemsSetSize =>
             {
@@ -141,17 +144,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 }
             });
             */
-            /*
-            foreach (var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
-            {
-                var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
-                foreach (var itemsSet in itemsOfGivenSize)
-                {
-                    associationRules
-                        .AddRange(ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams)
-                        .Where(candidateRule => AssocRuleMeetsCriteria(candidateRule, associationMiningParams)));
-                }
-            }*/
             foreach (var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
             {
                 var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
@@ -187,13 +179,13 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 {
                     continue;
                 }
-                var consequentSize = possibleConsequentList.Count();
+                var consequentSize = possibleConsequentList.Count;
                 var consequentFrequentItem = frequentItemsSearchResult[consequentSize].First(itm => itm.ItemsSet.SetEquals(possibleConsequentList));
                 var antecedentItemsSet = currentItemSet.ItemsSet.Except(possibleConsequentList).ToList();
 
                 var antecedentFrequentItemsSet = frequentItemsSearchResult[antecedentItemsSet.Count].First(itm => itm.ItemsSet.SetEquals(antecedentItemsSet));
 
-                var confidence = currentItemSet.RelativeSuppot / antecedentFrequentItemsSet.RelativeSuppot;
+                var confidence = currentItemSet.RelativeSupport / antecedentFrequentItemsSet.RelativeSupport;
                 var newAssociationRule = ConstructAssocRule(
                     currentItemSet,
                     antecedentFrequentItemsSet, 
@@ -206,7 +198,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 
         protected virtual bool CandidateItemMeetsCriteria(IFrequentItemsSet<TValue> itm, IFrequentItemsMiningParams miningParams)
         {
-            return itm.RelativeSuppot >= miningParams.MinimalRelativeSupport;
+            return itm.RelativeSupport >= miningParams.MinimalRelativeSupport;
         }
 
         protected virtual bool AssocRuleMeetsCriteria(IAssociationRule<TValue> assocRule,
@@ -226,7 +218,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 antecedentFrequentItemsSet,
                 consequentFrequentItem,
                 currentItemSet.Support,
-                currentItemSet.RelativeSuppot,
+                currentItemSet.RelativeSupport,
                 confidence);
             return newAssociationRule;
         }

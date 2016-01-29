@@ -38,7 +38,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     nameof(associationMiningParams)
                     );
             }
-            return assocRule.RelativeSuppot >= associationMiningParams.MinimalRelativeSupport;
+            return assocRule.RelativeSupport >= associationMiningParams.MinimalRelativeSupport;
         }
     }
 }

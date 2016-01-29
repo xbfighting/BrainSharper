@@ -89,7 +89,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 antecedentFrequentItemsSet,
                 consequentFrequentItem,
                 currentItemSet.Support,
-                currentItemSet.RelativeSuppot,
+                currentItemSet.RelativeSupport,
                 confidence);
         }
     }

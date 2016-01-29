@@ -51,11 +51,14 @@
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IAssociationMiningItem.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IDissociativeRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSearchResult.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsWithNegativeboundarySearchResult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationRulesFinder.cs" />
+    <Compile Include="Abstract\Algorithms\AssociationAnalysis\IDissociationRulesMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsFinder.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IFrequentItemsMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\DecisionTrees\DataStructures\BinaryTrees\IBinaryDecisionTreeClassificationLink.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="General\Utils\TypeUtils.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithm.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AssociationMiningParamsInterpreter.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\DissociationRulesFinder.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationModel.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationPredictor.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationApriori.cs" />
@@ -160,11 +164,14 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\RuleCoverageDataDto.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DisociativeRulesMiningParams.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DissociativeRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtils.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSearchResult.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsSet.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsWithNegativeBoundarySearchResult.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\Transaction.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\TransactionsSet.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BaseDecisionTreeModelBuilder.cs" />

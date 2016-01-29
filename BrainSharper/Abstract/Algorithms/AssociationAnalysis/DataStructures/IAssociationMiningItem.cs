@@ -3,6 +3,6 @@
     public interface IAssociationMiningItem
     {
         double Support { get; }
-        double RelativeSuppot { get; }
+        double RelativeSupport { get; }
     }
 }

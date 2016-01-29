@@ -22,7 +22,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 associationRules
                     .Cast<IClassificationAssociationRule<TValue>>()
                     .OrderByDescending(rule => rule.Confidence)
-                    .ThenByDescending(rule => rule.RelativeSuppot)
+                    .ThenByDescending(rule => rule.RelativeSupport)
                     .ThenBy(rule => rule.Antecedent.ItemsSet.Count)
                     .ToList();
 

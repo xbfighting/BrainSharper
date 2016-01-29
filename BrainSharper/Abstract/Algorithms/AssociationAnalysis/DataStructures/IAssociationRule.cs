@@ -4,6 +4,8 @@
     {
         IFrequentItemsSet<TValue> Antecedent { get; }
         IFrequentItemsSet<TValue> Consequent { get; }
+        bool IsAntecedentNegated { get; }
+        bool IsConsequentNegated { get; }
         double Confidence { get; }
     }
 }

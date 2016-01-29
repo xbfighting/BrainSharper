@@ -16,10 +16,11 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             var dataVector = new DataVector<object>(new object[] { "aaa", 2 }, new [] { "col1", "col2" });
             var assocRule = new ClassificationAssociationRule<object>(
                 new FrequentItemsSet<IDataItem<object>>(
+                    0, 0,
                     new DataItem<object>("col1", "aaa"),
                     new DataItem<object>("col2", 2)
                     ),
-                new FrequentItemsSet<IDataItem<object>>(new DataItem<object>("result", "super")), 
+                new FrequentItemsSet<IDataItem<object>>(0, 0, new DataItem<object>("result", "super")), 
                 10,
                 0.1,
                 0.9
@@ -36,10 +37,11 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             var dataVector = new DataVector<object>(new object[] { "aaa", 3 }, new[] { "col1", "col2" });
             var assocRule = new ClassificationAssociationRule<object>(
                 new FrequentItemsSet<IDataItem<object>>(
+                    0, 0,
                     new DataItem<object>("col1", "aaa"),
                     new DataItem<object>("col2", 2)
                     ),
-                new FrequentItemsSet<IDataItem<object>>(new DataItem<object>("result", "super")),
+                new FrequentItemsSet<IDataItem<object>>(0, 0, new DataItem<object>("result", "super")),
                 10,
                 0.1,
                 0.9
@@ -56,10 +58,11 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             var dataVector = new DataVector<object>(new object[] { "aaa" }, new[] { "col1" });
             var assocRule = new ClassificationAssociationRule<object>(
                 new FrequentItemsSet<IDataItem<object>>(
+                    0, 0,
                     new DataItem<object>("col1", "aaa"),
                     new DataItem<object>("col2", 2)
                     ),
-                new FrequentItemsSet<IDataItem<object>>(new DataItem<object>("result", "super")),
+                new FrequentItemsSet<IDataItem<object>>(0, 0, new DataItem<object>("result", "super")),
                 10,
                 0.1,
                 0.9

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
@@ -169,9 +172,8 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             Assert.AreEqual(11, assocRules.Count);
         }
 
-        /*
         [Test]
-        public void TestBuildingAssociationRules_BigDataSet()
+        public void TestBuildingAssociationRules_BigDataSetCongress_PerformanceMeasures()
         {
             // Given
             var dataSet = TestDataBuilder.ReadCongressData()
@@ -179,12 +181,23 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             var rulesMiningParams = new AssociationMiningParams(0.2, 0.8);
 
             // When
-            var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
-            var assocrules = Subject.FindAssociationRules(dataSet, frequentItems, rulesMiningParams);
+            var executionTimes = new List<double>();
+            
+            for (int i = 0; i < 10; i++)
+            {
+                GC.Collect();
+                var sw = Stopwatch.StartNew();
+                var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
+                sw.Stop();
+                executionTimes.Add(sw.ElapsedMilliseconds);
+            }
 
             // Then
-            Assert.IsNotNull(assocrules);
+            var avgExecutionTime = executionTimes.Average();
+            var std = MathNet.Numerics.Statistics.ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
+            var medianExecTime = MathNet.Numerics.Statistics.ArrayStatistics.MedianInplace(executionTimes.ToArray());
+
         }
-        */
+
     }
 }

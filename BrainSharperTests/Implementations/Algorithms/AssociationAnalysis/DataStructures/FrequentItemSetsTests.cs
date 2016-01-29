@@ -16,8 +16,8 @@
         public void TestForEquality_ShouldBeTrue()
         {
             // Given
-            var frequentItemsSet1 = new FrequentItemsSet<string>(23, 0.23, new object[]{ 1, 2, 3 }, new HashSet<string> { "b", "a", "c" });
-            var frequentItemsSet2 = new FrequentItemsSet<string>(23, 0.23, new object[] { 1, 2, 3 }, new HashSet<string> { "b", "a", "c" });
+            var frequentItemsSet1 = new FrequentItemsSet<string>(new object[]{ 1, 2, 3 }, new HashSet<string> { "b", "a", "c" }, 23, 0.23);
+            var frequentItemsSet2 = new FrequentItemsSet<string>(new object[] { 1, 2, 3 }, new HashSet<string> { "b", "a", "c" }, 23, 0.23);
 
             // Then
             Assert.IsTrue(frequentItemsSet1.Equals(frequentItemsSet2));
@@ -28,8 +28,8 @@
         public void TestForEquality_ShouldBeFalse()
         {
             // Given
-            var frequentItemsSet1 = new FrequentItemsSet<string>(23, 0.23, new object[] { 1, 2, 3 }, new HashSet<string> { "a", "b", "c" });
-            var frequentItemsSet2 = new FrequentItemsSet<string>(23, 0.23, new object[] { 1, 2, 3 }, new HashSet<string> { "a", "b", "b" });
+            var frequentItemsSet1 = new FrequentItemsSet<string>(new object[] { 1, 2, 3 }, new HashSet<string> { "a", "b", "c" }, 23, 0.23);
+            var frequentItemsSet2 = new FrequentItemsSet<string>(new object[] { 1, 2, 3 }, new HashSet<string> { "a", "b", "b" }, 23, 0.23);
 
             // Then
             Assert.IsFalse(frequentItemsSet1.Equals(frequentItemsSet2));
@@ -40,26 +40,26 @@
         public void TestForEquality_ForKEqual2Prefix_ShouldBeEqual()
         {
             // Given
-            var frequentItemsSet1 = new FrequentItemsSet<IDataItem<object>>(
-                23, 
-                0.23, 
+            var frequentItemsSet1 = new FrequentItemsSet<IDataItem<object>>( 
                 new object[] { 1, 2, 3 }, 
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 10)),
-                    });
-            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
+                    },
                 23,
-                0.23,
+                0.23);
+            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 11)),
-                    });
+                    },
+                23,
+                0.23);
 
             // When
             var isPrefixKEqual = frequentItemsSet1.KFirstElementsEqual(frequentItemsSet2, 2);
@@ -73,25 +73,25 @@
         {
             // Given
             var frequentItemsSet1 = new FrequentItemsSet<IDataItem<object>>(
-                23,
-                0.23,
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 10)),
-                    });
-            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
+                    },
                 23,
-                0.23,
+                0.23);
+            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 11)),
-                    });
+                    },
+                23,
+                0.23);
 
             // When
             var isPrefixKEqual = frequentItemsSet1.KFirstElementsEqual(frequentItemsSet2, 3);
@@ -105,25 +105,25 @@
         {
             // Given
             var frequentItemsSet1 = new FrequentItemsSet<IDataItem<object>>(
-                23,
-                0.23,
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 10)),
-                    });
+                    },
+                23,
+                0.23);
             var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
-                23,
-                0.23,
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 10)),
-                    });
+                    },
+                23,
+                0.23);
 
             // When
             var isPrefixKEqual = frequentItemsSet1.KFirstElementsEqual(frequentItemsSet2, 3);
@@ -137,25 +137,25 @@
         {
             // Given
             var frequentItemsSet1 = new FrequentItemsSet<IDataItem<object>>(
-                23,
-                0.23,
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 10)),
-                    });
-            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
+                    },
                 23,
-                0.23,
+                0.23);
+            var frequentItemsSet2 = new FrequentItemsSet<IDataItem<object>>(
                 new object[] { 1, 2, 3 },
                 new HashSet<IDataItem<object>>
                     {
                         new DataItem<object>("col1", "val1"),
                         new DataItem<object>("col2", 2),
                         new DataItem<object>("col3", new DateTime(2013, 10, 11)),
-                    });
+                    },
+                 23,
+                0.23);
 
             // When
             var isPrefixKEqual = frequentItemsSet1.KFirstElementsEqual(frequentItemsSet2, 3);

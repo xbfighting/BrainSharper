@@ -9,24 +9,30 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             IFrequentItemsSet<TValue> consequent,
             double support,
             double relativeSupport,
-            double confidence)
+            double confidence,
+            bool isAntecedentNegated = false,
+            bool isConsequentNegated = false)
         {
             Antecedent = antecedent;
             Consequent = consequent;
             Support = support;
             Confidence = confidence;
-            RelativeSuppot = relativeSupport;
+            RelativeSupport = relativeSupport;
+            IsAntecedentNegated = isAntecedentNegated;
+            IsConsequentNegated = isConsequentNegated;
         }
 
         public IFrequentItemsSet<TValue> Antecedent { get; }
         public IFrequentItemsSet<TValue> Consequent { get; }
+        public bool IsAntecedentNegated { get; }
+        public bool IsConsequentNegated { get; }
         public double Support { get; }
-        public double RelativeSuppot { get; }
+        public double RelativeSupport { get; }
         public double Confidence { get; }
 
         protected bool Equals(AssociationRule<TValue> other)
         {
-            return Equals(Antecedent, other.Antecedent) && Equals(Consequent, other.Consequent) && Equals(Support, other.Support) && Equals(RelativeSuppot, other.RelativeSuppot) && Equals(Confidence, other.Confidence);
+            return Equals(Antecedent, other.Antecedent) && Equals(Consequent, other.Consequent) && Equals(Support, other.Support) && Equals(RelativeSupport, other.RelativeSupport) && Equals(Confidence, other.Confidence) && IsAntecedentNegated.Equals(other.IsAntecedentNegated) && IsConsequentNegated.Equals(other.IsConsequentNegated);
         }
 
         public override bool Equals(object obj)
@@ -53,7 +59,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
                 return ((Antecedent != null ? Antecedent.GetHashCode() : 0)*397) ^
                        (Consequent != null ? Consequent.GetHashCode() : 0) ^
                        (Support.GetHashCode()) ^
-                       (RelativeSuppot.GetHashCode()) ^
+                       (RelativeSupport.GetHashCode()) ^
+                       (IsAntecedentNegated.GetHashCode()) ^
+                       (IsConsequentNegated.GetHashCode()) ^
                        (Confidence.GetHashCode());
             }
         }
@@ -70,7 +78,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
 
         public override string ToString()
         {
-            return $"[{Antecedent}] => [{Consequent}] Support: {RelativeSuppot}, Confidence: {Confidence}";
+            return $"[{Antecedent}] => [{Consequent}] Support: {RelativeSupport}, Confidence: {Confidence}";
         }
     }
 }
