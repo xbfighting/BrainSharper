@@ -7,5 +7,6 @@
         bool IsAntecedentNegated { get; }
         bool IsConsequentNegated { get; }
         double Confidence { get; }
+        double Lift { get; }
     }
 }

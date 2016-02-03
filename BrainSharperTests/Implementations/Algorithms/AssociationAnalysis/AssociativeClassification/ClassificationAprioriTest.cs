@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers;
+using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
+using BrainSharper.Implementations.MathUtils.ImpurityMeasures;
 using BrainSharperTests.TestUtils;
 using NUnit.Framework;
 
@@ -23,7 +26,9 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
         private readonly ClassificationAprioriRulesSelector<string> _basicHeuristic = new BasicCARRulesSelector<string>();
         private readonly ClassificationAprioriRulesSelector<string> _accHeuristic = new AccuracyBasedRulesSelector<string>();
         private readonly ClassificationAprioriRulesSelector<string> _statisticalSignificanceHeuristic = new StatisticalSignificanceRulesSelector<string>(new ChiSquareStatisticalSignificanceChecker());
-        
+        private readonly ClassificationAprioriRulesSelector<string> _informtionGainHeuristic =
+            new InformationGainRulesSelector<string>(new InformationGainRatioCalculator<string>(new ShannonEntropy<string>(), new ShannonEntropy<string>() as ICategoricalImpurityMeasure<string>));
+            
         [Test]
         public void BuildAssociativeModelTest_HeuristicsComparison_IrisData()
         {
@@ -49,7 +54,6 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             CollectionAssert.AreNotEquivalent(model3.ClassificationRules, model1.ClassificationRules);
             CollectionAssert.AreNotEquivalent(model3.ClassificationRules, model2.ClassificationRules);
         }
-
 
         [Test]
         public void BuildAssociativeModelTest_BasicCARHeuristic_IrisData()
@@ -89,7 +93,8 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
                 TestDataBuilder.CongressDataDependentFeatureName,
                 0.13,
                 null,
-                0.8);
+                0.8,
+                minimalLift: 1.65);
 
             // When
             var accuracies = _splitter.CrossValidate(
@@ -107,6 +112,23 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             Assert.GreaterOrEqual(avgAccuracy, 0.9);
         }
 
+        [Test]
+        public void SingleModelForCongressData()
+        {
+            // Given
+            var modelBuilder = new ClassificationApriori<string>(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, _basicHeuristic);
+            var testData = TestDataBuilder.ReadCongressData();
+            var miningParams = new ClassificationAssociationMiningParams(
+                TestDataBuilder.CongressDataDependentFeatureName,
+                0.13,
+                null,
+                0.8,
+                minimalLift: 1.65);
+
+            var model = modelBuilder.BuildModel(testData, TestDataBuilder.CongressDataDependentFeatureName, miningParams);
+
+            Assert.IsNotNull(model);
+        }
 
         [Test]
         public void BuildAssociativeModelTest_AccHeuristic_IrisData()
@@ -141,6 +163,34 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
         {
             // Given
             var modelBuilder = new ClassificationApriori<string>(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, _statisticalSignificanceHeuristic);
+            var testData = TestDataBuilder.ReadIrisDiscretizedData();
+            var miningParams = new ClassificationAssociationMiningParams(
+                TestDataBuilder.DiscretizedIrisDependentFeatureName,
+                0.05,
+                null,
+                0.8);
+
+            // When
+            var accuracies = _splitter.CrossValidate(
+                modelBuilder,
+                miningParams,
+                _classifier,
+                new ConfusionMatrixBuilder<string>(),
+                testData,
+                "iris",
+                0.7,
+                20);
+
+            // Then
+            var avgAccuracy = accuracies.Select(report => report.Accuracy).First();
+            Assert.GreaterOrEqual(avgAccuracy, 0.9);
+        }
+
+        [Test]
+        public void BuildAssociativeModelTest_InformationGainRatioHeuristic_IrisData()
+        {
+            // Given
+            var modelBuilder = new ClassificationApriori<string>(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, _informtionGainHeuristic);
             var testData = TestDataBuilder.ReadIrisDiscretizedData();
             var miningParams = new ClassificationAssociationMiningParams(
                 TestDataBuilder.DiscretizedIrisDependentFeatureName,

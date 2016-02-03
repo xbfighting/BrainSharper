@@ -24,14 +24,17 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 {
                     return false;
                 }
-            } else if (associationMiningParams.MinimalLift.HasValue)
+            }
+
+            if (associationMiningParams.MinimalLift.HasValue)
             {
-                if(assocRule.Confidence < associationMiningParams.MinimalLift)
+                if(assocRule.Lift < associationMiningParams.MinimalLift)
                 {
                     return false;
                 }
             }
-            else
+
+            if(!associationMiningParams.MinimalConfidence.HasValue && !associationMiningParams.MinimalLift.HasValue)
             {
                 throw new ArgumentException(
                     "Either minimal confidence or lift must be specified",

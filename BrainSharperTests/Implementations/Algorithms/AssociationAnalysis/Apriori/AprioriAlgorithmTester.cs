@@ -8,12 +8,12 @@ using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Data;
 using BrainSharperTests.TestUtils;
+using MathNet.Numerics.Statistics;
 using NUnit.Framework;
+using static BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.AssociationAnalysisTestDataBuilder;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-    using static AssociationAnalysisTestDataBuilder;
-
     [TestFixture]
     public class AprioriAlgorithmTester
     {
@@ -194,10 +194,8 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
 
             // Then
             var avgExecutionTime = executionTimes.Average();
-            var std = MathNet.Numerics.Statistics.ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
-            var medianExecTime = MathNet.Numerics.Statistics.ArrayStatistics.MedianInplace(executionTimes.ToArray());
-
+            var std = ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
+            var medianExecTime = ArrayStatistics.MedianInplace(executionTimes.ToArray());
         }
-
     }
 }

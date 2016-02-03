@@ -22,7 +22,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
         }
 
         public IClassificationAssociationRule<TValue> Rule { get; }
-        public ISet<int> CoveredExamples { get; private set; }
+        public ISet<int> CoveredExamples { get; set; }
 
         public TValue DefaultValueForRemainingData { get; set; }
 

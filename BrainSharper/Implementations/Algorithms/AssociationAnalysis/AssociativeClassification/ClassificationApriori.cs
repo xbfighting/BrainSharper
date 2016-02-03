@@ -8,11 +8,11 @@ using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics;
+
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
 {
-    using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics;
-
     public class ClassificationApriori<TValue> : AprioriAlgorithm<IDataItem<TValue>>, IPredictionModelBuilder
     {
         private static readonly string ClassificationAprioriAlgorithmRequiresAssociationminingparams = "Classification apriori algorithm requires ClassifcationAssociationMiningParams!";
@@ -91,6 +91,25 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 currentItemSet.Support,
                 currentItemSet.RelativeSupport,
                 confidence);
+        }
+
+        protected override IEnumerable<IAssociationRule<IDataItem<TValue>>> ProduceAssociationRules(IFrequentItemsSet<IDataItem<TValue>> currentItemSet,
+            IFrequentItemsSearchResult<IDataItem<TValue>> frequentItemsSearchResult, IAssociationMiningParams assocMiningParams)
+        {
+            var classificationParams = assocMiningParams as IClassificationAssociationMiningParams;
+            if (currentItemSet.ItemsSet.Any(itm => itm.FeatureName.Equals(classificationParams.DependentFeatureName)))
+            {
+                return base.ProduceAssociationRules(currentItemSet, frequentItemsSearchResult, assocMiningParams);
+            }
+            return new IAssociationRule<IDataItem<TValue>>[0];
+        }
+
+        protected override IEnumerable<IEnumerable<IDataItem<TValue>>> ProduceConsequents(IFrequentItemsSet<IDataItem<TValue>> currentItemSet, IAssociationMiningParams assocMiningParams)
+        {
+            var classificationParams = assocMiningParams as IClassificationAssociationMiningParams;
+            var classificationConsequent =
+                currentItemSet.ItemsSet.First(itm => itm.FeatureName.Equals(classificationParams.DependentFeatureName));
+            return new[] {new[] { classificationConsequent }};
         }
     }
 }

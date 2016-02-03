@@ -14,6 +14,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
         public IList<TValue> Predict(IDataFrame queryDataFrame, IPredictionModel model, string dependentFeatureName)
         {
             var associativeModel = GetAssociativeModel(model);
+            //TODO: [ASSOC RULES] debug only remove it later!!!!
+            var rulesByLift = associativeModel.ClassificationRules.OrderBy(r => r.Lift).ToList();
             return Predict(queryDataFrame, associativeModel, dependentFeatureName);
         }
 

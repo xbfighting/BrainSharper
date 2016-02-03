@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
@@ -10,26 +11,21 @@ using BrainSharper.General.Utils;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {
-
-
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
-        private readonly bool _saveNegativeBoundary;
-
         protected readonly AssocRuleMiningMinimumRequirementsChecker<TValue> AssocRuleMiningRequirementsChecker;
 
-        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker, bool saveNegativeBoundary = false)
+        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker)
         {
             AssocRuleMiningRequirementsChecker = assocRuleMiningRequirementsChecker;
-            _saveNegativeBoundary = saveNegativeBoundary;
         }
 
-        public AprioriAlgorithm(bool saveNegativeBoundary = false)
-            : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet, saveNegativeBoundary)
+        public AprioriAlgorithm() : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
         {
+
         }
 
-        public IFrequentItemsSearchResult<TValue> FindFrequentItems(
+        public virtual IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactionsSet,
             IFrequentItemsMiningParams frequentItemsMiningParams)
         {
@@ -38,25 +34,41 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
             {
                 [1] = initialFrequentItems
             };
+
             var anyItemsGenerated = true;
             var itemsSetSize = 1;
             while (anyItemsGenerated)
             {
-                itemsSetSize += 1;
                 anyItemsGenerated = false;
-                var previousItems = frequentItemsBySize[itemsSetSize - 1];
-                var nextItems = GenerateNextItems(transactionsSet, frequentItemsMiningParams, previousItems, itemsSetSize);
-                if (nextItems.Any())
+                itemsSetSize += 1;
+                var itemsGroupedByCriteria = ProcessNextSetOfItems(frequentItemsBySize, itemsSetSize, transactionsSet, frequentItemsMiningParams);
+                if (itemsGroupedByCriteria.ContainsKey(true))
                 {
+                    frequentItemsBySize[itemsSetSize] = itemsGroupedByCriteria[true].Select(itm => itm.FrequentItemsSet).ToList();
                     anyItemsGenerated = true;
-                    frequentItemsBySize[itemsSetSize] = nextItems;
                 }
-
             }
             return new FrequentItemsSearchResult<TValue>(frequentItemsBySize);
         }
 
-        public IList<IFrequentItemsSet<TValue>> GenerateNextItems(
+        protected virtual IDictionary<bool, List<FrequentItemBuildingResultDto<TValue>>> ProcessNextSetOfItems(
+            IDictionary<int, IList<IFrequentItemsSet<TValue>>>  frequentItemsSoFar,
+            int itemsSetSize,
+            ITransactionsSet<TValue> transactionsSet,
+            IFrequentItemsMiningParams frequentItemsMiningParams
+            )
+        {
+            
+            var previousItems = frequentItemsSoFar[itemsSetSize - 1];
+            var nextItems = GenerateNextItems(transactionsSet, frequentItemsMiningParams, previousItems, itemsSetSize);
+            return (
+                from buildingResult in nextItems.AsParallel()
+                group buildingResult by buildingResult.MeetsCriteria
+                into grp
+                select grp).ToDictionary(grp => grp.Key, grp => grp.ToList());
+        }
+
+        public IList<FrequentItemBuildingResultDto<TValue>> GenerateNextItems(
             ITransactionsSet<TValue> transactionsSet,
             IFrequentItemsMiningParams frequentItemsMiningParams,
             IList<IFrequentItemsSet<TValue>> previousItems,
@@ -81,8 +93,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                         candidateItemsTidSet.Count, 
                         relativeSupport
                         ) as IFrequentItemsSet<TValue>
-                where CandidateItemMeetsCriteria(newItem, frequentItemsMiningParams)
-                select newItem
+                let itemMeetsCriteria = CandidateItemMeetsCriteria(newItem, frequentItemsMiningParams)
+                select new FrequentItemBuildingResultDto<TValue>(newItem, itemMeetsCriteria)
                 ).ToList();
         }
 
@@ -128,8 +140,17 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 return new List<IAssociationRule<TValue>>();
             }
 
-            //var associationRules = new List<IAssociationRule<TValue>>();
-            var associationRules = new ConcurrentBag<IAssociationRule<TValue>>();
+            var associationRules = 
+                (from itemsSize in frequentItemsSearchResult.FrequentItemsSizes
+                where itemsSize > 1
+                let items = frequentItemsSearchResult[itemsSize]
+                let rulesFromItems =
+                    items.AsParallel().SelectMany(
+                        itemsSet =>
+                            ProduceAssociationRules(itemsSet, frequentItemsSearchResult, associationMiningParams))
+                        .Where(r => AssocRuleMeetsCriteria(r, associationMiningParams))
+                select rulesFromItems).SelectMany(r => r.ToList()).ToList();
+                        //var associationRules = new ConcurrentBag<IAssociationRule<TValue>>();
             /*
             allSizes.AsParallel().ForAll(itemsSetSize =>
             {
@@ -144,6 +165,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 }
             });
             */
+            /*
             foreach (var itemsSetSize in Enumerable.Range(2, maxFrequentItemsSize))
             {
                 var itemsOfGivenSize = frequentItemsSearchResult[itemsSetSize];
@@ -159,6 +181,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     }
                 });
             }
+            */
             return associationRules.ToList();
         }
 
@@ -168,9 +191,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
             IAssociationMiningParams assocMiningParams)
         {
             ;
-            var combinations = assocMiningParams.AllowMultiSelectorConsequent
-                                   ? currentItemSet.ItemsSet.GenerateAllCombinations()
-                                   : currentItemSet.ItemsSet.GenerateCombinationsOfSizeK(1);
+            var combinations = ProduceConsequents(currentItemSet, assocMiningParams);
 
             foreach (var possibleConsequent in combinations)
             {
@@ -194,6 +215,15 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     confidence);
                 yield return newAssociationRule;
             }
+        }
+
+        protected virtual IEnumerable<IEnumerable<TValue>> ProduceConsequents(
+            IFrequentItemsSet<TValue> currentItemSet, 
+            IAssociationMiningParams assocMiningParams)
+        {
+            return assocMiningParams.AllowMultiSelectorConsequent
+                ? currentItemSet.ItemsSet.GenerateAllCombinations()
+                : currentItemSet.ItemsSet.GenerateCombinationsOfSizeK(1);
         }
 
         protected virtual bool CandidateItemMeetsCriteria(IFrequentItemsSet<TValue> itm, IFrequentItemsMiningParams miningParams)

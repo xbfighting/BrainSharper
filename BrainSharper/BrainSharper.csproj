@@ -153,11 +153,14 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithm.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AssociationMiningParamsInterpreter.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\DissociationRulesFinder.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\FrequentItemBuildingResultDto.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationModel.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationPredictor.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationApriori.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\AccuracyBasedRulesSelector.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\BasicCARRulesSelector.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\InformationGainRulesSelector.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\PositivelyCorrelatedRulesHeuristic.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\StatisticalSignificanceRulesSelector.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\Heuristics\ClassificationAprioriRuleSelectior.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationMiningParams.cs" />

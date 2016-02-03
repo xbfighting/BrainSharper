@@ -75,6 +75,7 @@
     <Compile Include="General\CollectionUtils\CumulativeSumTest.cs" />
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithmTester.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\DissociationRulesFinderTester.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociationAnalysisTestDataBuilder.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAprioriTest.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRuleTest.cs" />

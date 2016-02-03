@@ -1,4 +1,8 @@
-﻿namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
+﻿using System.Collections.Generic;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+
+namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
 {
     using System.Data;
 
@@ -38,6 +42,16 @@
                         new object[]{ 5, Diapers }
                     }
             });
+
+        public static ITransactionsSet<string> AbstractTransactionsSet = new TransactionsSet<string>(
+            new List<ITransaction<string>>
+            {
+                new Transaction<string>(1, "A", "B", "D"),
+                new Transaction<string>(2, "B", "C"),
+                new Transaction<string>(3, "A", "D", "E"),
+                new Transaction<string>(4, "B", "D", "E"),
+                new Transaction<string>(5, "A", "B", "C")
+            }); 
 
     }
 }

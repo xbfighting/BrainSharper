@@ -17,6 +17,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             Consequent = consequent;
             Support = support;
             Confidence = confidence;
+            Lift = relativeSupport/(antecedent.RelativeSupport*consequent.RelativeSupport);
             RelativeSupport = relativeSupport;
             IsAntecedentNegated = isAntecedentNegated;
             IsConsequentNegated = isConsequentNegated;
@@ -29,6 +30,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         public double Support { get; }
         public double RelativeSupport { get; }
         public double Confidence { get; }
+        public double Lift { get; }
 
         protected bool Equals(AssociationRule<TValue> other)
         {
