@@ -2,15 +2,14 @@
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    public struct DisociativeRulesMiningParams : IDissociationRulesMiningParams
+    public class DisociativeRulesMiningParams : AssociationMiningParams, IDissociationRulesMiningParams
     {
-        public DisociativeRulesMiningParams(double minimalRelativeSupport, double maxRelativeJoin)
+        public DisociativeRulesMiningParams(double minimalRelativeSupport, double maxRelativeJoin, double? minimalConfidence, double? minimalLift = null, bool allowMultiSelectorConsequent = false)
+            : base(minimalRelativeSupport, minimalConfidence, minimalLift, allowMultiSelectorConsequent)
         {
-            MinimalRelativeSupport = minimalRelativeSupport;
             MaxRelativeJoin = maxRelativeJoin;
         }
 
-        public double MinimalRelativeSupport { get; }
         public double MaxRelativeJoin { get; }
     }
 }

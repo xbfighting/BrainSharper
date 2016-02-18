@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BrainSharper</RootNamespace>
     <AssemblyName>BrainSharper</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -169,6 +169,7 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DisociativeRulesMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DissociativeRule.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DissociativeRuleItemset.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemsMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\AssociationRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtils.cs" />

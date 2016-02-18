@@ -26,7 +26,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             // Given
             var subject = new DissociationRulesFinder<string>();
             ITransactionsSet<string> abstractSet = AbstractTransactionsSet;
-            var miningParams = new AssociationMiningParams(0.4, 1.0);
+            var miningParams = new DisociativeRulesMiningParams(0.4, maxRelativeJoin: 0.1, minimalConfidence: 1.0);
             var expectedNegativeBoundaryItems = new Dictionary<int, IList<IFrequentItemsSet<string>>>
             {
                 [2] = new List<IFrequentItemsSet<string>>

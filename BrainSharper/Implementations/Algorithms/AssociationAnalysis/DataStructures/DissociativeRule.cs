@@ -10,6 +10,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             double support, 
             double relativeSupport, 
             double confidence, 
+            double maxRelativeJoin,
             bool isAntecedentNegated = false, 
             bool isConsequentNegated = false)
             : base(
@@ -21,8 +22,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
                   isAntecedentNegated, 
                   isConsequentNegated)
         {
+            MaxRelativeJoin = maxRelativeJoin;
         }
 
-        public double MaxRelativeJoin => RelativeSupport;
+        public double MaxRelativeJoin { get; }
     }
 }
