@@ -57,7 +57,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             // Given
             var data = TestDataBuilder.ReadCongressData().ToAssociativeTransactionsSet<string>();
             var subject = new DissociationRulesFinder<IDataItem<string>>();
-            var miningParams = new AssociationMiningParams(0.2, 0.9);
+            var miningParams = new DisociativeRulesMiningParams(0.4, maxRelativeJoin: 0.1, minimalConfidence: 1.0);
 
             // When
             var results = subject.FindFrequentItems(data, miningParams) as IFrequentItemsWithNegativeboundarySearchResult<IDataItem<string>>;

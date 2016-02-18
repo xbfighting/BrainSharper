@@ -190,7 +190,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 CalculateSupportOfDissociationRuleCandidateItemSets(transactionsSet, supersetsOfThisSet);
                 supersets.AddRange(supersetsOfThisSet.Where(superset => superset.RelativeSupport <= miningParams.MaxRelativeJoin));
             }
-            return validDissociativeItems.Union(supersets).ToList();
+            return allValidDissociativeItems.Union(supersets).ToList();
 
         }
 
