@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<DataTable>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="Table1" msdata:Locale="pl-PL">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Table1" msdata:Locale="pl-PL">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Outlook" type="xs:string" minOccurs="0" />
+                <xs:element name="Temperature" type="xs:int" minOccurs="0" />
+                <xs:element name="Humidity" type="xs:int" minOccurs="0" />
+                <xs:element name="Windy" type="xs:int" minOccurs="0" />
+                <xs:element name="Play" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <DocumentElement>
+      <Table1 diffgr:id="Table11" msdata:rowOrder="0">
+        <Outlook>Sunny</Outlook>
+        <Temperature>27</Temperature>
+        <Humidity>55</Humidity>
+        <Windy>2</Windy>
+        <Play>No</Play>
+      </Table1>
+      <Table1 diffgr:id="Table12" msdata:rowOrder="1">
+        <Outlook>Sunny</Outlook>
+        <Temperature>28</Temperature>
+        <Humidity>60</Humidity>
+        <Windy>10</Windy>
+        <Play>No</Play>
+      </Table1>
+      <Table1 diffgr:id="Table13" msdata:rowOrder="2">
+        <Outlook>Overcast</Outlook>
+        <Temperature>29</Temperature>
+        <Humidity>65</Humidity>
+        <Windy>3</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table14" msdata:rowOrder="3">
+        <Outlook>Rainy</Outlook>
+        <Temperature>21</Temperature>
+        <Humidity>70</Humidity>
+        <Windy>4</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table15" msdata:rowOrder="4">
+        <Outlook>Rainy</Outlook>
+        <Temperature>17</Temperature>
+        <Humidity>20</Humidity>
+        <Windy>5</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table16" msdata:rowOrder="5">
+        <Outlook>Rainy</Outlook>
+        <Temperature>18</Temperature>
+        <Humidity>25</Humidity>
+        <Windy>12</Windy>
+        <Play>No</Play>
+      </Table1>
+      <Table1 diffgr:id="Table17" msdata:rowOrder="6">
+        <Outlook>Overcast</Outlook>
+        <Temperature>19</Temperature>
+        <Humidity>30</Humidity>
+        <Windy>14</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table18" msdata:rowOrder="7">
+        <Outlook>Sunny</Outlook>
+        <Temperature>22</Temperature>
+        <Humidity>75</Humidity>
+        <Windy>6</Windy>
+        <Play>No</Play>
+      </Table1>
+      <Table1 diffgr:id="Table19" msdata:rowOrder="8">
+        <Outlook>Sunny</Outlook>
+        <Temperature>20</Temperature>
+        <Humidity>35</Humidity>
+        <Windy>7</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table110" msdata:rowOrder="9">
+        <Outlook>Rainy</Outlook>
+        <Temperature>23</Temperature>
+        <Humidity>40</Humidity>
+        <Windy>8</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table111" msdata:rowOrder="10">
+        <Outlook>Sunny</Outlook>
+        <Temperature>24</Temperature>
+        <Humidity>45</Humidity>
+        <Windy>16</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table112" msdata:rowOrder="11">
+        <Outlook>Overcast</Outlook>
+        <Temperature>25</Temperature>
+        <Humidity>80</Humidity>
+        <Windy>18</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table113" msdata:rowOrder="12">
+        <Outlook>Overcast</Outlook>
+        <Temperature>30</Temperature>
+        <Humidity>50</Humidity>
+        <Windy>9</Windy>
+        <Play>Yes</Play>
+      </Table1>
+      <Table1 diffgr:id="Table114" msdata:rowOrder="13">
+        <Outlook>Rainy</Outlook>
+        <Temperature>26</Temperature>
+        <Humidity>85</Humidity>
+        <Windy>20</Windy>
+        <Play>No</Play>
+      </Table1>
+    </DocumentElement>
+  </diffgr:diffgram>
+</DataTable>

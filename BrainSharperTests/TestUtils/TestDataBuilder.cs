@@ -1,4 +1,7 @@
-﻿namespace BrainSharperTests.TestUtils
+﻿using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
+
+namespace BrainSharperTests.TestUtils
 {
     using System;
     using System.Collections.Generic;
@@ -19,6 +22,10 @@
         public const string WeatherDataDependentFeatureName = "Play";
         public const string DiscretizedIrisDependentFeatureName = "iris";
         public const string CongressDataDependentFeatureName = "party";
+
+        public const string SerializedDataSetsPath = "SerializedDataSets";
+        public const string SerializedIrisData = "IrisDataSerialized";
+
 
         public static IDataFrame BuildSmallDataFrameMixedDataTypes()
         {
@@ -184,64 +191,96 @@
 
         public static IDataFrame ReadWeatherDataWithCategoricalAttributes()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherData.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\WeatherData.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadWeatherDataWithMixedAttributes()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\WeatherDataNumeric.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\WeatherDataNumeric.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadMushroomDataWithCategoricalAttributes()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Mushroom.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\Mushroom.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadHousingData()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\Housing.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\Housing.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadHousingDataNormalizedAttrs()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\HousingNormalized.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\HousingNormalized.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadTitanicData()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\titanic_train_data.txt", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\titanic_train_data.txt", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadTitanicQuery()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\cleaned_test.csv", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\cleaned_test.csv", true);
+            return new DataFrame(dt);
         }
 
         public static IDataFrame ReadIrisDiscretizedData()
         {
-            return new DataFrame(ReadCsvIntoDataTable(@"DataSets\discretized_iris.csv", true));
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\discretized_iris.csv", true);
+            return new DataFrame(dt);
         }
 
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)
         {
-            string header = isFirstRowHeader ? "Yes" : "No";
+#if MONO
+                var binarySerialzer = new BinaryFormatter();
+                using (var fileReader = File.OpenRead(filepath))
+                {
+                    return (DataTable)binarySerialzer.Deserialize(fileReader);
+                }
+#else
+                string header = isFirstRowHeader ? "Yes" : "No";
 
-            string fileName = Path.GetFileName(filepath);
-            string directory = Path.GetDirectoryName(filepath) ?? string.Empty;
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var fullPath = Path.Combine(currentDirectory, directory);
+                string fileName = Path.GetFileName(filepath);
+                string directory = Path.GetDirectoryName(filepath) ?? string.Empty;
+                var currentDirectory = Directory.GetCurrentDirectory();
+                var fullPath = Path.Combine(currentDirectory, directory);
 
-            string sql = @"SELECT * FROM [" + fileName + "]";
+                string sql = @"SELECT * FROM [" + fileName + "]";
 
-            using (OleDbConnection connection = new OleDbConnection(
-                      @"Provider= Microsoft.Jet.OLEDB.4.0;Data Source=" + fullPath +
-                      ";Extended Properties=\"Text;HDR=" + header + "\""))
-            using (OleDbCommand command = new OleDbCommand(sql, connection))
-            using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
+                using (OleDbConnection connection = new OleDbConnection(
+                          @"Provider= Microsoft.Jet.OLEDB.4.0;Data Source=" + fullPath +
+                          ";Extended Properties=\"Text;HDR=" + header + "\""))
+                using (OleDbCommand command = new OleDbCommand(sql, connection))
+                using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
+                {
+                    DataTable dataTable = new DataTable { Locale = CultureInfo.CurrentCulture };
+                    adapter.Fill(dataTable);
+                    return dataTable;
+                }
+# endif
+        }
+
+        private static void SerializeDataTable(DataTable dt, string path)
+        {
+            var binarySerialzer = new BinaryFormatter();
+            var xmlSerializer = new XmlSerializer(typeof(DataTable));
+
+            using(var fileStream = File.Create(path))
             {
-                DataTable dataTable = new DataTable { Locale = CultureInfo.CurrentCulture };
-                adapter.Fill(dataTable);
-                return dataTable;
+                binarySerialzer.Serialize(fileStream, dt);
+            }
+
+            using (var fileStream = File.Create(path + ".xml"))
+            {
+                xmlSerializer.Serialize(fileStream, dt);
             }
         }
     }
