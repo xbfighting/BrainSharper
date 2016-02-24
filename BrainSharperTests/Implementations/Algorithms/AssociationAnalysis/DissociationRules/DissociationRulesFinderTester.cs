@@ -114,10 +114,19 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Disso
 
             var expectedDissociativeRules = new List<IDissociativeRule<string>>
             {
-                new DissociativeRule<string>(new FrequentItemsSet<string>(new HashSet<string> { "C" }, 2, 0.4), new FrequentItemsSet<string>(new HashSet<string> { "D" }, 3, 0.6), 2, 0.4, 1, 0),
-                new DissociativeRule<string>(new FrequentItemsSet<string>(new HashSet<string> { "C" }, 2, 0.4), new FrequentItemsSet<string>(new HashSet<string> { "E" }, 2, 0.4), 2, 0.4, 1, 0),
-                new DissociativeRule<string>(new FrequentItemsSet<string>(new HashSet<string> { "D" }, 3, 0.6), new FrequentItemsSet<string>(new HashSet<string> { "C" }, 2, 0.4), 2, 0.4, 1, 0),
-                new DissociativeRule<string>(new FrequentItemsSet<string>(new HashSet<string> { "E" }, 2, 0.4), new FrequentItemsSet<string>(new HashSet<string> { "C" }, 2, 0.4), 2, 0.4, 1, 0)
+                new DissociativeRule<string>(
+                    new FrequentItemsSet<string>(new object[] { 2, 5 }, new[] { "C" }, 2, 0.4),
+                    new FrequentItemsSet<string>(new object[] { 1, 3, 4 }, new[] { "D" }, 3, 0.6), 2, 0.4, 1, 0),
+                new DissociativeRule<string>(
+                    new FrequentItemsSet<string>(new object[] { 2, 5 }, new[] { "C" }, 2, 0.4),
+                    new FrequentItemsSet<string>(new object[] { 3, 4 }, new[] { "E" }, 2, 0.4), 2, 0.4, 1, 0),
+                new DissociativeRule<string>(
+                    new FrequentItemsSet<string>(new object[] { 1, 3, 4 }, new[] { "D" }, 3, 0.6),
+                    new FrequentItemsSet<string>(new object[] { 2, 5 }, new[] { "C" }, 2, 0.4), 2, 0.4, 1, 0),
+                new DissociativeRule<string>(
+                    new FrequentItemsSet<string>(new object[] { 3, 4 }, new[] { "E" }, 2, 0.4),
+                    new FrequentItemsSet<string>(new object[] { 2, 5 }, new[] { "C" }, 2, 0.4), 2, 0.4, 1, 0)
+                    
             };
 
             // When
@@ -127,21 +136,6 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Disso
 
             // Then
            CollectionAssert.AreEquivalent(expectedDissociativeRules, actualDissociativeRules);
-        }
-
-        [Test]
-        public void FindNegativeBoundaryOnLargerDataset()
-        {
-            // Given
-            var data = TestDataBuilder.ReadCongressData().ToAssociativeTransactionsSet<string>();
-            var subject = new DissociationRulesFinder<IDataItem<string>>();
-            var miningParams = new DisociativeRulesMiningParams(0.4, maxRelativeJoin: 0.1, minimalConfidence: 1.0);
-
-            // When
-            var results = subject.FindFrequentItems(data, miningParams) as IFrequentItemsWithDissociativeSets<IDataItem<string>>;
-
-            // Then
-            Assert.IsNotNull(results.ValidDissociativeSets);
         }
     }
 }
