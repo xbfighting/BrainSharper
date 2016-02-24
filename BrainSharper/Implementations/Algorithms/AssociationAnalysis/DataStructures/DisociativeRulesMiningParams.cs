@@ -1,4 +1,5 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {

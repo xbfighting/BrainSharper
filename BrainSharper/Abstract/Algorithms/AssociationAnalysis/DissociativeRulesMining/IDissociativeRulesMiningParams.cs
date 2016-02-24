@@ -1,7 +1,4 @@
-﻿using System;
-using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
-
-namespace BrainSharper
+﻿namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining
 {
 	public interface IDissociativeRulesMiningParams : IAssociationMiningParams
 	{

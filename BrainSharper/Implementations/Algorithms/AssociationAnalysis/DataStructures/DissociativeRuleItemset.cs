@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {

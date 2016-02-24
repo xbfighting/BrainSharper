@@ -1,8 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-using System.Collections.Generic;
 
-namespace BrainSharper
+namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining
 {
 	public interface IDissociativeRuleCandidateItemset<TValue>
 	{

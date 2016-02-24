@@ -1,4 +1,5 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
@@ -10,7 +11,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             double support, 
             double relativeSupport, 
             double confidence, 
-            double maxRelativeJoin,
+            double @join,
             bool isAntecedentNegated = false, 
             bool isConsequentNegated = false)
             : base(
@@ -22,9 +23,30 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
                   isAntecedentNegated, 
                   isConsequentNegated)
         {
-            MaxRelativeJoin = maxRelativeJoin;
+            Join = @join;
         }
 
-        public double MaxRelativeJoin { get; }
+        public double Join { get; }
+
+        protected bool Equals(DissociativeRule<TValue> other)
+        {
+            return base.Equals(other) && Join.Equals(other.Join);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DissociativeRule<TValue>) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (base.GetHashCode()*397) ^ Join.GetHashCode();
+            }
+        }
     }
 }

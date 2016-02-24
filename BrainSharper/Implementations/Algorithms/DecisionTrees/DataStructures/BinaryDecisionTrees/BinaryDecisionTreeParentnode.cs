@@ -5,12 +5,6 @@ using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 
 namespace BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees
 {
-    #region
-
-    
-
-    #endregion
-
     public class BinaryDecisionTreeParentNode : DecisionTreeParentNode, IBinaryDecisionTreeParentNode
     {
         public BinaryDecisionTreeParentNode(

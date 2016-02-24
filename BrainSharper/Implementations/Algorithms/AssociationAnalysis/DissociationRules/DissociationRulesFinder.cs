@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 using BrainSharper.General.Utils;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Data;
@@ -12,7 +13,7 @@ using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DissociationRules
 {
-	public class DissociationRulesFinder<TValue> : AprioriAlgorithm<TValue>, IDissociativeRulesFinder<TValue>
+  public class DissociationRulesFinder<TValue> : AprioriAlgorithm<TValue>, IDissociativeRulesFinder<TValue>
     {
         private static string InvalidMiningParametersTypePassedToDissociationRulesFinderError = "Invalid mining parameters type passed to DissociationRulesFinder!";
 
@@ -27,37 +28,37 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
         {
         }
 
-		public IList<IDissociativeRule<TValue>> FindDissociativeRules (ITransactionsSet<TValue> transactionsSet, IDissociativeRulesMiningParams dissociativeRulesMiningParams)
-		{
-			var frequentItemsSetsWithDissocItems = FindFrequentItems (
-				transactionsSet,
-				dissociativeRulesMiningParams
-			) as IFrequentItemsWithDissociativeSets<TValue>;
+    public IList<IDissociativeRule<TValue>> FindDissociativeRules (ITransactionsSet<TValue> transactionsSet, IDissociativeRulesMiningParams dissociativeRulesMiningParams)
+    {
+      var frequentItemsSetsWithDissocItems = FindFrequentItems (
+        transactionsSet,
+        dissociativeRulesMiningParams
+      ) as IFrequentItemsWithDissociativeSets<TValue>;
 
-			IList<IDissociativeRuleCandidateItemset<TValue>> extendedCandidateDissociativeItems = ExtendCandidateDissociativeItems(
-				frequentItemsSetsWithDissocItems.FrequentItemsBySize, 
-				frequentItemsSetsWithDissocItems.ValidDissociativeSets,
-				frequentItemsSetsWithDissocItems.CandidateDissociativeSets,
-				transactionsSet);
-			var extendedValidDissociativeItemsets = ExtendValidDissociativeItems(
-				extendedCandidateDissociativeItems,
-				frequentItemsSetsWithDissocItems.ValidDissociativeSets,
-				frequentItemsSetsWithDissocItems.FrequentItemsBySize, 
-				transactionsSet, 
-				dissociativeRulesMiningParams);
-			var dissociativeRules = BuildDissociativeRules(extendedValidDissociativeItemsets, dissociativeRulesMiningParams);
-			return dissociativeRules;
-		}
+      IList<IDissociativeRuleCandidateItemset<TValue>> extendedCandidateDissociativeItems = ExtendCandidateDissociativeItems(
+        frequentItemsSetsWithDissocItems.FrequentItemsBySize, 
+        frequentItemsSetsWithDissocItems.ValidDissociativeSets,
+        frequentItemsSetsWithDissocItems.CandidateDissociativeSets,
+        transactionsSet);
+      var extendedValidDissociativeItemsets = ExtendValidDissociativeItems(
+        extendedCandidateDissociativeItems,
+        frequentItemsSetsWithDissocItems.ValidDissociativeSets,
+        frequentItemsSetsWithDissocItems.FrequentItemsBySize, 
+        transactionsSet, 
+        dissociativeRulesMiningParams);
+      var dissociativeRules = BuildDissociativeRules(extendedValidDissociativeItemsets, dissociativeRulesMiningParams);
+      return dissociativeRules;
+    }
 
         public override IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactionsSet,
             IFrequentItemsMiningParams frequentItemsMiningParams)
         {
-			if (!(frequentItemsMiningParams is IDissociativeRulesMiningParams))
+      if (!(frequentItemsMiningParams is IDissociativeRulesMiningParams))
             {
                 throw new ArgumentException(InvalidMiningParametersTypePassedToDissociationRulesFinderError);
             }
-			var dissocRulesMiningParams = frequentItemsMiningParams as IDissociativeRulesMiningParams;
+      var dissocRulesMiningParams = frequentItemsMiningParams as IDissociativeRulesMiningParams;
             var initialFrequentItems = GenerateInitialItemsSet(transactionsSet, frequentItemsMiningParams);
             var frequentItemsBySize = new Dictionary<int, IList<IFrequentItemsSet<TValue>>>
             {
@@ -66,8 +67,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
 
             var anyItemsGenerated = true;
             var itemsSetSize = 1;
-			var candidateDissociativeItems = new List<IDissociativeRuleCandidateItemset<TValue>>(); 
-			var validDissociativeItems = new List<IDissociativeRuleCandidateItemset<TValue>>();
+      var candidateDissociativeItems = new List<IDissociativeRuleCandidateItemset<TValue>>(); 
+      var validDissociativeItems = new List<IDissociativeRuleCandidateItemset<TValue>>();
             while (anyItemsGenerated)
             {
                 anyItemsGenerated = false;
@@ -88,21 +89,21 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
                     candidateDissociativeItems.AddRange(dissocItemsAndCandidates.Item2);
                 }
             }
-			return new FrequentItemsWithDissociativeSets<TValue> (frequentItemsBySize, validDissociativeItems, candidateDissociativeItems); 
+      return new FrequentItemsWithDissociativeSets<TValue> (frequentItemsBySize, validDissociativeItems, candidateDissociativeItems); 
         }
 
-		protected IList<IDissociativeRuleCandidateItemset<TValue>> ExtendCandidateDissociativeItems(
+    protected IList<IDissociativeRuleCandidateItemset<TValue>> ExtendCandidateDissociativeItems(
             IDictionary<int, IList<IFrequentItemsSet<TValue>>> frequentItemsBySize,
-			IList<IDissociativeRuleCandidateItemset<TValue>> dissociativeItemsets,
-			IList<IDissociativeRuleCandidateItemset<TValue>> candidateDissociativeItemsets,
+      IList<IDissociativeRuleCandidateItemset<TValue>> dissociativeItemsets,
+      IList<IDissociativeRuleCandidateItemset<TValue>> candidateDissociativeItemsets,
             ITransactionsSet<TValue> transactionsSet)
         {
             var anyNewItemsFound = true;
-			var newItemSets = new List<IDissociativeRuleCandidateItemset<TValue>>();
+      var newItemSets = new List<IDissociativeRuleCandidateItemset<TValue>>();
             var latestItems = candidateDissociativeItemsets;
             while (anyNewItemsFound)
             {
-				var newItems = new List<IDissociativeRuleCandidateItemset<TValue>>();
+        var newItems = new List<IDissociativeRuleCandidateItemset<TValue>>();
                 foreach (var candidateItemsSet in latestItems)
                 {
                     foreach (var frequentItemSizeOne in frequentItemsBySize[1])
@@ -149,22 +150,22 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
             return dissociativeItemsets.Union(newItemSets).ToList();
         }
 
-		protected IList<IDissociativeRuleCandidateItemset<TValue>> ExtendValidDissociativeItems(
-			IList<IDissociativeRuleCandidateItemset<TValue>> extendedCandidateItemSets,
-			IList<IDissociativeRuleCandidateItemset<TValue>> validDissociativeItems,
+    protected IList<IDissociativeRuleCandidateItemset<TValue>> ExtendValidDissociativeItems(
+      IList<IDissociativeRuleCandidateItemset<TValue>> extendedCandidateItemSets,
+      IList<IDissociativeRuleCandidateItemset<TValue>> validDissociativeItems,
             IDictionary<int, IList<IFrequentItemsSet<TValue>>> frequentItemsBySize,
             ITransactionsSet<TValue> transactionsSet,
-			IDissociativeRulesMiningParams miningParams)
+      IDissociativeRulesMiningParams miningParams)
         {
             var allValidDissociativeItems =
                 validDissociativeItems.Union(
                     extendedCandidateItemSets.Where(set => set.RelativeSupport <= miningParams.MaxRelativeJoin)).ToList();
-			var supersets = new List<IDissociativeRuleCandidateItemset<TValue>>();
+      var supersets = new List<IDissociativeRuleCandidateItemset<TValue>>();
             foreach (var validDissociationItemsSet in allValidDissociativeItems)
             {
                 var itemSetSize = validDissociationItemsSet.AllItemsSet.Count;
                 var maxFrequentItemsSize = frequentItemsBySize.Keys.Max();
-				var supersetsOfThisSet = new List<IDissociativeRuleCandidateItemset<TValue>>();
+        var supersetsOfThisSet = new List<IDissociativeRuleCandidateItemset<TValue>>();
                 if (maxFrequentItemsSize > itemSetSize)
                 {
                     for (int size = itemSetSize + 1; size < maxFrequentItemsSize; size++)
@@ -186,8 +187,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
                             if (isFirstSubsetFrequent.Item1 && isSecondSubsetFrequent.Item1)
                             {
                                 supersetsOfThisSet.Add(new DissociativeRuleCandidateItemSet<TValue>(
-									isFirstSubsetFrequent.Item2, 
-									isSecondSubsetFrequent.Item2));
+                  isFirstSubsetFrequent.Item2, 
+                  isSecondSubsetFrequent.Item2));
                             }
                         }
                     }
@@ -200,8 +201,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
         }
 
         protected IList<IDissociativeRule<TValue>> BuildDissociativeRules(
-			IList<IDissociativeRuleCandidateItemset<TValue>> dissociativeItemsets,
-			IDissociativeRulesMiningParams miningParams)
+      IList<IDissociativeRuleCandidateItemset<TValue>> dissociativeItemsets,
+      IDissociativeRulesMiningParams miningParams)
         {
             var dissociationRules = new List<IDissociativeRule<TValue>>();
             foreach (var dissociativeItemsSet in dissociativeItemsets)
@@ -250,7 +251,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
         protected Tuple<IList<DissociativeRuleCandidateItemSet<TValue>>, IList<DissociativeRuleCandidateItemSet<TValue>>> BuildTwoItemsets(
             IDictionary<int, IList<IFrequentItemsSet<TValue>>> frequentItemsSoFar,
             IList<IFrequentItemsSet<TValue>> itemsNotMeetingCriteria,
-			IDissociativeRulesMiningParams miningParams)
+      IDissociativeRulesMiningParams miningParams)
         {
             var correctDissociationItemsets = new List<DissociativeRuleCandidateItemSet<TValue>>();
             var candidateDissociationItemsets = new List<DissociativeRuleCandidateItemSet<TValue>>();
@@ -320,9 +321,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
             return new Tuple<bool, IFrequentItemsSet<TValue>>(frequentSubset != null, frequentSubset);
         }
 
-		protected static Tuple<double, double> CalculateDissociativeConfidence(IDissociativeRuleCandidateItemset<TValue> itemsSet)
-        {
-            if (itemsSet.RelativeSupport.HasValue)
+    protected static Tuple<double, double> CalculateDissociativeConfidence(IDissociativeRuleCandidateItemset<TValue> itemsSet)
+    {
+        if (itemsSet.RelativeSupport.HasValue)
             {
                 var firstNotImpliesSecondConfidence = 1.0 -
                                                       (itemsSet.RelativeSupport.Value/
@@ -332,16 +333,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
                                                        itemsSet.SecondSubset.RelativeSupport);
                 return new Tuple<double, double>(firstNotImpliesSecondConfidence, secondNotImpliesFirstConfidence);
             }
-            else
-            {
-                return new Tuple<double, double>(0.0, 0.0);
-            }
-            
-        }
+        return new Tuple<double, double>(0.0, 0.0);
+    }
 
-        protected void CalculateSupportOfDissociationRuleCandidateItemSets(
+      protected void CalculateSupportOfDissociationRuleCandidateItemSets(
             ITransactionsSet<TValue> transactionsSet,
-			IList<IDissociativeRuleCandidateItemset<TValue>> candidateItemSets)
+      IList<IDissociativeRuleCandidateItemset<TValue>> candidateItemSets)
         {
             Parallel.ForEach(candidateItemSets, itm =>
             {

@@ -51,9 +51,7 @@
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationMiningParams.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\AssociativeClassification\IClassificationAssociationRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IAssociationMiningItem.cs" />
-    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IDissociativeRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsSearchResult.cs" />
-    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsWithNegativeboundarySearchResult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransaction.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\ITransactionsSet.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\IAssociationMiningParams.cs" />
@@ -152,7 +150,6 @@
     <Compile Include="General\Utils\TypeUtils.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithm.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AssociationMiningParamsInterpreter.cs" />
-    <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\DissociationRulesFinder.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\FrequentItemBuildingResultDto.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationModel.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeClassificationPredictor.cs" />
@@ -271,12 +268,9 @@
     <Compile Include="Implementations\MathUtils\Normalizers\MinMaxNormalizer.cs" />
     <Compile Include="Implementations\MathUtils\Normalizers\StandardDeviationNormalizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Implementations\Algorithms\DecisionTrees\DataStructures\BinaryDecisionTrees\BinaryDecisionTreeParentnode.cs" />
-    <Compile Include="Implementations\Data\FilteringREsult.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\IDissociativeRulesFinder.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\IDissociativeRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\IDissociativeRulesMiningParams.cs" />
-    <Compile Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\IAssociationRule.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DataStructures\IFrequentItemsWithDissociativeSets.cs" />
     <Compile Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\IDissociativeRuleCandidateItemset.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DissociationRules\DissociationRulesFinder.cs" />
@@ -293,8 +287,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="Abstract\Algorithms\AssociationAnalysis\DissociativeRulesMining\" />
-    <Folder Include="Implementations\Algorithms\AssociationAnalysis\DissociationRules\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

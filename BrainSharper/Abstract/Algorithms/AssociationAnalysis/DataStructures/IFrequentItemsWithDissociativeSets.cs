@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
 namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
 {

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
+
+using NUnit.Framework;
+using BrainSharper.General.Utils;
 
 namespace BrainSharperTests.General.CollectionUtils
 {
-    using System.Collections.Generic;
-
-    using NUnit.Framework;
-    using BrainSharper.General.Utils;
-
     [TestFixture]
     public class CombinationsTest
     {

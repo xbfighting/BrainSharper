@@ -1,14 +1,9 @@
-﻿using System;
-using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
-namespace BrainSharper
+namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining
 {
-	public interface IDissociativeRule<TValue> : IAssociationRule<TValue>
-	{
-		IFrequentItemsSet<TValue> Antecedent { get; }
-		IFrequentItemsSet<TValue> Consequent { get; }
-		bool IsAntecedentNegated { get; }
-		bool IsConsequentNegated { get; }
-	}
+    public interface IDissociativeRule<TValue> : IAssociationRule<TValue>
+    {
+        double Join { get; }
+    }
 }
-
