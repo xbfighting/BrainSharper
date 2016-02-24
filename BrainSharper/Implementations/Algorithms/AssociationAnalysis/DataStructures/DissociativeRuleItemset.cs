@@ -4,7 +4,7 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    public class DissociativeRuleCandidateItemSet<TValue>
+	public class DissociativeRuleCandidateItemSet<TValue> : IDissociativeRuleCandidateItemset<TValue>
     {
         public DissociativeRuleCandidateItemSet(
             IFrequentItemsSet<TValue> firstSubset, 
@@ -27,5 +27,20 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         public bool IsSupportSet => Support.HasValue;
         public bool IsRelativeSet => RelativeSupport.HasValue;
 
+		public override bool Equals(object other)
+		{
+			if(!(other is IDissociativeRuleCandidateItemset<TValue>))
+			{
+				return false;
+			}
+
+			var otherDissocItem = other as IDissociativeRuleCandidateItemset<TValue>;
+			if(!Equals(this.Support, otherDissocItem.Support) || !Equals(this.RelativeSupport, otherDissocItem.RelativeSupport))
+			{
+				return false;
+			}
+			return this.AllItemsSet.SetEquals(otherDissocItem.AllItemsSet);
+		}
+		
     }
 }

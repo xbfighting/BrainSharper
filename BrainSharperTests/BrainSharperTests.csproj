@@ -184,4 +184,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DissociationRules\DissociationRulesFinderTester.cs" />
 </Project>

@@ -2,7 +2,7 @@
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    public class AssociationRule<TValue> : IAssociationRule<TValue>
+	public class AssociationRule<TValue> : IDissociativeRule<TValue>
     {
         public AssociationRule(
             IFrequentItemsSet<TValue> antecedent, 

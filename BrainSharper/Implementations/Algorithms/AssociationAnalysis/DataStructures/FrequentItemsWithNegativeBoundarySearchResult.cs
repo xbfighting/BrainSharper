@@ -4,27 +4,24 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
-    public class FrequentItemsWithNegativeBoundarySearchResult<TValue> : FrequentItemsSearchResult<TValue>, IFrequentItemsWithNegativeboundarySearchResult<TValue>
-    {
-        private readonly IDictionary<int, IList<IFrequentItemsSet<TValue>>> _negativeBoundaryItemsBySize;
+	public class FrequentItemsWithDissociativeSets<TValue> : FrequentItemsSearchResult<TValue>, IFrequentItemsWithDissociativeSets<TValue>
+	{
+		private readonly IList<IDissociativeRuleCandidateItemset<TValue>> _validDissociativeSets;
+		private readonly IList<IDissociativeRuleCandidateItemset<TValue>> _candidateDissociativeSets;
 
-        public FrequentItemsWithNegativeBoundarySearchResult(IDictionary<int, IList<IFrequentItemsSet<TValue>>> frequentItemsSetsBySize, IDictionary<int, IList<IFrequentItemsSet<TValue>>> negativeBoundaryItems = null) : base(frequentItemsSetsBySize)
-        {
-            _negativeBoundaryItemsBySize = negativeBoundaryItems ??
-                                           new Dictionary<int, IList<IFrequentItemsSet<TValue>>>();
-            ContainsNegativeBoundary = negativeBoundaryItems != null;
-        }
 
-        public IList<IFrequentItemsSet<TValue>> GetNegativeBoundaryItemsBySize(int size)
-        {
-            return _negativeBoundaryItemsBySize[size];
-        }
+		public FrequentItemsWithDissociativeSets (
+			IDictionary<int, IList<IFrequentItemsSet<TValue>>> frequentItemsSetsBySize, 
+			IList<IDissociativeRuleCandidateItemset<TValue>> validDissociativeSets,
+			IList<IDissociativeRuleCandidateItemset<TValue>> candidateDissociativeSets
+		) : base (frequentItemsSetsBySize)
+		{
+			_validDissociativeSets = validDissociativeSets;
+			_candidateDissociativeSets = candidateDissociativeSets;
+		}
 
-        public IList<int> NegativeBoundaryItemsSizes => _negativeBoundaryItemsBySize.Keys.ToList();
 
-        public bool ContainsNegativeBoundary { get; }
-
-        public IList<IFrequentItemsSet<TValue>> NegativeBoundaryItems
-            => _negativeBoundaryItemsBySize.Values.SelectMany(itm => itm).ToList();
-    }
+		public IList<IDissociativeRuleCandidateItemset<TValue>> ValidDissociativeSets => _validDissociativeSets;
+		public IList<IDissociativeRuleCandidateItemset<TValue>> CandidateDissociativeSets => _candidateDissociativeSets;
+	}
 }

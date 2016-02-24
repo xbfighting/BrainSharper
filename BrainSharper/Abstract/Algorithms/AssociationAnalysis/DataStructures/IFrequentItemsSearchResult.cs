@@ -8,5 +8,6 @@ namespace BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures
         IList<IFrequentItemsSet<TValue>> FrequentItems { get; }
         IList<int> FrequentItemsSizes { get; }
         IList<IFrequentItemsSet<TValue>> this[int size] { get; }
+		IDictionary<int, IList<IFrequentItemsSet<TValue>>> FrequentItemsBySize { get; }
     }
 }
