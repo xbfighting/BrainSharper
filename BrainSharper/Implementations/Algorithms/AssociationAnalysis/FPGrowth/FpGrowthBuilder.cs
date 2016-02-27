@@ -63,16 +63,20 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
 
         protected virtual FpGrowthNode<TValue> BuildFpTree(ITransactionsSet<TValue> transactions)
         {
+            var headersDictionary = new Dictionary<TValue, IList<FpGrowthNode<TValue>>>();
             var tree = new FpGrowthNode<TValue>();
             foreach (var transaction in transactions.TransactionsList)
             {
                 var transactionItems = transaction.TransactionItems;
-                AddToTree(tree, transactionItems.ToList());
+                AddToTree(tree, transactionItems.ToList(), headersDictionary);
             }
             return tree;
         }
 
-        protected virtual void AddToTree(FpGrowthNode<TValue> treeNode, IList<TValue> items)
+        protected virtual void AddToTree(
+            FpGrowthNode<TValue> treeNode, 
+            IList<TValue> items,
+            IDictionary<TValue, IList<FpGrowthNode<TValue>>> headers)
         {
             if (!items.Any())
             {
@@ -105,7 +109,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                     nodeToAddTo = BuildNewChild(treeNode, head);
                 }
             }
-            AddToTree(nodeToAddTo, tail);
+            AddNodeToHeadersTable(nodeToAddTo, headers);
+            AddToTree(nodeToAddTo, tail, headers);
         }
 
         private static FpGrowthNode<TValue> BuildNewChild(
@@ -115,6 +120,21 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             var newChild = new FpGrowthNode<TValue>(head, true, 1);
             treeNode.AddChild(newChild);
             return newChild;
+        }
+
+        private static void AddNodeToHeadersTable(
+            FpGrowthNode<TValue> treeNode,
+            IDictionary<TValue, IList<FpGrowthNode<TValue>>> headers
+            )
+        {
+            if (headers.ContainsKey(treeNode.Value))
+            {
+                headers[treeNode.Value].Add(treeNode);
+            }
+            else
+            {
+                headers.Add(treeNode.Value, new List<FpGrowthNode<TValue>> { treeNode });
+            }
         }
     }
 }
