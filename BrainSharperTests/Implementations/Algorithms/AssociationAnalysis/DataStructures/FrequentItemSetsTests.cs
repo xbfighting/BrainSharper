@@ -1,4 +1,6 @@
-﻿namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.DataStructures
+﻿using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
+
+namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.DataStructures
 {
     using System;
     using System.Collections.Generic;

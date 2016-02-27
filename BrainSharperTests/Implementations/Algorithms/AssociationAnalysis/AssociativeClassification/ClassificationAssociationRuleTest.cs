@@ -1,6 +1,7 @@
 ﻿using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Data;
 using NUnit.Framework;
 

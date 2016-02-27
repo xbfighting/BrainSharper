@@ -1,7 +1,8 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.DissociativeRules
 {
     public class DissociativeRule<TValue> : AssociationRule<TValue>, IDissociativeRule<TValue>
     {

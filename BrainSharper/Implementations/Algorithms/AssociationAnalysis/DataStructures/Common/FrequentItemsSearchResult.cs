@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-using System.Collections.ObjectModel;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common
 {
 	public class FrequentItemsSearchResult<TValue> : IFrequentItemsSearchResult<TValue>
     {

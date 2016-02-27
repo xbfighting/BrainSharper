@@ -2,7 +2,7 @@
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common
 {
     public class TransactionsSet<TValue> : ITransactionsSet<TValue>
     {

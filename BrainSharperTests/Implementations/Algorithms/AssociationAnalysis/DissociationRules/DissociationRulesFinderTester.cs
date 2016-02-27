@@ -13,6 +13,8 @@ using NUnit.Framework;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DissociationRules;
 using BrainSharper;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.DissociativeRules;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.DissociationRules
 {

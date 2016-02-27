@@ -1,6 +1,6 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common
 {
 	public class AssociationRule<TValue> : IAssociationRule<TValue>
     {

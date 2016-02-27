@@ -3,7 +3,7 @@ using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.DissociativeRules
 {
 	public class DissociativeRuleCandidateItemSet<TValue> : IDissociativeRuleCandidateItemset<TValue>
     {

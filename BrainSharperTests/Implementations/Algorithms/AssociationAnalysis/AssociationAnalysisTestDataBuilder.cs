@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
 {

@@ -10,6 +10,8 @@ using BrainSharper.General.Utils;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.DissociativeRules;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DissociationRules
 {

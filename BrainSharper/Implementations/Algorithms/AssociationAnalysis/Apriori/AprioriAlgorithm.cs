@@ -8,6 +8,7 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.General.Utils;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
 {

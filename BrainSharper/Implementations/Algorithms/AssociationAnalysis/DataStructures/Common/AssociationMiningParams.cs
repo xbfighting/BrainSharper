@@ -1,6 +1,6 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common
 {
     public class AssociationMiningParams : IAssociationMiningParams
     {

@@ -6,6 +6,7 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Data;
 using BrainSharperTests.TestUtils;
 using MathNet.Numerics.Statistics;

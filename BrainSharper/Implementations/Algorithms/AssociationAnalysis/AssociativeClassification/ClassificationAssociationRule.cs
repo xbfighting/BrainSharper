@@ -4,6 +4,7 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassifica
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
 {

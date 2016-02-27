@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common
 {
 	public class FrequentItemsWithDissociativeSets<TValue> : FrequentItemsSearchResult<TValue>, IFrequentItemsWithDissociativeSets<TValue>
 	{
