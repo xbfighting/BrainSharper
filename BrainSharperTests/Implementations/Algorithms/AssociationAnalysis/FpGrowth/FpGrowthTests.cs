@@ -36,3 +36,21 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
 
     }
 }
+
+//TODO: solve problems with building tree structure. Sometimes it behaves strange. The follownig result is NOT GIVING CORRECT RESULTS
+//: 0
+//  |  Feature: Product Value: nuts: 4
+//   |   Feature: Product Value: coca-cola: 1
+//   |   Feature: Product Value: beer: 3
+//    |    Feature: Product Value: diapers: 2
+//    |    Feature: Product Value: coca-cola: 1
+//  |  Feature: Product Value: coca-cola: 1
+
+// Some other times the following model gives positive results:
+//: 0
+//  |  Feature: Product Value: nuts: 4
+//   |   Feature: Product Value: coca-cola: 2
+//    |    Feature: Product Value: beer: 1
+//   |   Feature: Product Value: beer: 2
+//    |    Feature: Product Value: diapers: 2
+//  |  Feature: Product Value: coca-cola: 1
