@@ -168,6 +168,7 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DissociativeRules\DissociativeRule.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DissociativeRules\DissociativeRuleItemset.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FPGrowth\FpGrowthHeaderTable.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FPGrowth\FpGrowthModel.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FPGrowth\FpGrowthNode.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\Common\FrequentItemsMiningParams.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\Common\AssociationRule.cs" />

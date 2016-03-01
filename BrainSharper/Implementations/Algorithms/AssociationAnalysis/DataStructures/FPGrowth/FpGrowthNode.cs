@@ -11,7 +11,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         public FpGrowthNode(
             TValue value,
             bool isLeaf = false,
-            int count = 0,
+            double count = 0.0,
             IList<int> transactionIds = null, //TODO: AAAA Fpgrowth, think if this is needed in constructor
             IList<FpGrowthNode<TValue>> children = null)
         {
@@ -27,7 +27,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             : this(default(TValue))
         {
             IsRoot = true;
-        } 
+        }
 
         public bool IsRoot { get; }
 
@@ -39,12 +39,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
 
         public bool HasChildren => Children != null && Children.Any();
         public bool HasBranches => HasChildren && Children.Count > 1;
-        public IList<FpGrowthNode<TValue>> Children { get; }
+        public IList<FpGrowthNode<TValue>> Children { get; set; }
 
         public IList<int> TransactionIds { get; }
-        public int Count { get; private set; }
+        public double Count { get; set; }
 
-        public void IncrementCountBy(int count)
+        public void IncrementCountBy(double count)
         {
             Count += count;
         }
@@ -71,7 +71,19 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
                 sb.Append($"\n {parentIndent} | {child.PrintStructure(indent + 1)}");
             }
             return sb.ToString();
+        }
 
+        public FpGrowthNode<TValue> CopyNode()
+        {
+            return new FpGrowthNode<TValue>(
+                Value,
+                IsLeaf,
+                Count,
+                TransactionIds,
+                Children)
+            {
+                Parent = Parent
+            };
         }
     }
 }

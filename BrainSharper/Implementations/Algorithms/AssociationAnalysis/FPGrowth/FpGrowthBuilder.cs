@@ -18,7 +18,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
         {
             var initialItems = GenerateInitialFrequentItems(transactions, frequentItemsMiningParams);
             var transactonsWithOnlyFrequentElements = RemapTrasactionsToContainOnlyFrequentItems(transactions, initialItems, frequentItemsMiningParams);
-            var fpGrowthTree = BuildFpTree(transactonsWithOnlyFrequentElements);
+            var fpGrowthModel = BuildFpModel(transactonsWithOnlyFrequentElements);
+            PerformFrequentItemsMining(initialItems.Values.ToList(), fpGrowthModel, frequentItemsMiningParams, transactions.TransactionsCount);
             throw new NotImplementedException();
         }
 
@@ -39,8 +40,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             return elementsWithSupport
                 .Where(kvp => (kvp.Value.Count / (double)transactions.TransactionsCount) >= frequentItemsMiningParams.MinimalRelativeSupport)
                 .ToDictionary(
-                    kvp => kvp.Key, 
-                    kvp => new FrequentItemsSet<TValue>(kvp.Value, new [] { kvp.Key }, kvp.Value.Count, kvp.Value.Count/(double)transactions.TransactionsCount) as IFrequentItemsSet<TValue>);
+                    kvp => kvp.Key,
+                    kvp => new FrequentItemsSet<TValue>(kvp.Value, new[] { kvp.Key }, kvp.Value.Count, kvp.Value.Count / (double)transactions.TransactionsCount) as IFrequentItemsSet<TValue>);
         }
 
         protected virtual ITransactionsSet<TValue> RemapTrasactionsToContainOnlyFrequentItems(
@@ -61,44 +62,45 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             return new TransactionsSet<TValue>(remappedTransactions);
         }
 
-        protected virtual FpGrowthNode<TValue> BuildFpTree(ITransactionsSet<TValue> transactions)
+        protected virtual FpGrowthModel<TValue> BuildFpModel(ITransactionsSet<TValue> transactions)
         {
             var headersDictionary = new Dictionary<TValue, IList<FpGrowthNode<TValue>>>();
             var tree = new FpGrowthNode<TValue>();
             foreach (var transaction in transactions.TransactionsList)
             {
                 var transactionItems = transaction.TransactionItems;
-                AddToTree(tree, transactionItems.ToList(), headersDictionary);
+                AddToTree(tree, transactionItems.Select(itm => new Tuple<TValue, double>(itm, 1)).ToList(), headersDictionary);
             }
-            return tree;
+            return new FpGrowthModel<TValue>(new FpGrowthHeaderTable<TValue>(headersDictionary), tree);
         }
 
         protected virtual void AddToTree(
-            FpGrowthNode<TValue> treeNode, 
-            IList<TValue> items,
+            FpGrowthNode<TValue> treeNode,
+            IList<Tuple<TValue, double>> itemsWithCounts,
             IDictionary<TValue, IList<FpGrowthNode<TValue>>> headers)
         {
-            if (!items.Any())
+            if (!itemsWithCounts.Any())
             {
                 return;
             }
 
-            TValue head = items.First();
+            Tuple<TValue, double> headWithCount = itemsWithCounts.First();
             FpGrowthNode<TValue> nodeToAddTo = treeNode;
-            var tail = items.Skip(1).ToList();
+            var tail = itemsWithCounts.Skip(1).ToList();
 
             if (!treeNode.HasChildren)
             {
-                nodeToAddTo = BuildNewChild(treeNode, head);
+                nodeToAddTo = BuildNewChild(treeNode, headWithCount);
+                AddNodeToHeadersTable(nodeToAddTo, headers);
             }
             else
             {
                 var anyChildMatched = false;
                 foreach (var child in treeNode.Children)
                 {
-                    if (child.Value.Equals(head))
+                    if (child.Value.Equals(headWithCount.Item1))
                     {
-                        child.IncrementCountBy(1);
+                        child.IncrementCountBy(headWithCount.Item2);
                         nodeToAddTo = child;
                         anyChildMatched = true;
                         break;
@@ -106,18 +108,95 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 }
                 if (!anyChildMatched)
                 {
-                    nodeToAddTo = BuildNewChild(treeNode, head);
+                    nodeToAddTo = BuildNewChild(treeNode, headWithCount);
+                    AddNodeToHeadersTable(nodeToAddTo, headers);
                 }
             }
-            AddNodeToHeadersTable(nodeToAddTo, headers);
+            
             AddToTree(nodeToAddTo, tail, headers);
         }
 
-        private static FpGrowthNode<TValue> BuildNewChild(
-            FpGrowthNode<TValue> treeNode, 
-            TValue head)
+        protected virtual IEnumerable<IFrequentItemsSet<TValue>> PerformFrequentItemsMining(
+            IList<IFrequentItemsSet<TValue>> initialItemsSet,
+            FpGrowthModel<TValue> model, 
+            IFrequentItemsMiningParams miningParams, 
+            int totalItemsCount)
         {
-            var newChild = new FpGrowthNode<TValue>(head, true, 1);
+            var allItems = new List<IFrequentItemsSet<TValue>>(initialItemsSet);
+            foreach(var initialItem in initialItemsSet)
+            {
+                var itemValue = initialItem.OrderedItems.First();
+                allItems.AddRange(ProcessPrefixTrees(itemValue, model, initialItem, miningParams, totalItemsCount));
+            }
+            return allItems;
+        }
+
+        protected virtual IEnumerable<IFrequentItemsSet<TValue>> ProcessPrefixTrees(
+            TValue valueToStartFrom,
+            FpGrowthModel<TValue> currentModel, 
+            IFrequentItemsSet<TValue> prefix,
+            IFrequentItemsMiningParams miningParams,
+            int totalTransactionsCount)
+        {
+            var paths = new List<IList<Tuple<TValue, double>>>();
+            var minTransactionsCount = (int)totalTransactionsCount*miningParams.MinimalRelativeSupport;
+            //TODO: add lookup dictionary with items counts
+            foreach (var currentNode in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
+            {
+                if (currentNode.Parent == null)
+                {
+                    continue;
+                }
+                var processedNode = currentNode.Parent;
+                var pathSoFar = new List<Tuple<TValue, double>>();
+                while (processedNode.HasParent && !processedNode.IsRoot)
+                {
+                    var copyOfNode = processedNode.CopyNode();
+                    if (copyOfNode.Count > currentNode.Count)
+                    {
+                        copyOfNode.Count = currentNode.Count;
+                    }
+                    pathSoFar.Add(new Tuple<TValue, double>(copyOfNode.Value, copyOfNode.Count));
+                    if (copyOfNode.Parent == null)
+                    {
+                        break;
+                    }
+                    processedNode = copyOfNode.Parent;
+                }
+                if(pathSoFar.Any()) paths.Add(pathSoFar);
+            }
+            var headerTable = new FpGrowthHeaderTable<TValue>(new Dictionary<TValue, IList<FpGrowthNode<TValue>>>());
+            var conditionalTree = paths.Select(path => path.Where(el => el.Item2 >= minTransactionsCount).ToList()).Aggregate(new FpGrowthNode<TValue>(),
+                (tree, list) => {
+                    AddToTree(tree, list, headerTable.ValuesToNodesMapping);
+                    return tree;
+                });
+            var newModel = new FpGrowthModel<TValue>(headerTable, conditionalTree);
+            var nodesQueueToProcess = new Queue<FpGrowthNode<TValue>>(new[] { conditionalTree });
+            while(nodesQueueToProcess.Any())
+            {
+                var treeNode = nodesQueueToProcess.Dequeue();
+                nodesQueueToProcess = new Queue<FpGrowthNode<TValue>>(nodesQueueToProcess.Concat(treeNode.Children));
+                if(treeNode.IsRoot) continue;
+                var frequentItems = new FrequentItemsSet<TValue>(
+                    treeNode.Count,
+                    treeNode.Count / totalTransactionsCount, 
+                    prefix.OrderedItems.Concat(new [] { treeNode.Value }).ToArray());
+                yield return frequentItems;
+                var subTreesProcessingResults = ProcessPrefixTrees(treeNode.Value, newModel, frequentItems, miningParams, totalTransactionsCount);
+                foreach (var result in subTreesProcessingResults)
+                {
+                    yield return result;
+                }
+                if (treeNode.IsLeaf) break;
+            }
+        }
+
+        private static FpGrowthNode<TValue> BuildNewChild(
+            FpGrowthNode<TValue> treeNode,
+            Tuple<TValue, double> headWithCount)
+        {
+            var newChild = new FpGrowthNode<TValue>(headWithCount.Item1, true, headWithCount.Item2);
             treeNode.AddChild(newChild);
             return newChild;
         }
