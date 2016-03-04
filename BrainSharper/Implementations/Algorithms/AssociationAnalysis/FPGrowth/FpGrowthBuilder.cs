@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
@@ -19,8 +20,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             var initialItems = GenerateInitialFrequentItems(transactions, frequentItemsMiningParams);
             var transactonsWithOnlyFrequentElements = RemapTrasactionsToContainOnlyFrequentItems(transactions, initialItems, frequentItemsMiningParams);
             var fpGrowthModel = BuildFpModel(transactonsWithOnlyFrequentElements);
-            PerformFrequentItemsMining(initialItems.Values.ToList(), fpGrowthModel, frequentItemsMiningParams, transactions.TransactionsCount);
-            throw new NotImplementedException();
+            var frequentItems = PerformFrequentItemsMining(initialItems.Values.ToList(), fpGrowthModel, frequentItemsMiningParams, transactions.TransactionsCount);
+            var itemsGroupedBySize = frequentItems
+                .AsParallel()
+                .GroupBy(itm => itm.ItemsSet.Count, itm => itm)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.ToList() as IList<IFrequentItemsSet<TValue>>);
+            return new FrequentItemsSearchResult<TValue>(itemsGroupedBySize);
         }
 
         IDictionary<TValue, IFrequentItemsSet<TValue>> GenerateInitialFrequentItems(ITransactionsSet<TValue> transactions, IFrequentItemsMiningParams frequentItemsMiningParams)
@@ -56,10 +61,13 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 var frequentElementsOnly = transaction.TransactionItems
                     .Where(frequentItems.ContainsKey)
                     .OrderByDescending(itm => frequentItems[itm].RelativeSupport)
+                    .ThenByDescending(itm => itm)
                     .ToList();
                 remappedTransactions[tranIdx] = new Transaction<TValue>(transaction.TransactionKey, frequentElementsOnly);
             });
-            return new TransactionsSet<TValue>(remappedTransactions);
+            var noElemes = remappedTransactions.Where(tran => tran.TransactionItems.Any());
+            Debug.Assert(noElemes.Any());
+            return new TransactionsSet<TValue>(remappedTransactions.Where(tran => tran.TransactionItems.Any()));
         }
 
         protected virtual FpGrowthModel<TValue> BuildFpModel(ITransactionsSet<TValue> transactions)
@@ -139,6 +147,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             int totalTransactionsCount)
         {
             var paths = new List<IList<Tuple<TValue, double>>>();
+            var valuesCounts = new Dictionary<TValue, int>();
             var minTransactionsCount = (int)totalTransactionsCount*miningParams.MinimalRelativeSupport;
             //TODO: add lookup dictionary with items counts
             foreach (var currentNode in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
@@ -157,6 +166,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                         copyOfNode.Count = currentNode.Count;
                     }
                     pathSoFar.Add(new Tuple<TValue, double>(copyOfNode.Value, copyOfNode.Count));
+                    if (!valuesCounts.ContainsKey(copyOfNode.Value))
+                    {
+                        valuesCounts.Add(copyOfNode.Value, (int)copyOfNode.Count);
+                    }
+                    else
+                    {
+                        valuesCounts[copyOfNode.Value] += (int)copyOfNode.Count;
+                    }
                     if (copyOfNode.Parent == null)
                     {
                         break;
@@ -166,7 +183,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 if(pathSoFar.Any()) paths.Add(pathSoFar);
             }
             var headerTable = new FpGrowthHeaderTable<TValue>(new Dictionary<TValue, IList<FpGrowthNode<TValue>>>());
-            var conditionalTree = paths.Select(path => path.Where(el => el.Item2 >= minTransactionsCount).ToList()).Aggregate(new FpGrowthNode<TValue>(),
+            var conditionalTree = paths.Select(path => path.Where(el => valuesCounts[el.Item1] >= minTransactionsCount).ToList()).Aggregate(new FpGrowthNode<TValue>(),
                 (tree, list) => {
                     AddToTree(tree, list, headerTable.ValuesToNodesMapping);
                     return tree;
