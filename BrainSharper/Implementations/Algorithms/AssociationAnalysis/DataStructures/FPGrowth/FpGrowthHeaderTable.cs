@@ -4,9 +4,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
 {
     public class FpGrowthHeaderTable<TValue>
     {
-        public FpGrowthHeaderTable(IDictionary<TValue, IList<FpGrowthNode<TValue>>> valuesToNodesMapping)
+        public FpGrowthHeaderTable(IDictionary<TValue, IList<FpGrowthNode<TValue>>> valuesToNodesMapping = null)
         {
-            ValuesToNodesMapping = valuesToNodesMapping;
+            ValuesToNodesMapping = valuesToNodesMapping ?? new Dictionary<TValue, IList<FpGrowthNode<TValue>>>();
         }
 
         public IDictionary<TValue, IList<FpGrowthNode<TValue>>> ValuesToNodesMapping { get; }

@@ -57,21 +57,6 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
         }
 
         [Test]
-        public void TestFpGrowthOnAbstractDataSet()
-        {
-            // Given
-            var data = AbstractTransactionsSet2;
-            var subject = new FpGrowthBuilder<string>();
-            var miningParams = new FrequentItemsMiningParams(0.3333, 0.8);
-
-            // When
-            var result = subject.FindFrequentItems(data, miningParams);
-
-            // Then
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
         public void Test_BuildingFpTree_LargeDataset_PerformanceMeasures()
         {
             // Given

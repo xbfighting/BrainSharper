@@ -14,6 +14,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         {
         }
 
+        public FrequentItemsSet(
+            IEnumerable<TValue> itemsSet,
+            double support = 0.0,
+            double relativeSupport = 0.0)
+            : this(new object[0], itemsSet, support, relativeSupport)
+        {
+        }
+
         public FrequentItemsSet(double support, double relativesupport, params TValue[] elements)
             : this(new HashSet<TValue>(elements), support, relativesupport)
         {
