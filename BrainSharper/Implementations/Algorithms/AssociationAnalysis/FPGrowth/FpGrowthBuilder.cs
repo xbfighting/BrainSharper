@@ -149,7 +149,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             var paths = new List<IList<Tuple<TValue, double>>>();
             var valuesCounts = new Dictionary<TValue, int>();
             var minTransactionsCount = (int)totalTransactionsCount*miningParams.MinimalRelativeSupport;
-            //TODO: add lookup dictionary with items counts
             foreach (var currentNode in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
             {
                 if (currentNode.Parent == null)
@@ -160,6 +159,10 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 var pathSoFar = new List<Tuple<TValue, double>>();
                 while (processedNode.HasParent && !processedNode.IsRoot)
                 {
+                    if (prefix.ItemsSet.Contains(processedNode.Value))
+                    {
+                        processedNode = processedNode.Parent;
+                    }
                     var copyOfNode = processedNode.CopyNode();
                     if (copyOfNode.Count > currentNode.Count)
                     {
@@ -183,7 +186,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 if(pathSoFar.Any()) paths.Add(pathSoFar);
             }
             var headerTable = new FpGrowthHeaderTable<TValue>(new Dictionary<TValue, IList<FpGrowthNode<TValue>>>());
-            var conditionalTree = paths.Select(path => path.Where(el => valuesCounts[el.Item1] >= minTransactionsCount).ToList()).Aggregate(new FpGrowthNode<TValue>(),
+            var conditionalPaths = paths
+                .Select(path => path
+                    .Where(el => valuesCounts[el.Item1] >= minTransactionsCount)
+                    .OrderByDescending(el => valuesCounts[el.Item1])
+                    .ThenByDescending(itm => itm.Item1)
+                    .ToList());
+            var conditionalTree = conditionalPaths
+                .Aggregate(new FpGrowthNode<TValue>(),
                 (tree, list) => {
                     AddToTree(tree, list, headerTable.ValuesToNodesMapping);
                     return tree;

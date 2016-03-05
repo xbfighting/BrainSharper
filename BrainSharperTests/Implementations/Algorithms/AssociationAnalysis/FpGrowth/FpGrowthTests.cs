@@ -23,7 +23,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
         protected readonly FpGrowthBuilder<IDataItem<string>> Subject = new FpGrowthBuilder<IDataItem<string>>();
 
         [Test]
-        public void TestBuildingFpTree()
+        public void TestBuildingFpTreeMarketBasketDataSet()
         {
             // Given
             var data = new TransactionsSet<IDataItem<string>>(
@@ -57,6 +57,21 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
         }
 
         [Test]
+        public void TestFpGrowthOnAbstractDataSet()
+        {
+            // Given
+            var data = AbstractTransactionsSet2;
+            var subject = new FpGrowthBuilder<string>();
+            var miningParams = new FrequentItemsMiningParams(0.3333, 0.8);
+
+            // When
+            var result = subject.FindFrequentItems(data, miningParams);
+
+            // Then
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public void Test_BuildingFpTree_LargeDataset_PerformanceMeasures()
         {
             // Given
@@ -87,6 +102,25 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
             var avgExecutionTime = executionTimes.Average();
             var std = ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
             var medianExecTime = ArrayStatistics.MedianInplace(executionTimes.ToArray());
+        }
+
+        [Test]
+        public void TestFpGrowthOnMushroomData()
+        {
+            // Given
+            var data = new TransactionsSet<IDataItem<string>>(
+                TestDataBuilder.ReadMushroomDataWithCategoricalAttributes()
+                .ToAssociativeTransactionsSet<string>()
+                .TransactionsList
+                );
+            var miningParams = new FrequentItemsMiningParams(0.5, 0.9);
+            var expectedCount = 153;
+
+            // When
+            var results = Subject.FindFrequentItems(data, miningParams);
+
+            // Then
+            Assert.AreEqual(expectedCount, results.FrequentItems.Count);
         }
 
     }

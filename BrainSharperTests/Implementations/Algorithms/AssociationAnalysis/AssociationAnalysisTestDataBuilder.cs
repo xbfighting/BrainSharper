@@ -52,7 +52,18 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
                 new Transaction<string>(3, "A", "D", "E"),
                 new Transaction<string>(4, "B", "D", "E"),
                 new Transaction<string>(5, "A", "B", "C")
-            }); 
+            });
+
+        public static ITransactionsSet<string> AbstractTransactionsSet2 = new TransactionsSet<string>(
+            new List<ITransaction<string>>
+            {
+                new Transaction<string>(1, "25", "52", "274"),
+                new Transaction<string>(2, "71"),
+                new Transaction<string>(3, "71", "274"),
+                new Transaction<string>(4, "52"),
+                new Transaction<string>(5, "25", "52"),
+                new Transaction<string>(6, "274", "71")
+            });
 
     }
 }
