@@ -108,5 +108,20 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
             Assert.AreEqual(expectedCount, results.FrequentItems.Count);
         }
 
+        [Test]
+        public void TestFpGrowthOnAbstractDataset()
+        {
+            // Given
+            var data = AbstractTaTransactionsSet3;
+            var miningParams = new FrequentItemsMiningParams(0.3, 1.0);
+            var subject = new FpGrowthBuilder<string>();
+            
+            // When
+            var result = subject.FindFrequentItems(data, miningParams);
+
+            // Then
+            Assert.IsNotNull(result);
+
+        }
     }
 }

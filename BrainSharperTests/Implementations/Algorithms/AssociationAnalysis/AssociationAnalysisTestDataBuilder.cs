@@ -65,5 +65,21 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
                 new Transaction<string>(6, "274", "71")
             });
 
+        public static ITransactionsSet<string> AbstractTaTransactionsSet3 = new TransactionsSet<string>(
+            new ITransaction<string>[]
+            {
+                new Transaction<string>(1, "a", "b"),
+                new Transaction<string>(2, "b", "c", "d"),
+                new Transaction<string>(3, "a", "c", "d", "e"),
+                new Transaction<string>(4, "a", "d", "e"),
+                new Transaction<string>(5, "a", "b", "c"),
+                new Transaction<string>(6, "a", "b", "c", "d"),
+                new Transaction<string>(7, "a"),
+                new Transaction<string>(8, "a", "b", "c"),
+                new Transaction<string>(9, "a", "b", "d"),
+                new Transaction<string>(10, "b", "c", "e")
+
+            });
+
     }
 }

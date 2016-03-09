@@ -133,7 +133,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             foreach(var initialItem in initialItemsSet)
             {
                 var itemValue = initialItem.OrderedItems.First();
-                //allItems.AddRange(ProcessPrefixTrees(itemValue, model, initialItem, miningParams, totalItemsCount));
+              //  allItems.AddRange(ProcessPrefixTrees(itemValue, model, initialItem, miningParams, totalItemsCount));
                 allItems.AddRange(ProcessPrefixPaths(itemValue, model, initialItem, miningParams, totalItemsCount));
             }
             return allItems;

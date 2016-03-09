@@ -44,6 +44,24 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
         public IList<int> TransactionIds { get; }
         public double Count { get; set; }
 
+        public IList<FpGrowthNode<TValue>> GetPathToSelf(bool includeSelf = false, bool includeRoot = false)
+        {
+            var path = new List<FpGrowthNode<TValue>>();
+            if (IsRoot && includeRoot && includeSelf)
+            {
+                return new[] { this };
+            }
+            if (includeSelf)
+            {
+                if ((IsRoot && includeRoot) || !IsRoot)
+                {
+                    path.Add(this);
+                }
+            }
+            if(HasParent) path.AddRange(Parent.GetPathToSelf(true, includeRoot));
+            return path;
+        }
+
         public void IncrementCountBy(double count)
         {
             Count += count;

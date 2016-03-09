@@ -81,6 +81,7 @@
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAssociationRuleTest.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\DataUtilsTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DataStructures\FrequentItemSetsTests.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\FpGrowth\FpGrowthNodeTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\FpGrowth\FpGrowthTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\BinaryDecisionTreeModelBuilderTests.cs" />
     <Compile Include="Implementations\Algorithms\DecisionTrees\DecisionTreePredictorTests.cs" />
