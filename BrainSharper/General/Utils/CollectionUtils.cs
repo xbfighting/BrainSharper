@@ -71,5 +71,29 @@ namespace BrainSharper.General.Utils
                         .GenerateCombinationsOfSizeK(combinationSize - 1)
                         .Select(c => (new[] {e}).Concat(c)));
         }
+
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, IList<TValue>> dict, TKey key, TValue value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key].Add(value);
+            }
+            else
+            {
+                dict.Add(key, new List<TValue> { value });
+            }
+        }
+
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value, Func<TValue, TValue, TValue> updateF)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = updateF(dict[key], value);
+            }
+            else
+            {
+                dict.Add(key, value);
+            }
+        }
     }
 }

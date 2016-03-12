@@ -121,7 +121,22 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
 
             // Then
             Assert.IsNotNull(result);
+        }
 
+        [Test]
+        public void TestBuildingFpModelFromData()
+        {
+            //Given
+            var data = AbstractTaTransactionsSet3;
+            var miningParams = new FrequentItemsMiningParams(0.1, 1.0);
+            var subject = new FpGrowthBuilder<string>();
+
+            //When
+            var items = subject.FindFrequentItems(data, miningParams);
+            
+
+            //Then
+            Assert.IsNotNull(items);
         }
     }
 }
