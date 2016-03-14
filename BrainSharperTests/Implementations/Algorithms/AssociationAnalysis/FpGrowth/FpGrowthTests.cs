@@ -60,12 +60,35 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
         }
 
         [Test]
+        public void Test_BuildingFpTree_CongressVotingDataSet_NoDuplicatedElems_ProperElemsCount()
+        {
+            // Given
+            var dataSet = TestDataBuilder.ReadCongressData()
+                .ToAssociativeTransactionsSet<string>();
+            var rulesMiningParams = new AssociationMiningParams(0.2, 0.8);
+            var expectedUniqueElementsCount = 13932;
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
+            var groupedItems = frequentItems.FrequentItemsBySize[2]
+                 .GroupBy(itm => itm)
+                 .ToDictionary(grp => grp.Key, grp => grp.Count());
+
+            var uniqueFrequentItemsCount = frequentItems.FrequentItems.Distinct().Count();
+
+            //Then
+            Assert.AreEqual(expectedUniqueElementsCount, uniqueFrequentItemsCount);
+            Assert.AreEqual(frequentItems.FrequentItems.Count(), uniqueFrequentItemsCount);
+        }
+
+        [Test]
         public void Test_BuildingFpTree_LargeDataset_PerformanceMeasures()
         {
             // Given
             var dataSet = TestDataBuilder.ReadCongressData()
                 .ToAssociativeTransactionsSet<string>();
             var rulesMiningParams = new AssociationMiningParams(0.2, 0.8);
+            var expectedMedianExecTime = 500;
 
             // When
             var executionTimes = new List<double>();
@@ -75,13 +98,6 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
                 GC.Collect();
                 var sw = Stopwatch.StartNew();
                 var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
-                var groupedItems = frequentItems.FrequentItemsBySize[2]
-                    .GroupBy(itm => itm)
-                    .ToDictionary(grp => grp.Key, grp => grp.Count());
-
-                var uniqueFrequentItemsCount = frequentItems.FrequentItems.Distinct().Count();
-                Assert.AreEqual(frequentItems.FrequentItems.Count(), uniqueFrequentItemsCount);
-                
                 sw.Stop();
                 executionTimes.Add(sw.ElapsedMilliseconds);
             }
@@ -90,6 +106,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
             var avgExecutionTime = executionTimes.Average();
             var std = ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
             var medianExecTime = ArrayStatistics.MedianInplace(executionTimes.ToArray());
+            Assert.LessOrEqual(medianExecTime, expectedMedianExecTime);
         }
 
         [Test]
@@ -116,30 +133,15 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
         {
             // Given
             var data = AbstractTaTransactionsSet3;
-            var miningParams = new FrequentItemsMiningParams(0.3, 1.0);
+            var miningParams = new FrequentItemsMiningParams(0.2, 1.0);
             var subject = new FpGrowthBuilder<string>();
-            
+            var expectedFrequentItemsCount = 19;
+
             // When
             var result = subject.FindFrequentItems(data, miningParams);
 
             // Then
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void TestBuildingFpModelFromData()
-        {
-            //Given
-            var data = AbstractTaTransactionsSet3;
-            var miningParams = new FrequentItemsMiningParams(0.1, 1.0);
-            var subject = new FpGrowthBuilder<string>();
-
-            //When
-            var items = subject.FindFrequentItems(data, miningParams);
-            
-
-            //Then
-            Assert.IsNotNull(items);
+            Assert.AreEqual(result.FrequentItems.Count, expectedFrequentItemsCount);
         }
     }
 }
