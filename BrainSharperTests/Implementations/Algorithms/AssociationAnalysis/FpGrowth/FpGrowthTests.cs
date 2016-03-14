@@ -34,10 +34,10 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
                 );
             var expectedFrequentItems = new List<IFrequentItemsSet<IDataItem<string>>>
                                            {
-                                               new FrequentItemsSet<IDataItem<string>>(3, 0.6, new string[] { "2", "4", "5" }, new DataItem<string>(Product, Beer)),
-                                               new FrequentItemsSet<IDataItem<string>>(2, 0.4, new string[] { "2", "5" }, new DataItem<string>(Product, Diapers)),
-                                               new FrequentItemsSet<IDataItem<string>>(4, 0.8, new string[] { "1", "2", "4", "5" }, new DataItem<string>(Product, Nuts)),
-                                               new FrequentItemsSet<IDataItem<string>>(3, 0.6, new string[] { "1", "3", "4" }, new DataItem<string>(Product, CocaCola)),
+                                               new FrequentItemsSet<IDataItem<string>>(3, 0.6, new DataItem<string>(Product, Beer)),
+                                               new FrequentItemsSet<IDataItem<string>>(2, 0.4, new DataItem<string>(Product, Diapers)),
+                                               new FrequentItemsSet<IDataItem<string>>(4, 0.8, new DataItem<string>(Product, Nuts)),
+                                               new FrequentItemsSet<IDataItem<string>>(3, 0.6, new DataItem<string>(Product, CocaCola)),
                                                new FrequentItemsSet<IDataItem<string>>(2, 0.4, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Diapers)),
                                                new FrequentItemsSet<IDataItem<string>>(3, 0.6, new DataItem<string>(Product, Beer), new DataItem<string>(Product, Nuts)),
                                                new FrequentItemsSet<IDataItem<string>>(2, 0.4, new DataItem<string>(Product, Diapers), new DataItem<string>(Product, Nuts)),
@@ -53,7 +53,10 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
 
             // Then
             Assert.AreEqual(9, actualFrequentItems.FrequentItems.Count);
-            CollectionAssert.AreEquivalent(expectedFrequentItems, actualFrequentItems.FrequentItems);
+            foreach (var item in actualFrequentItems.FrequentItems)
+            {
+                CollectionAssert.Contains(expectedFrequentItems, item);
+            }
         }
 
         [Test]

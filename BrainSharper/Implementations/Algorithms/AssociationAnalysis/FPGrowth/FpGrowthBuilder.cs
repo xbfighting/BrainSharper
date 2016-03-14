@@ -126,17 +126,17 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
 
         public virtual IEnumerable<IFrequentItemsSet<TValue>> PerformFrequentItemsMining(
             IList<IFrequentItemsSet<TValue>> initialItemsSet,
-            FpGrowthModel<TValue> model, 
-            IFrequentItemsMiningParams miningParams, 
+            FpGrowthModel<TValue> model,
+            IFrequentItemsMiningParams miningParams,
             int totalItemsCount)
         {
             var allItems = new List<IFrequentItemsSet<TValue>>();
-            foreach(var initialItem in initialItemsSet)
+            foreach (var initialItem in initialItemsSet)
             {
                 var itemValue = initialItem.OrderedItems.First();
-              //  allItems.AddRange(ProcessPrefixTrees(itemValue, model, initialItem, miningParams, totalItemsCount));
-              //  allItems.AddRange(ProcessPrefixPaths(itemValue, model, initialItem, miningParams, totalItemsCount));
-              allItems.AddRange(ProcessPrefixPathForValue(itemValue, model, initialItem, miningParams, totalItemsCount));
+                //  allItems.AddRange(ProcessPrefixTrees(itemValue, model, initialItem, miningParams, totalItemsCount));
+                //  allItems.AddRange(ProcessPrefixPaths(itemValue, model, initialItem, miningParams, totalItemsCount));
+                allItems.AddRange(ProcessPrefixPathForValue(itemValue, model, initialItem, miningParams, totalItemsCount));
             }
             return allItems;
         }
@@ -160,40 +160,41 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                 foreach (var nodeAntecedent in prefixPath)
                 {
                     var countToRecord = nodeAntecedent.Count > node.Count ? node.Count : nodeAntecedent.Count;
-                    nodeNodeNormalizedPrefixPath.Add(new Tuple<TValue,double>(nodeAntecedent.Value, countToRecord));
+                    nodeNodeNormalizedPrefixPath.Add(new Tuple<TValue, double>(nodeAntecedent.Value, countToRecord));
                     valuesCountsMnemonics.AddOrUpdate(nodeAntecedent.Value, countToRecord, updateF);
                 }
-                transformedPaths.Add(nodeNodeNormalizedPrefixPath);
+                if (nodeNodeNormalizedPrefixPath.Any()) transformedPaths.Add(nodeNodeNormalizedPrefixPath);
             }
 
             var extendedPrefix = new FrequentItemsSet<TValue>(
                 currentPrefix.ItemsSet.Union(new List<TValue> { valueToStartFrom }),
-                valuesCountsMnemonics[valueToStartFrom], 
-                valuesCountsMnemonics[valueToStartFrom]/totalTransactionsCount);
+                valuesCountsMnemonics[valueToStartFrom],
+                valuesCountsMnemonics[valueToStartFrom] / totalTransactionsCount);
             yield return extendedPrefix;
 
-            if(!transformedPaths.Any()) yield break;
-
-            var onlyFrequentPathElements = from path in transformedPaths
-                                           let pathWithOnlyFrequentElements =
-                                               from pathElem in path
-                                               where pathElem.Item2 >= minimalTransactionsCount
-                                               orderby pathElem.Item2 descending
-                                               select pathElem
-                                           select pathWithOnlyFrequentElements.ToList();
-
-            var headerTableSeed = new FpGrowthHeaderTable<TValue>();
-            var prefixTree = onlyFrequentPathElements.Aggregate(new FpGrowthNode<TValue>(),
-                (tree, transaction) => {
-                    AddToTree(tree, transaction, headerTableSeed.ValuesToNodesMapping);
-                    return tree;
-                });
-            var prefixModel = new FpGrowthModel<TValue>(headerTableSeed, prefixTree);
-            foreach (var prefixValue in prefixModel.HeaderTable.ValuesToNodesMapping.Keys)
+            if (transformedPaths.Any())
             {
-                var subPrefixes = ProcessPrefixPathForValue(prefixValue, prefixModel, extendedPrefix, miningParams,
-                    totalTransactionsCount);
-                foreach (var subPrefix in subPrefixes) yield return subPrefix;
+                var onlyFrequentPathElements = transformedPaths
+                .Select(path =>
+                            path
+                                .Where(itm => valuesCountsMnemonics[itm.Item1] >= minimalTransactionsCount)
+                                .OrderByDescending(itm => itm.Item2)
+                                .ThenByDescending(itm => valuesCountsMnemonics[itm.Item1])
+                                .ToList()).ToList();
+                var headerTableSeed = new FpGrowthHeaderTable<TValue>();
+                var prefixTree = onlyFrequentPathElements.Aggregate(new FpGrowthNode<TValue>(),
+                    (tree, transaction) =>
+                    {
+                        AddToTree(tree, transaction, headerTableSeed.ValuesToNodesMapping);
+                        return tree;
+                    });
+                var prefixModel = new FpGrowthModel<TValue>(headerTableSeed, prefixTree);
+                foreach (var prefixValue in prefixModel.HeaderTable.ValuesToNodesMapping.Keys)
+                {
+                    var subPrefixes = ProcessPrefixPathForValue(prefixValue, prefixModel, extendedPrefix, miningParams,
+                        totalTransactionsCount);
+                    foreach (var subPrefix in subPrefixes) yield return subPrefix;
+                }
             }
         }
 
@@ -206,7 +207,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
         {
             var transformedPaths = new List<IList<Tuple<TValue, double>>>();
             var valuesCountsMnemonics = new Dictionary<TValue, double>();
-            var minimalTransactionsCount = (int) totalTransactionsCount*miningParams.MinimalRelativeSupport;
+            var minimalTransactionsCount = (int)totalTransactionsCount * miningParams.MinimalRelativeSupport;
             foreach (var nodeWithStartValue in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
             {
                 var maxSupportValue = nodeWithStartValue.Count;
@@ -240,22 +241,23 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                     .ToList());
             var headerTableSeed = new FpGrowthHeaderTable<TValue>();
             var resultingTree = onlyFrequentItems.Aggregate(new FpGrowthNode<TValue>(),
-                (tree, transaction) => {
+                (tree, transaction) =>
+                {
                     AddToTree(tree, transaction, headerTableSeed.ValuesToNodesMapping);
                     return tree;
                 });
             var subModel = new FpGrowthModel<TValue>(headerTableSeed, resultingTree);
             if (resultingTree.HasChildren)
             {
-                var nodesToProcessQueue = new Queue<FpGrowthNode<TValue>>(new [] { resultingTree });
+                var nodesToProcessQueue = new Queue<FpGrowthNode<TValue>>(new[] { resultingTree });
                 while (nodesToProcessQueue.Any())
                 {
                     var head = nodesToProcessQueue.Dequeue();
                     nodesToProcessQueue = new Queue<FpGrowthNode<TValue>>(nodesToProcessQueue.Union(head.Children));
-                    if(head.IsRoot) continue;
-                    var pattern = prefix.ItemsSet.Union(new[] {head.Value});
+                    if (head.IsRoot) continue;
+                    var pattern = prefix.ItemsSet.Union(new[] { head.Value });
                     var support = head.Count;
-                    var relativeSupport = support/(double) totalTransactionsCount;
+                    var relativeSupport = support / (double)totalTransactionsCount;
                     var conditionalPatternSet = new FrequentItemsSet<TValue>(pattern, support, relativeSupport);
                     yield return conditionalPatternSet;
                     foreach (
@@ -268,14 +270,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
 
         public virtual IEnumerable<IFrequentItemsSet<TValue>> ProcessPrefixTrees(
             TValue valueToStartFrom,
-            FpGrowthModel<TValue> currentModel, 
+            FpGrowthModel<TValue> currentModel,
             IFrequentItemsSet<TValue> prefix,
             IFrequentItemsMiningParams miningParams,
             int totalTransactionsCount)
         {
             var paths = new List<IList<Tuple<TValue, double>>>();
             var valuesCounts = new Dictionary<TValue, int>();
-            var minTransactionsCount = (int)totalTransactionsCount*miningParams.MinimalRelativeSupport;
+            var minTransactionsCount = (int)totalTransactionsCount * miningParams.MinimalRelativeSupport;
             foreach (var currentNode in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
             {
                 if (currentNode.Parent == null)
@@ -310,7 +312,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                     }
                     processedNode = copyOfNode.Parent;
                 }
-                if(pathSoFar.Any()) paths.Add(pathSoFar);
+                if (pathSoFar.Any()) paths.Add(pathSoFar);
             }
             var headerTable = new FpGrowthHeaderTable<TValue>();
             var conditionalPaths = paths
@@ -321,21 +323,22 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                     .ToList());
             var conditionalTree = conditionalPaths
                 .Aggregate(new FpGrowthNode<TValue>(),
-                (tree, list) => {
+                (tree, list) =>
+                {
                     AddToTree(tree, list, headerTable.ValuesToNodesMapping);
                     return tree;
                 });
             var newModel = new FpGrowthModel<TValue>(headerTable, conditionalTree);
             var nodesQueueToProcess = new Queue<FpGrowthNode<TValue>>(new[] { conditionalTree });
-            while(nodesQueueToProcess.Any())
+            while (nodesQueueToProcess.Any())
             {
                 var treeNode = nodesQueueToProcess.Dequeue();
                 nodesQueueToProcess = new Queue<FpGrowthNode<TValue>>(nodesQueueToProcess.Concat(treeNode.Children));
-                if(treeNode.IsRoot) continue;
+                if (treeNode.IsRoot) continue;
                 var frequentItems = new FrequentItemsSet<TValue>(
                     treeNode.Count,
-                    treeNode.Count / totalTransactionsCount, 
-                    prefix.OrderedItems.Concat(new [] { treeNode.Value }).ToArray());
+                    treeNode.Count / totalTransactionsCount,
+                    prefix.OrderedItems.Concat(new[] { treeNode.Value }).ToArray());
                 yield return frequentItems;
                 var subTreesProcessingResults = ProcessPrefixTrees(treeNode.Value, newModel, frequentItems, miningParams, totalTransactionsCount);
                 foreach (var result in subTreesProcessingResults)
