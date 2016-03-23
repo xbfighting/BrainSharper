@@ -15,13 +15,21 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
     public class AprioriAlgorithm<TValue> : IFrequentItemsFinder<TValue>, IAssociationRulesFinder<TValue>
     {
         protected readonly AssocRuleMiningMinimumRequirementsChecker<TValue> AssocRuleMiningRequirementsChecker;
+        protected readonly IEnumerable<ItemsetValidityChecker<TValue>> ValidityCheckers;
 
-        public AprioriAlgorithm(AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker)
+        public AprioriAlgorithm(
+            IEnumerable<ItemsetValidityChecker<TValue>> validityCheckers,
+            AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker
+            )
         {
+            ValidityCheckers = validityCheckers;
             AssocRuleMiningRequirementsChecker = assocRuleMiningRequirementsChecker;
         }
 
-        public AprioriAlgorithm() : this(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
+        public AprioriAlgorithm() 
+            : this(
+                  new ItemsetValidityChecker<TValue>[] { AssociationMiningParamsInterpreter.IsItemSupportAboveThreshold },
+                  AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
         {
 
         }
@@ -61,7 +69,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
         {
             
             var previousItems = frequentItemsSoFar[itemsSetSize - 1];
-            var nextItems = GenerateNextItems(transactionsSet, frequentItemsMiningParams, previousItems, itemsSetSize);
+            var nextItems = GenerateNextItems(transactionsSet, frequentItemsMiningParams, frequentItemsSoFar, itemsSetSize);
             return (
                 from buildingResult in nextItems.AsParallel()
                 group buildingResult by buildingResult.MeetsCriteria
@@ -72,10 +80,11 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
         public IList<FrequentItemBuildingResultDto<TValue>> GenerateNextItems(
             ITransactionsSet<TValue> transactionsSet,
             IFrequentItemsMiningParams frequentItemsMiningParams,
-            IList<IFrequentItemsSet<TValue>> previousItems,
+            IDictionary<int, IList<IFrequentItemsSet<TValue>>> itemsBySize,
             int desiredSize)
         {
             var kMinusOne = desiredSize - 2;
+            var previousItems = itemsBySize[desiredSize - 1];
             var elementsComparator = Comparer<TValue>.Default;
             return (
                 from itm1 in previousItems.AsParallel()
@@ -94,7 +103,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                         candidateItemsTidSet.Count, 
                         relativeSupport
                         ) as IFrequentItemsSet<TValue>
-                let itemMeetsCriteria = CandidateItemMeetsCriteria(newItem, frequentItemsMiningParams)
+                let itemMeetsCriteria = CandidateItemMeetsCriteria(newItem, itemsBySize, frequentItemsMiningParams)
                 select new FrequentItemBuildingResultDto<TValue>(newItem, itemMeetsCriteria)
                 ).ToList();
         }
@@ -126,7 +135,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                     kvp =>
                         new FrequentItemsSet<TValue>(kvp.Value.Count, kvp.Value.Count/totalElemsCount, kvp.Value,
                             kvp.Key) as IFrequentItemsSet<TValue>)
-                    .Where(itm => CandidateItemMeetsCriteria(itm, frequentItemsMiningParams))
+                    .Where(itm => itm.RelativeSupport >= frequentItemsMiningParams.MinimalRelativeSupport)
                     .ToList();
         }
 
@@ -191,7 +200,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
             IFrequentItemsSearchResult<TValue> frequentItemsSearchResult,
             IAssociationMiningParams assocMiningParams)
         {
-            ;
             var combinations = ProduceConsequents(currentItemSet, assocMiningParams);
 
             foreach (var possibleConsequent in combinations)
@@ -227,9 +235,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori
                 : currentItemSet.ItemsSet.GenerateCombinationsOfSizeK(1);
         }
 
-        protected virtual bool CandidateItemMeetsCriteria(IFrequentItemsSet<TValue> itm, IFrequentItemsMiningParams miningParams)
+        protected virtual bool CandidateItemMeetsCriteria(
+            IFrequentItemsSet<TValue> itm,
+            IDictionary<int, IList<IFrequentItemsSet<TValue>>> itemsMinedSoFar,
+            IFrequentItemsMiningParams miningParams)
         {
-            return itm.RelativeSupport >= miningParams.MinimalRelativeSupport;
+            return ValidityCheckers.All(checker => checker(itm, itemsMinedSoFar, miningParams));
         }
 
         protected virtual bool AssocRuleMeetsCriteria(IAssociationRule<TValue> assocRule,

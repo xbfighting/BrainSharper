@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DissociativeRulesMining;
 using BrainSharper.General.Utils;
-using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
-using BrainSharper.Implementations.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.DissociativeRules;
@@ -20,13 +17,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Dissociati
         private static string InvalidMiningParametersTypePassedToDissociationRulesFinderError = "Invalid mining parameters type passed to DissociationRulesFinder!";
 
         public DissociationRulesFinder(
+            IEnumerable<ItemsetValidityChecker<TValue>> validityCheckers,
             AssocRuleMiningMinimumRequirementsChecker<TValue> assocRuleMiningRequirementsChecker) 
-            : base(assocRuleMiningRequirementsChecker)
+            : base(validityCheckers, assocRuleMiningRequirementsChecker)
         {
         }
 
         public DissociationRulesFinder()
-            : base(AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
+            : base(new ItemsetValidityChecker<TValue>[] { AssociationMiningParamsInterpreter.IsItemSupportAboveThreshold },  AssociationMiningParamsInterpreter.AreMinimalRequirementsMet)
         {
         }
 

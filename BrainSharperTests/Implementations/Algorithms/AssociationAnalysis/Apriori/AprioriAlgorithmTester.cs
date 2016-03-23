@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
@@ -88,11 +89,12 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             // When
             var initialItemSets = Subject.GenerateInitialItemsSet(MarketBasketTransactions, miningParams);
             var candidateItemsets =
-                Subject.GenerateNextItems(MarketBasketTransactions, miningParams, initialItemSets, 2);
+                Subject.GenerateNextItems(MarketBasketTransactions, miningParams, new Dictionary<int, IList<IFrequentItemsSet<IDataItem<string>>>> { [1] =  initialItemSets }, 2);
+            var candidateItemsetsMeetingCriteria = candidateItemsets.Where(itms => itms.MeetsCriteria).Select(itm => itm.FrequentItemsSet).ToList();
 
             // Then
-            Assert.AreEqual(4, candidateItemsets.Count);
-            CollectionAssert.AreEquivalent(frequentItemsetsOfSize2, candidateItemsets);
+            Assert.AreEqual(4, candidateItemsetsMeetingCriteria.Count);
+            CollectionAssert.AreEquivalent(frequentItemsetsOfSize2, candidateItemsetsMeetingCriteria);
         }
 
         [Test]
@@ -111,10 +113,10 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             };
 
             // When
-            var candidateItemsOfSize3 = Subject.GenerateNextItems(MarketBasketTransactions, miningParams, frequentItemsetsOfSize2, 3);
+            var candidateItemsOfSize3 = Subject.GenerateNextItems(MarketBasketTransactions, miningParams, new Dictionary<int, IList<IFrequentItemsSet<IDataItem<string>>>> { [2] = frequentItemsetsOfSize2 }, 3);
 
             // Then
-            Assert.AreEqual(1, candidateItemsOfSize3.Count);
+            Assert.AreEqual(4, candidateItemsOfSize3.Count);
         }
 
         [Test]
@@ -174,8 +176,25 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
         }
 
         [Test]
+        public void TestBuildingAssociationRules_BigDataSetCongress()
+        {
+            // Given
+            var dataSet = TestDataBuilder.ReadCongressData()
+                .ToAssociativeTransactionsSet<string>();
+            var rulesMiningParams = new AssociationMiningParams(0.2, 0.8);
+            var expectedItemsCount = 13932;
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
+
+            // Then
+            Assert.AreEqual(expectedItemsCount, frequentItems.FrequentItems.Count);
+        }
+
+        [Test]
         public void TestBuildingAssociationRules_BigDataSetCongress_PerformanceMeasures()
         {
+            /*
             // Given
             var dataSet = TestDataBuilder.ReadCongressData()
                 .ToAssociativeTransactionsSet<string>();
@@ -183,7 +202,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
 
             // When
             var executionTimes = new List<double>();
-            
+
             for (int i = 0; i < 10; i++)
             {
                 GC.Collect();
@@ -197,6 +216,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
             var avgExecutionTime = executionTimes.Average();
             var std = ArrayStatistics.MeanStandardDeviation(executionTimes.ToArray());
             var medianExecTime = ArrayStatistics.MedianInplace(executionTimes.ToArray());
+            */
         }
 
         [Test]
@@ -216,21 +236,6 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
 
             // Then
             Assert.AreEqual(expectedCount, results.FrequentItems.Count);
-        }
-
-        [Test]
-        public void TestAprioriOnAbstractDataSet()
-        {
-            // Given
-            var data = AbstractTransactionsSet2;
-            var subject = new AprioriAlgorithm<string>();
-            var miningParams = new FrequentItemsMiningParams(0.4, 0.8);
-
-            // When
-            var result = subject.FindFrequentItems(data, miningParams);
-
-            // Then
-            Assert.IsNotNull(result);
         }
     }
 }

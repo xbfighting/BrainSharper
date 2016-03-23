@@ -20,9 +20,10 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
         private readonly ClassificationAprioriRulesSelector<TValue> _rulesSelectionHeuristic; 
 
         public ClassificationApriori(
+            IEnumerable<ItemsetValidityChecker<IDataItem<TValue>>> validityCheckers,
             AssocRuleMiningMinimumRequirementsChecker<IDataItem<TValue>> assocRuleMiningRequirementsChecker,
             ClassificationAprioriRulesSelector<TValue> rulesSelectionHeuristic) 
-            : base(assocRuleMiningRequirementsChecker)
+            : base(validityCheckers, assocRuleMiningRequirementsChecker)
         {
             _rulesSelectionHeuristic = rulesSelectionHeuristic;
         }
@@ -46,14 +47,17 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             return this.BuildModel(dataFrame, dataFrame.ColumnNames[dependentFeatureIndex], additionalParams);
         }
 
-        protected override bool CandidateItemMeetsCriteria(IFrequentItemsSet<IDataItem<TValue>> itm, IFrequentItemsMiningParams miningParams)
+        protected override bool CandidateItemMeetsCriteria(
+            IFrequentItemsSet<IDataItem<TValue>> itm, 
+            IDictionary<int, IList<IFrequentItemsSet<IDataItem<TValue>>>> itemsMinedSoFar,
+            IFrequentItemsMiningParams miningParams)
         {
             var classificationMiningParams = miningParams as IClassificationAssociationMiningParams;
             if (classificationMiningParams == null)
             {
                 throw new ArgumentException(ClassificationAprioriAlgorithmRequiresAssociationminingparams, nameof(miningParams));
             }
-            return base.CandidateItemMeetsCriteria(itm, miningParams);
+            return base.CandidateItemMeetsCriteria(itm, itemsMinedSoFar, miningParams);
         }
 
         protected override bool AssocRuleMeetsCriteria(IAssociationRule<IDataItem<TValue>> assocRule, IAssociationMiningParams miningParams)
