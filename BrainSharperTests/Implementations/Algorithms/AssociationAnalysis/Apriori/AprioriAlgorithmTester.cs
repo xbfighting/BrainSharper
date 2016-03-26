@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
-using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures.BinaryTrees;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
-using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Data;
 using BrainSharperTests.TestUtils;
@@ -230,7 +228,7 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Aprio
                 );
             var miningParams = new FrequentItemsMiningParams(0.5, 0.9);
             var expectedCount = 153;
-
+            
             // When
             var results = Subject.FindFrequentItems(data, miningParams);
 
