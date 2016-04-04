@@ -1,9 +1,8 @@
 ﻿using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
-using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common
 {
     public class ClassificationAssociationMiningParams : AssociationMiningParams, IClassificationAssociationMiningParams
     {

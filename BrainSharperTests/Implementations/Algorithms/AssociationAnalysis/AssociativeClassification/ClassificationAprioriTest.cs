@@ -4,6 +4,8 @@ using BrainSharper.Abstract.Data;
 using BrainSharper.Abstract.MathUtils.ImpurityMeasures;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Apriori;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Helpers;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Implementations.MathUtils.ImpurityMeasures;

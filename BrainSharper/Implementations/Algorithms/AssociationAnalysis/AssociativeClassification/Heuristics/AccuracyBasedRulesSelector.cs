@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 
 namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics
 {

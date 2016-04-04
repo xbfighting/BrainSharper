@@ -7,12 +7,11 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.Infrastructure;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.Apriori;
-using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Heuristics;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 
-
-namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
+namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Apriori
 {
     public class ClassificationApriori<TValue> : AprioriAlgorithm<IDataItem<TValue>>, IPredictionModelBuilder
     {

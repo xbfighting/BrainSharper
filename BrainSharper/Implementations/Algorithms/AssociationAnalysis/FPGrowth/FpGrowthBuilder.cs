@@ -14,7 +14,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
 {
     public class FpGrowthBuilder<TValue> : IFrequentItemsFinder<TValue>
     {
-        public IFrequentItemsSearchResult<TValue> FindFrequentItems(
+        public virtual IFrequentItemsSearchResult<TValue> FindFrequentItems(
             ITransactionsSet<TValue> transactions,
             IFrequentItemsMiningParams frequentItemsMiningParams)
         {
@@ -31,8 +31,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
 
         public IDictionary<TValue, IFrequentItemsSet<TValue>> GenerateInitialFrequentItems(ITransactionsSet<TValue> transactions, IFrequentItemsMiningParams frequentItemsMiningParams)
         {
+            //TODO: probably can exchange that with count instead of list of objects. It will reduce space complexity of the task
             var elementsWithSupport = new ConcurrentDictionary<TValue, IList<object>>();
-
+            double transactionsCount = (double)transactions.TransactionsCount;
             Parallel.ForEach(transactions.TransactionsList, tran =>
             {
                 Func<TValue, IList<object>, IList<object>> updateFunc = (o, list) => new List<object>(list) { tran.TransactionKey };
@@ -44,7 +45,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             });
 
             return elementsWithSupport
-                .Where(kvp => (kvp.Value.Count / (double)transactions.TransactionsCount) >= frequentItemsMiningParams.MinimalRelativeSupport)
+                .Where(kvp => InitialItemMeetsCriteria(kvp, transactionsCount, frequentItemsMiningParams))
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => new FrequentItemsSet<TValue>(kvp.Value, new[] { kvp.Key }, kvp.Value.Count, kvp.Value.Count / (double)transactions.TransactionsCount) as IFrequentItemsSet<TValue>);
@@ -66,7 +67,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
                     .ToList();
                 remappedTransactions[tranIdx] = new Transaction<TValue>(transaction.TransactionKey, frequentElementsOnly);
             });
-            var noElemes = remappedTransactions.Where(tran => tran.TransactionItems.Any());
+            var noElemes = remappedTransactions.AsParallel().Where(tran => tran.TransactionItems.Any());
             Debug.Assert(noElemes.Any());
             return new TransactionsSet<TValue>(remappedTransactions.Where(tran => tran.TransactionItems.Any()));
         }
@@ -218,6 +219,15 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.FPGrowth
             {
                 headers.Add(treeNode.Value, new List<FpGrowthNode<TValue>> { treeNode });
             }
+        }
+
+        protected virtual bool InitialItemMeetsCriteria(
+            KeyValuePair<TValue, IList<object>> itemWithSupport,
+            double transactionsCount,
+            IFrequentItemsMiningParams miningParams
+            )
+        {
+            return (itemWithSupport.Value.Count / transactionsCount) >= miningParams.MinimalRelativeSupport;
         }
     }
 }

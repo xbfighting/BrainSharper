@@ -1,0 +1,6 @@
+A,B,C,D,label
+a1,b1,c1,d1,A
+a1,b2,c1,d2,B
+a2,b3,c2,d3,A
+a1,b2,c3,d3,C
+a1,b2,c1,d3,C

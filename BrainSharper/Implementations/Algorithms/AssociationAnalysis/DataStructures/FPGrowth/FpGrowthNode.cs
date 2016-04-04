@@ -39,7 +39,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
 
         public bool HasChildren => Children != null && Children.Any();
         public bool HasBranches => HasChildren && Children.Count > 1;
-        public IList<FpGrowthNode<TValue>> Children { get; set; }
+        public IList<FpGrowthNode<TValue>> Children { get; private set; }
 
         public IList<int> TransactionIds { get; }
         public double Count { get; set; }
@@ -77,6 +77,29 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             }
         }
 
+        public void ReplaceChild(
+            FpGrowthNode<TValue> childToReplace, 
+            FpGrowthNode<TValue> newChild,
+            bool keepSubtree = true)
+        {
+            var indexToReplace = Children.IndexOf(childToReplace);
+            if (indexToReplace >= 0)
+            {
+                Children.Remove(childToReplace);
+                Children.Add(newChild);
+                if (keepSubtree)
+                {
+                    newChild.Children = childToReplace.Children;
+                    foreach (var child in newChild.Children) child.Parent = newChild;
+                }
+                newChild.Parent = childToReplace.Parent;
+            }
+            else
+            {
+                throw new ArgumentException($"No such child: {childToReplace}");
+            }
+        }
+
         public string PrintStructure(int indent = 0)
         {
             var sb = new StringBuilder();
@@ -91,7 +114,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             return sb.ToString();
         }
 
-        public FpGrowthNode<TValue> CopyNode()
+        public virtual FpGrowthNode<TValue> CopyNode()
         {
             return new FpGrowthNode<TValue>(
                 Value,

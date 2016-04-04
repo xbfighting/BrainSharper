@@ -7,6 +7,7 @@ using BrainSharper.Abstract.Algorithms.AssociationAnalysis.DataStructures;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Abstract.Algorithms.DecisionTrees.Processors;
 using BrainSharper.Abstract.Data;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures;
 using BrainSharper.Implementations.Algorithms.DecisionTrees.DataStructures.BinaryDecisionTrees;
 

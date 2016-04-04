@@ -237,6 +237,12 @@ namespace BrainSharperTests.TestUtils
             return new DataFrame(dt);
         }
 
+        public static IDataFrame ReadAbstractCMARData()
+        {
+            DataTable dt = ReadCsvIntoDataTable(@"DataSets\AbstractCMARDataSet.txt", true);
+            return new DataFrame(dt);
+        }
+
         private static DataTable ReadCsvIntoDataTable(string filepath, bool isFirstRowHeader)
         {
 #if MONO

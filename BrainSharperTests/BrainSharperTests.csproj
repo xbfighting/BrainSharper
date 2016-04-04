@@ -75,6 +75,7 @@
     <Compile Include="General\CollectionUtils\CumulativeSumTest.cs" />
     <Compile Include="General\DataQuality\ConfusionMatrixTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\Apriori\AprioriAlgorithmTester.cs" />
+    <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\AssociativeTreeTests.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\DissociationRules\DissociationRulesFinderTester.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociationAnalysisTestDataBuilder.cs" />
     <Compile Include="Implementations\Algorithms\AssociationAnalysis\AssociativeClassification\ClassificationAprioriTest.cs" />
@@ -115,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="DataSets\AbstractCMARDataSet.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="DataSets\AdultCensusIncomeBinaryClassification.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

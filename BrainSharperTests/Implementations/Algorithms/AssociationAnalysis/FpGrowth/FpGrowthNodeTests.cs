@@ -104,5 +104,38 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.FpGro
             CollectionAssert.AreEqual(pathToBb, expectedPath);
         }
 
+        [Test]
+        public void TestReplaceChildWithKeepingSubtree()
+        {
+            // Given
+            var replacement = new FpGrowthNode<string>("XXX", count: 1);
+            var tree = new FpGrowthNode<string>();
+            var firstChild = new FpGrowthNode<string>("A", count: 1);
+            var firstChildOfFirstChild = new FpGrowthNode<string>("Aa", count: 2);
+            var secondChildOfFirstChild = new FpGrowthNode<string>("Ab", count: 2);
+
+            firstChild.AddChild(firstChildOfFirstChild);
+            firstChild.AddChild(secondChildOfFirstChild);
+
+            var secondChild = new FpGrowthNode<string>("B", count: 1);
+            var firstChildOfSecondChild = new FpGrowthNode<string>("Ba", count: 2);
+            var secondChildOfSecondChild = new FpGrowthNode<string>("Bb", count: 2);
+
+            secondChild.AddChild(firstChildOfSecondChild);
+            secondChild.AddChild(secondChildOfSecondChild);
+
+            tree.AddChild(firstChild);
+            tree.AddChild(secondChild);
+
+            tree.ReplaceChild(firstChild, replacement);
+
+            var expectedPath = new List<FpGrowthNode<string>> { replacement, tree };
+
+            // When
+            var actualPath = secondChildOfFirstChild.GetPathToSelf(false, true);
+
+            // Then
+            CollectionAssert.AreEqual(expectedPath, actualPath);
+        }
     }
 }

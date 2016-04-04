@@ -78,7 +78,16 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis
                 new Transaction<string>(8, "a", "b", "c"),
                 new Transaction<string>(9, "a", "b", "d"),
                 new Transaction<string>(10, "b", "c", "e")
+            });
 
+        public static ITransactionsSet<IDataItem<string>> AbstractCMARDataSetOnlyFrequentItems = new TransactionsSet<IDataItem<string>>(
+            new ITransaction<IDataItem<string>>[]
+            {
+                new Transaction<IDataItem<string>>(1, new DataItem<string>("A", "a1"), new DataItem<string>("C", "c1"), new DataItem<string>("label", "A")),
+                new Transaction<IDataItem<string>>(2, new DataItem<string>("A", "a1"), new DataItem<string>("B", "b2"), new DataItem<string>("C", "c1"), new DataItem<string>("label", "B")),
+                new Transaction<IDataItem<string>>(3, new DataItem<string>("D", "d3"), new DataItem<string>("label", "A")),
+                new Transaction<IDataItem<string>>(4, new DataItem<string>("A", "a1"), new DataItem<string>("B", "b2"), new DataItem<string>("D", "d3"), new DataItem<string>("label", "C")),
+                new Transaction<IDataItem<string>>(2, new DataItem<string>("A", "a1"), new DataItem<string>("B", "b2"), new DataItem<string>("C", "c1"), new DataItem<string>("D", "d3"), new DataItem<string>("label", "C"))
             });
 
     }
