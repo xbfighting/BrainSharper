@@ -100,7 +100,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             }
         }
 
-        public string PrintStructure(int indent = 0)
+        public virtual string PrintStructure(int indent = 0)
         {
             var sb = new StringBuilder();
             var parentIndent = new string(' ', indent);
@@ -114,14 +114,14 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStruct
             return sb.ToString();
         }
 
-        public virtual FpGrowthNode<TValue> CopyNode()
+        public virtual FpGrowthNode<TValue> CopyNode(bool includeChildren = true)
         {
             return new FpGrowthNode<TValue>(
                 Value,
                 IsLeaf,
                 Count,
                 TransactionIds,
-                Children)
+                includeChildren ? Children : null)
             {
                 Parent = Parent
             };

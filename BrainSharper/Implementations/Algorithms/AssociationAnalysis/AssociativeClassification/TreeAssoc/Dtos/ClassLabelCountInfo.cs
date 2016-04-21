@@ -11,6 +11,11 @@
         public TValue ClassLabel { get; }
         public int Count { get; private set; }
 
+        public static ClassLabelCountInfo<TValue> FromOther(ClassLabelCountInfo<TValue> other)
+        {
+            return new ClassLabelCountInfo<TValue>(other.ClassLabel, other.Count);
+        } 
+
         public void IncrementCount(int by)
         {
             Count += by;

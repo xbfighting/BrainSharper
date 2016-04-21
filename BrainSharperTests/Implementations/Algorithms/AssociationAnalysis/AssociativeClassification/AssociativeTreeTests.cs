@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.TreeAssoc;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.TreeAssoc.Dtos;
-using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.FPGrowth;
-using BrainSharperTests.TestUtils;
 using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
@@ -75,6 +70,15 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             // Then
             CollectionAssert.AreEquivalent(expectedNodes, gatheredNodes);
             CollectionAssert.AreEquivalent(classificationNodes, classificationNodes);
+        }
+
+        [Test]
+        public void FindingFrequentItems()
+        {
+            var data = AssociationAnalysisTestDataBuilder.AbstractCMARDataSetOnlyFrequentItems;
+            var miningParams = new ClassificationAssociationMiningParams("label", 0.4, null, 0.5);
+
+            var result = Subject.FindFrequentItems(data, miningParams);
         }
     }
 }
