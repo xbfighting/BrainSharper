@@ -4,7 +4,9 @@ using BrainSharper.Abstract.Data;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.TreeAssoc;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification.TreeAssoc.Dtos;
+using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.Common;
 using BrainSharper.Implementations.Algorithms.AssociationAnalysis.DataStructures.FPGrowth;
+using BrainSharperTests.TestUtils;
 using NUnit.Framework;
 
 namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.AssociativeClassification
@@ -79,6 +81,20 @@ namespace BrainSharperTests.Implementations.Algorithms.AssociationAnalysis.Assoc
             var miningParams = new ClassificationAssociationMiningParams("label", 0.4, null, 0.5);
 
             var result = Subject.FindFrequentItems(data, miningParams);
+        }
+
+        [Test]
+        public void ProcessBigDataSet()
+        {
+            var dataSet = TestDataBuilder.ReadCongressData()
+                .ToAssociativeTransactionsSet<string>();
+            var rulesMiningParams = new ClassificationAssociationMiningParams("party", 0.2, null, 0.8);
+
+            // When
+            var frequentItems = Subject.FindFrequentItems(dataSet, rulesMiningParams);
+            var groupedItems = frequentItems.FrequentItemsBySize[2]
+                 .GroupBy(itm => itm)
+                 .ToDictionary(grp => grp.Key, grp => grp.Count());
         }
     }
 }

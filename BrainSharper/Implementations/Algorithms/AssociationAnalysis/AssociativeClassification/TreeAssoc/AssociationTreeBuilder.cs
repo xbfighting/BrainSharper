@@ -38,12 +38,21 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             var transactonsWithOnlyFrequentElements = RemapTrasactionsToContainOnlyFrequentItems(transactions, initialItems, frequentItemsMiningParams);
             var classificationFpGrowthModel = BuildClassificationFpGrowthModel(transactonsWithOnlyFrequentElements,
                 classificationMiningParams);
+            //TODO: from this frequent items we can build classification rules
+            //TODO: check preconditions - if more general rule exists already in a tree with the same conclusion
+            //TODO: check rule generality level: perform chi-squared test on the rule
             var frequentItems = base.PerformFrequentItemsMining(
                 initialItems.Where(kvp => kvp.Key.FeatureName != classificationMiningParams.DependentFeatureName).Select(kvp => kvp.Value).ToList(),
                 classificationFpGrowthModel,
                 frequentItemsMiningParams,
                 transactions.TransactionsCount);
-            return null;
+            var itemsDict = (from item in frequentItems
+                group item by item.ItemsSet.Count
+                into grp
+                select grp
+                ).ToDictionary(grp => grp.Key,
+                    grp => grp.Select(elem => elem).ToList() as IList<IFrequentItemsSet<IDataItem<TValue>>>);
+            return new FrequentItemsSearchResult<IDataItem<TValue>>(itemsDict);
         }
 
         public FpGrowthModel<IDataItem<TValue>> BuildClassificationFpGrowthModel(
@@ -74,8 +83,6 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                         .Select(itm => new Tuple<IDataItem<TValue>, int>(itm, 1))
                         .ToList();
                 AddTransactionNodesToTree(items, classLabelItem, treeRoot, headersDictionary);
-                //TODO: check preconditions
-                //TODO: after preconditions are ok: insert to tree
             }
             return treeRoot;
         }
