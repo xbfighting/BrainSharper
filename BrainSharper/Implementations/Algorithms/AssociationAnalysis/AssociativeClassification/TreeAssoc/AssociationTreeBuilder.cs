@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis;
 using BrainSharper.Abstract.Algorithms.AssociationAnalysis.AssociativeClassification;
@@ -40,9 +39,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             var classificationFpGrowthModel = BuildClassificationFpGrowthModel(transactonsWithOnlyFrequentElements,
                 classificationMiningParams);
             var frequentItems = base.PerformFrequentItemsMining(
-                initialItems.Where(kvp => kvp.Key.FeatureName != classificationMiningParams.DependentFeatureName).Select(kvp => kvp.Value).ToList(), 
+                initialItems.Where(kvp => kvp.Key.FeatureName != classificationMiningParams.DependentFeatureName).Select(kvp => kvp.Value).ToList(),
                 classificationFpGrowthModel,
-                frequentItemsMiningParams, 
+                frequentItemsMiningParams,
                 transactions.TransactionsCount);
             return null;
         }
@@ -105,7 +104,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 {
                     remappedTransactions[tranIdx] = new Transaction<IDataItem<TValue>>(transaction.TransactionKey, new IDataItem<TValue>[0]);
                 }
-                
+
             });
             var noElemes = remappedTransactions.AsParallel().Where(tran => tran.TransactionItems.Any());
             return new TransactionsSet<IDataItem<TValue>>(
@@ -133,31 +132,31 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             if (!itemsToAdd.Any()) return;
             var head = itemsToAdd.First();
             var tail = itemsToAdd.Skip(1).ToList();
-            FpGrowthNode<IDataItem<TValue>> newNode;
+            FpGrowthNode<IDataItem<TValue>> nodeToProcess;
             var terminalNode = !tail.Any();
-            bool anyChildMatched = false;
+            bool existingChildFound = false;
 
             if (!tree.HasChildren)
             {
-                newNode = BuildNodeWithInitialClassDistribution(head.Item1, classLabelValue, head.Item2);
-                tree.AddChild(newNode);
+                nodeToProcess = BuildNewNodeWithInitialClass(head.Item1, classLabelValue, head.Item2);
+                tree.AddChild(nodeToProcess);
             }
             else
             {
                 Tuple<bool, FpGrowthNode<IDataItem<TValue>>> result = ProcessChildren(
-                    classLabelValue, 
-                    tree, head, 
+                    classLabelValue,
+                    tree, head,
                     terminalNode);
-                anyChildMatched = result.Item1;
-                newNode = result.Item2;
+                existingChildFound = result.Item1;
+                nodeToProcess = result.Item2;
             }
 
-            if (!anyChildMatched)
+            if (!existingChildFound)
             {
-                if(headersTable.ContainsKey(head.Item1)) headersTable[head.Item1].Add(newNode);
-                else headersTable.Add(head.Item1, new List<FpGrowthNode<IDataItem<TValue>>> { newNode } );
+                if (headersTable.ContainsKey(head.Item1)) headersTable[head.Item1].Add(nodeToProcess);
+                else headersTable.Add(head.Item1, new List<FpGrowthNode<IDataItem<TValue>>> { nodeToProcess });
             }
-            AddTransactionNodesToTree(tail, classLabelValue, newNode, headersTable);
+            AddTransactionNodesToTree(tail, classLabelValue, nodeToProcess, headersTable);
         }
 
         private ClassificationFpGrowthNode<IDataItem<TValue>, TValue> BuildClassificationChildIfNeccessary(
@@ -167,19 +166,9 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             int newCount
             )
         {
-            if (child is ClassificationFpGrowthNode<IDataItem<TValue>, TValue>)
-            {
-                var classificationChild = child as ClassificationFpGrowthNode<IDataItem<TValue>, TValue>;
-                classificationChild.AddOrIncrementClassLabelCount(classLabelValue, newCount);
-                return classificationChild;
-            }
-            else
-            {
-                var classificationChild = BuildNodeWithInitialClassDistribution(child.Value,
-                            classLabelValue, (int)child.Count + newCount);
-                tree.ReplaceChild(child, classificationChild);
-                return classificationChild;
-            }
+            var classificationChild = (ClassificationFpGrowthNode < IDataItem<TValue>, TValue> )child;
+            classificationChild.AddOrIncrementClassLabelCount(classLabelValue, newCount);
+            return classificationChild;
         }
 
         private Tuple<bool, FpGrowthNode<IDataItem<TValue>>> ProcessChildren(TValue classLabelValue, FpGrowthNode<IDataItem<TValue>> tree, Tuple<IDataItem<TValue>, int> head, bool terminalNode)
@@ -197,23 +186,15 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 }
                 else
                 {
-                    if (matchingChild is ClassificationFpGrowthNode<IDataItem<TValue>, TValue>)
-                    {
-                        var classificationChild = matchingChild as ClassificationFpGrowthNode<IDataItem<TValue>, TValue>;
-                        // TODO: check if this assumption is correct -should the count be always incremented by one?
-                        classificationChild.AddOrIncrementClassLabelCount(classLabelValue, 1);
-                        newNode = classificationChild;
-                    }
-                    else
-                    {
-                        newNode = BuildClassificationChildIfNeccessary(tree, matchingChild, classLabelValue, 1);
-                        newNode.IncrementCountBy(head.Item2);
-                    }
+                    var classificationChild = (ClassificationFpGrowthNode<IDataItem<TValue>, TValue>)matchingChild;
+                    //TODO: check if this assumption is correct -should the count be always incremented by one?
+                    classificationChild.AddOrIncrementClassLabelCount(classLabelValue, 1);
+                    newNode = classificationChild;
                 }
             }
             else
             {
-                newNode = BuildNodeWithInitialClassDistribution(head.Item1, classLabelValue, head.Item2);
+                newNode = BuildNewNodeWithInitialClass(head.Item1, classLabelValue, head.Item2);
                 tree.AddChild(newNode);
             }
             return new Tuple<bool, FpGrowthNode<IDataItem<TValue>>>(anyChildMatched, newNode);
@@ -222,8 +203,8 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
         public override IEnumerable<IFrequentItemsSet<IDataItem<TValue>>> ProcessPrefixPathForValue(
             IDataItem<TValue> valueToStartFrom,
             FpGrowthModel<IDataItem<TValue>> currentModel,
-            IFrequentItemsSet<IDataItem<TValue>> currentPrefix, 
-            IFrequentItemsMiningParams miningParams, 
+            IFrequentItemsSet<IDataItem<TValue>> currentPrefix,
+            IFrequentItemsMiningParams miningParams,
             int totalTransactionsCount)
         {
             var transformedPaths = new List<IEnumerable<ClassificationFpGrowthNode<IDataItem<TValue>, TValue>>>();
@@ -233,13 +214,12 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             var support = 0.0;
             foreach (var node in currentModel.HeaderTable.GetNodesForValue(valueToStartFrom))
             {
-                var currentClassificationNode = node as ClassificationFpGrowthNode<IDataItem<TValue>, TValue>;
+                var currentClassificationNode = (ClassificationFpGrowthNode < IDataItem<TValue>, TValue> )node;
                 valuesFrequenceies.AddOrUpdate(currentClassificationNode.Value, currentClassificationNode.Count, (v1, v2) => v1 + v2);
                 foreach (var classLabelDistr in currentClassificationNode.ClassLabelDistributions)
                 {
-                    if (classValueFrequencies.ContainsKey(classLabelDistr.Key))
-                        classValueFrequencies[classLabelDistr.Key] += classLabelDistr.Value.Count;
-                    else classValueFrequencies.Add(classLabelDistr.Key, classLabelDistr.Value.Count);
+                    if (!classValueFrequencies.ContainsKey(classLabelDistr.Key)) classValueFrequencies.Add(classLabelDistr.Key, classLabelDistr.Value.Count);
+                    else classValueFrequencies[classLabelDistr.Key] += classLabelDistr.Value.Count;
                 }
                 support += currentClassificationNode.Count;
 
@@ -247,7 +227,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 var pathWithAdjustedClassesCounts = new List<ClassificationFpGrowthNode<IDataItem<TValue>, TValue>>();
                 foreach (var nodeInPath in pathToNode)
                 {
-                    var copyOfnode = (ClassificationFpGrowthNode<IDataItem<TValue>, TValue>) nodeInPath.CopyNode(false);
+                    var copyOfnode = (ClassificationFpGrowthNode<IDataItem<TValue>, TValue>)nodeInPath.CopyNode(false);
                     var copyOfMasterNodeClassLabelDistributions = new Dictionary<TValue, ClassLabelCountInfo<TValue>>(currentClassificationNode.ClassLabelDistributions);
                     if (copyOfnode.Count > node.Count) copyOfnode.Count = node.Count;
                     // TODO: consider it as a performance bottleneck. It might be a problem for bigger datasets
@@ -289,8 +269,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
             var headersDictionary = new Dictionary<IDataItem<TValue>, IList<FpGrowthNode<IDataItem<TValue>>>>();
             foreach (var path in transformedPathsWithOnlyFrequentElems)
             {
-                AddNodesToTree(treeRoot, path);
-                foreach(var node in path) AddNodeToHeadersTable(node, headersDictionary);
+                AddNodesToTree(treeRoot, path, headersDictionary);
             }
 
             // TODO: it can be refactored for better style
@@ -302,16 +281,18 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 foreach (var subPrefix in subPrefixes) yield return subPrefix;
             }
 
-            
+
         }
 
         protected void AddNodesToTree(
             ClassificationFpGrowthNode<IDataItem<TValue>, TValue> parentNode,
-            IEnumerable<ClassificationFpGrowthNode<IDataItem<TValue>, TValue>> nodesToAdd)
+            IEnumerable<ClassificationFpGrowthNode<IDataItem<TValue>, TValue>> nodesToAdd,
+            IDictionary<IDataItem<TValue>, IList<FpGrowthNode<IDataItem<TValue>>>> headersDictionary)
         {
             if (!nodesToAdd.Any()) return;
             var head = nodesToAdd.First();
             ClassificationFpGrowthNode<IDataItem<TValue>, TValue> childToProcess = null;
+            bool existingNodeFound = false;
             if (!parentNode.HasChildren)
             {
                 childToProcess = ClassificationFpGrowthNode<IDataItem<TValue>, TValue>.FromOther(head);
@@ -322,6 +303,7 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                 var matchingChild = parentNode.Children.FirstOrDefault(chd => chd.Value.Equals(head.Value)) as ClassificationFpGrowthNode<IDataItem<TValue>, TValue>;
                 if (matchingChild != null)
                 {
+                    existingNodeFound = true;
                     childToProcess = matchingChild;
                     matchingChild.IncrementCountBy(head.Count);
                     foreach (var kvp in head.ClassLabelDistributions)
@@ -339,10 +321,15 @@ namespace BrainSharper.Implementations.Algorithms.AssociationAnalysis.Associativ
                     parentNode.AddChild(childToProcess);
                 }
             }
-            AddNodesToTree(childToProcess, nodesToAdd.Skip(1));
+            if (!existingNodeFound)
+            {
+                if(!headersDictionary.ContainsKey(childToProcess.Value)) headersDictionary.Add(childToProcess.Value, new List<FpGrowthNode<IDataItem<TValue>>>());
+                headersDictionary[childToProcess.Value].Add(childToProcess);
+            }
+            AddNodesToTree(childToProcess, nodesToAdd.Skip(1), headersDictionary);
         }
 
-        protected ClassificationFpGrowthNode<IDataItem<TValue>, TValue> BuildNodeWithInitialClassDistribution(
+        protected ClassificationFpGrowthNode<IDataItem<TValue>, TValue> BuildNewNodeWithInitialClass(
             IDataItem<TValue> nodeValue,
             TValue classLabel,
             int count
